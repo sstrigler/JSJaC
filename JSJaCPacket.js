@@ -70,7 +70,11 @@ function JSJaCPacket(name) {
 		}
 		return null;
 	}
-	this._replaceNode = function(aNode) { return this.doc.replaceChild(aNode,this.doc.firstChild); };
+	this._replaceNode = function(aNode) { return this.doc.replaceChild(aNode.cloneNode(true),this.doc.firstChild); };
+
+	this.clone = function() {
+		return JSJaCPWrapNode(this.getNode());
+	}
 } 
 
 function JSJaCPresence() {
