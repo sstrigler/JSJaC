@@ -252,6 +252,8 @@ function JSJaCHandleResponse(req) {
 	for (var i=0; i<xmldoc.firstChild.childNodes.length; i++) {
 		this.oDbg.log("xmldoc.firstChild.childNodes.item("+i+").nodeName: "+xmldoc.firstChild.childNodes.item(i).nodeName,3);
 		var aJSJaCPacket = JSJaCPWrapNode(xmldoc.firstChild.childNodes.item(i).cloneNode(true));
+		if (typeof(aJSJaCPacket.pType) == 'undefined') // didn't parse as proper XMPP packet
+			continue;
 		if (!this._handlePID(aJSJaCPacket))
 				this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
 	}
