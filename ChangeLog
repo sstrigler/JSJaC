@@ -1,20 +1,23 @@
 JSJaC v0.2
 ==========
 
-	* send always does asychronous send now as http polling doesn't support this.
+* send always does asychronous send now as http polling doesn't
+  support this.
 
-	  In detail: When sending a packet where we expect a reply to it
-	  http polling doesn't make sure that this reply is contained
-	  within the http body reply to the query sent. So we have to
-	  setup a callback that handles the reply once it has been
-	  delivered to us.
+  In detail: When sending a packet where we expect a reply to it
+  http polling doesn't make sure that this reply is contained
+  within the http body reply to the query sent. So we have to
+  setup a callback that handles the reply once it has been
+  delivered to us.
 
-	* added a dedicated method syncedSend that sends in synchronous mode
+* added a dedicated method syncedSend that sends in synchronous
+  mode
 
-	  First read above, then understand that you can't expect any
-	  response to this call. It's there to make sure, sending is
-	  finished before windows get closed
+  First read above, then understand that you can't expect any
+  response to this call. It's there to make sure, sending is
+  finished before windows get closed
 
-	* added events 'onconnect', 'ondisconnect' and 'onerror'. see API for details.
+* added events 'onconnect', 'ondisconnect' and 'onerror'. see API
+  for details.
 
-	* removed method process() as polling is started at connect() now.
+* removed method process() as polling is started at connect() now.
