@@ -1,4 +1,4 @@
-JSJaCHPC_NKEYS = 100; // number of keys to generate
+JSJaCHPC_NKEYS = 10; // number of keys to generate
 
 function JSJaCHttpPollingConnection(oDbg) {
 	this.base = JSJaCConnection;
@@ -17,17 +17,18 @@ function JSJaCHPCKeys(oDbg) {
 	var seed = Math.random();
 
 	this.k = new Array();
-	this.k[0] = this.username+seed;
+	this.k[0] = seed.toString();
 	this.oDbg = oDbg;
 
 	for (var i=1; i<JSJaCHPC_NKEYS; i++) {
 		this.k[i] = b64_sha1(this.k[i-1]);
-		if (this.oDbg)
-			oDbg.log(i+": "+this.k[i],4);
+		oDbg.log(i+": "+this.k[i],4);
 	}
 
 	this.indexAt = JSJaCHPC_NKEYS-1;
-	this.getKey = function() { return this.k[this.indexAt--]; };
+	this.getKey = function() { 
+		return this.k[this.indexAt--]; 
+	};
 	this.lastKey = function() { return (this.indexAt == 0); };
 }
 
@@ -69,6 +70,7 @@ function JSJaCHPCPrepareResponse() {
 		return null;
 	} 
 
+	this.oDbg.log(this.req.getAllResponseHeaders(),4);
 	var aPList = this.req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
 	for (var i=0;i<aPList.length;i++) {
@@ -78,7 +80,7 @@ function JSJaCHPCPrepareResponse() {
 	}
 
 	// http polling component error
-	if (sid.indexOf(':0') != -1) {
+	if (typeof(sid) != 'undefined' && sid.indexOf(':0') != -1) {
 		switch (sid.substring(0,sid.indexOf(':0'))) {
 		case '0':
 			this.oDbg.log("invalid response:" + this.req.responseText,1);
@@ -106,12 +108,11 @@ function JSJaCHPCPrepareResponse() {
 	}
 
 	var response = XmlDocument.create();
-
 	response.loadXML("<body>"+this.req.responseText+"</body>");
 	return response;
 }
 
-function JSJaCHPCConnect(http_base,server,username,resource,pass,register) {
+function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,register) {
 	// initial request to get sid and streamid
 
 	this.http_base = http_base || '/';
@@ -136,6 +137,7 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,register) {
 		return;
 	}
 
+	this.oDbg.log(this.req.getAllResponseHeaders(),4);
 	this.oDbg.log(this.req.responseText,4);
 
 	// extract session ID
@@ -153,6 +155,9 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,register) {
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
 	this._connected = true;
+
+	this._process(timerval); // start polling
+
 	if (register)
 		this._doReg();
 	else

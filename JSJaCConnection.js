@@ -75,7 +75,7 @@ function JSJaCConnection(oDbg) {
 		this.oDbg.log("unregistered "+pID,3);
 		return true;
 	};
-	this.process = function(timerval) {
+	this._process = function(timerval) {
 		this.timeout = setInterval("oCon.send()",timerval);
 	};
 	this.setPollInterval = function(timerval) {
@@ -92,7 +92,6 @@ function JSJaCConnection(oDbg) {
 	this._doAuth2 = JSJaCAuth2;
 	this._doAuth3 = JSJaCAuth3;
 	this._sendQueue = JSJaCSendQueue;
-	oCon.auth1_done = false;
 }
 
 function JSJaCReg() {
@@ -119,8 +118,6 @@ function JSJaCAuth(iq) {
 		return;
 	}
 
-	if (oCon.auth1_done)
-		return;
 	var iq = new JSJaCIQ();
 	iq.setIQ(oCon.server,null,'get','auth1');
 	var query = iq.setQuery('jabber:iq:auth');
@@ -130,11 +127,9 @@ function JSJaCAuth(iq) {
 	query.appendChild(aNode);
 
 	oCon.send(iq,oCon._doAuth2);
-	setTimeout("oCon._doAuth();",2000); // retry - dirty hack for broken mozilla
 }
 
 function JSJaCAuth2(iq) {
-	oCon.auth1_done = true;
 	oCon.oDbg.log("got iq: " + iq.getDoc().xml,4);
 	var use_digest = false;
 	for (var aChild=iq.getNode().firstChild.firstChild; aChild!=null; aChild=aChild.nextSibling) {
