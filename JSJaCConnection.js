@@ -1,4 +1,4 @@
-JSJaC_HAVEKEYS = false;  // whether to use keys
+JSJaC_HAVEKEYS = true;  // whether to use keys
 JSJaC_NKEYS    = 64;    // number of keys to generate
 
 /* ******************************
@@ -81,14 +81,17 @@ function JSJaCConnection(oDbg) {
 		return true;
 	};
 	this._process = function(timerval) {
-		this.timeout = setInterval("oCon.send()",timerval);
+		if (timerval)
+			this.setPollInterval(timerval);
+		this.send();
+		this.timeout = setTimeout("oCon._process()",this.timerval);
 	};
 	this.setPollInterval = function(timerval) {
-		if (!timerval || isNaN(timerval))
+		if (!timerval || isNaN(timerval)) {
 			this.oDbg.log("Invalid timerval: " + timerval,1);
-		if (this.timeout)
-			clearTimeout(this.timeout);
-		this.timeout = setInterval("oCon.send();",timerval);
+			return;
+		}
+		this.timerval = timerval;
 	};
 
 	this._handleResponse = JSJaCHandleResponse;
@@ -163,6 +166,9 @@ function JSJaCAuth2(iq) {
 	oCon.send(iq,oCon._doAuth3);
 }
 
+/* ***
+ * check if auth' was successful
+ */
 function JSJaCAuth3(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
@@ -172,6 +178,11 @@ function JSJaCAuth3(iq) {
 		oCon.handleEvent('onconnect');
 }
 
+/* ***
+ * send a jsjac packet
+ * optional args: cb  - callback to be called when result is received)
+ *                arg - additional argument to be passed to callback
+ */
 function JSJaCSend(aJSJaCPacket,cb,arg) {
 	// remember id for response if callback present
 	if (aJSJaCPacket && cb) {
@@ -248,10 +259,11 @@ function JSJaCSyncSend(aPacket) {
 	this._handleResponse(xmlhttp);
 }
 
+/* ***
+ * send empty request 
+ * waiting for stream id to be able to proceed with authentication 
+ */
 function JSJaCSendEmpty() {
-	/* send empty request 
-	 * waiting for stream id to be able to proceed with authentication 
-	 */
 	oCon.req = oCon._setupRequest(false);
 	oCon.req.send(oCon._getRequestString());
 	oCon._getStreamID(); // handle response
@@ -276,6 +288,9 @@ function JSJaCHandleResponse(req) {
 	return null;
 }
 
+/* ***
+ * an error packet for internal use
+ */
 function JSJaCError(code,type,condition) {
 	var xmldoc = XmlDocument.create();
 	xmldoc.appendChild(xmldoc.createElement('error'));
@@ -285,7 +300,10 @@ function JSJaCError(code,type,condition) {
 	xmldoc.firstChild.firstChild.setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
 	return xmldoc.firstChild.cloneNode(true);
 }
-																
+
+/* ***
+ * set of sha1 hash keys for securing sessions
+ */											
 function JSJaCKeys(oDbg) {
 	var seed = Math.random();
 
