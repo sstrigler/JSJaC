@@ -21,6 +21,7 @@ function JSJaCConnection(oDbg) {
 
 	this.connected = function() { return this._connected; };
 	this.send = JSJaCSend;
+	this.syncSend = JSJaCSyncSend;
 	this.registerHandler = function(event,handler) {
 		event = event.toLowerCase(); // don't be case-sensitive here
 		if (!this._events[event])
@@ -200,7 +201,7 @@ function JSJaCSendQueue() {
 			return;
 		if (oCon.req.readyState == 4) {
 			oCon.oDbg.log("async recv: "+oCon.req.responseText,4);
-			oCon._handleResponse();
+			oCon._handleResponse(oCon.req);
  			if (oCon._pQueue.length)
  				oCon._sendQueue();
 		}
@@ -227,8 +228,22 @@ function JSJaCSendQueue() {
 
 }
 
-function JSJaCHandleResponse() {
-	var xmldoc = this._prepareResponse();
+function JSJaCSyncSend(aPacket) {
+	if (!this.connected()) {
+		this.oDbg.log("Connection lost ...",1);
+		return;
+	}
+
+	var xmlhttp = this._setupRequest(false);
+
+	var reqstr = this._getRequestString(aPacket.getDoc().xml);
+	this.oDbg.log("sending: " + reqstr,4);
+	xmlhttp.send(reqstr);
+	this._handleResponse(xmlhttp);
+}
+
+function JSJaCHandleResponse(req) {
+	var xmldoc = this._prepareResponse(req);
 
 	if (!xmldoc)
 		return null;

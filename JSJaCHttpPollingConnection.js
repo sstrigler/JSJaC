@@ -1,4 +1,4 @@
-JSJaCHPC_NKEYS = 10; // number of keys to generate
+JSJaCHPC_NKEYS = 256; // number of keys to generate
 
 function JSJaCHttpPollingConnection(oDbg) {
 	this.base = JSJaCConnection;
@@ -54,14 +54,14 @@ function JSJaCHPCGetRequestString(xml) {
 	return reqstr;
 }
 
-function JSJaCHPCPrepareResponse() {
+function JSJaCHPCPrepareResponse(req) {
 	if (!this.connected())
 		return null;
 
 	/* handle error */
 	// proxy error (!)
-	if (this.req.status != 200) {
-		this.oDbg.log("invalid response:\n" + this.req.responseText,1);
+	if (req.status != 200) {
+		this.oDbg.log("invalid response:\n" + req.responseText,1);
 		clearTimeout(this.timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
@@ -70,8 +70,8 @@ function JSJaCHPCPrepareResponse() {
 		return null;
 	} 
 
-	this.oDbg.log(this.req.getAllResponseHeaders(),4);
-	var aPList = this.req.getResponseHeader('Set-Cookie');
+	this.oDbg.log(req.getAllResponseHeaders(),4);
+	var aPList = req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
 	for (var i=0;i<aPList.length;i++) {
 		aArg = aPList[i].split("=");
@@ -83,7 +83,7 @@ function JSJaCHPCPrepareResponse() {
 	if (typeof(sid) != 'undefined' && sid.indexOf(':0') != -1) {
 		switch (sid.substring(0,sid.indexOf(':0'))) {
 		case '0':
-			this.oDbg.log("invalid response:" + this.req.responseText,1);
+			this.oDbg.log("invalid response:" + req.responseText,1);
 			break;
 		case '-1':
 			this.oDbg.log("Internal Server Error",1);
@@ -108,7 +108,7 @@ function JSJaCHPCPrepareResponse() {
 	}
 
 	var response = XmlDocument.create();
-	response.loadXML("<body>"+this.req.responseText+"</body>");
+	response.loadXML("<body>"+req.responseText+"</body>");
 	return response;
 }
 
