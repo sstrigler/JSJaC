@@ -62,7 +62,10 @@ function JSJaCPacket(name) {
 	this._childElVal = function(nodeName) {
 		for (var i=0; i<this.getNode().childNodes.length; i++) {
 			if (this.getNode().childNodes.item(i).nodeName == nodeName) {
-				return this.getNode().childNodes.item(i).firstChild.nodeValue;
+				if (this.getNode().childNodes.item(i).firstChild)
+					return this.getNode().childNodes.item(i).firstChild.nodeValue;
+				else
+					return '';
 			}
 		}
 		return null;
