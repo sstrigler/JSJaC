@@ -74,7 +74,7 @@ function JSJaCPresence() {
 	this.base = JSJaCPacket;
 	this.base('presence');
 
-	this.setXMLNS('jabber:client');
+	//	this.setXMLNS('jabber:client');
 
 	this.setStatus = function(status) {
 		this.getNode().appendChild(this.getDoc().createElement('status')).appendChild(this.getDoc().createTextNode(status));
@@ -139,7 +139,7 @@ function JSJaCMessage() {
 	this.base = JSJaCPacket;
 	this.base('message');
 
-	this.setXMLNS('jabber:client');
+	//	this.setXMLNS('jabber:client');
 
 	this.setBody = function(body) {
 		var aNode = this.getNode().appendChild(this.getDoc().createElement('body'));
