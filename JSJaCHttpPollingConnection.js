@@ -55,8 +55,9 @@ function JSJaCHPCPrepareResponse(req) {
 	this.oDbg.log(req.getAllResponseHeaders(),4);
 	var aPList = req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
+	var sid;
 	for (var i=0;i<aPList.length;i++) {
-		aArg = aPList[i].split("=");
+		var aArg = aPList[i].split("=");
 		if (aArg[0] == 'ID')
 			sid = aArg[1];
 	}
@@ -84,6 +85,9 @@ function JSJaCHPCPrepareResponse(req) {
 		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		return null;
 	}
+
+	if (req.responseText == '')
+		return null;
 
 	var response = XmlDocument.create();
 	response.loadXML("<body>"+req.responseText+"</body>");
