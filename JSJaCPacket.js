@@ -23,6 +23,14 @@ function JSJaCPacket(name) {
 	this.getXMLLang = function() { return this.getNode().getAttribute('xml:lang'); };
 	this.getXMLNS = function() { return this.getNode().getAttribute('xmlns',xmlns); };
 
+	this._childElVal = function(nodeName) {
+		for (var i=0; i<this.getNode().childNodes.length; i++) {
+			if (this.getNode().childNodes.item(i).nodeName == nodeName) {
+				return this.getNode().childNodes.item(i).firstChild.nodeValue;
+			}
+		}
+		return null;
+	}
 	this._replaceNode = function(aNode) { return this.doc.replaceChild(aNode,this.doc.firstChild); };
 } 
 
@@ -57,14 +65,6 @@ function JSJaCPresence() {
 	this.getStatus = function() {	return this._childElVal('status');	};
 	this.getShow = function() { return this._childElVal('show'); };
 	this.getPriority = function() { return this._childElVal('priority'); };
-
-	this._childElVal = function(nodeName) {
-		if (this.getNode().getElementsByTagName(nodeName).length) {
-			return this.getNode().getElementsByTagName(nodeName).item(0).firstChild.nodeValue; 
-		}	else
-			return null;
-	}
-
 }
 
 function JSJaCIQ() {
@@ -116,8 +116,8 @@ function JSJaCMessage() {
 		return this; 
 	};
 	
-	this.getBody = function() { return this.getNode().getElementsByTagName('body').item(0).firstChild.nodeValue; };
-	this.getSubject = function() { return this.getNode().getElementsByTagName('subject').item(0).firstChild.nodeValue; };
+	this.getBody = function() { return this._childElVal('body'); };
+	this.getSubject = function() { return this._childElVal('subject') };
 }
 
 /* ***
