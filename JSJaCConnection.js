@@ -46,6 +46,8 @@ function JSJaCConnection(oDbg) {
 		this.timeout = setInterval("oCon.send()",timerval);
 	};
 	this.setPollInterval = function(timerval) {
+		if (!timerval || isNaN(timerval))
+			this.oDbg.log("Invalid timerval: " + timerval,1);
 		if (this.timeout)
 			clearTimeout(this.timeout);
 		this.timeout = setInterval("oCon.send()",timerval);
@@ -109,12 +111,13 @@ function JSJaCSend(aJSJaCPacket) {
 	}
 
 	var async = false;
-	if (aJSJaCPacket && aJSJaCPacket.pType() != 'iq') // 'message' or 'presence'
+	if (!aJSJaCPacket || aJSJaCPacket.pType() != 'iq') // 'message' or 'presence'
 		async = true;
 
-	if (async && typeof(this.req) != 'undefined' && this.req.readyState != 4) {
-		this.oDbg.log("httpreq in readyState " + this.req.readyState+"<br>adding packet to send queue",3);
-		this.sendQueue = this.sendQueue.concat(aJSJaCPacket);
+	if (typeof(this.req) != 'undefined' && this.req.readyState != 4) {
+		this.oDbg.log("httpreq in readyState " + this.req.readyState+"\nadding packet to send queue",3);
+		if (aJSJaCPacket)
+			this.sendQueue = this.sendQueue.concat(aJSJaCPacket);
 		return null;
 	}
 
@@ -139,9 +142,7 @@ function JSJaCSend(aJSJaCPacket) {
 				return;
 			if (oCon.req.readyState == 4) {
 				oCon.oDbg.log("async recv: "+oCon.req.responseText,4);
-				if (oCon.req.responseXML) {
-				  oCon._handleResponse();
-				}
+				oCon._handleResponse();
 				if (oCon.sendQueue.length) {
 					var aPacket = oCon.sendQueue[0];
 					oCon.oDbg.log("sending from queue: "+aPacket.getDoc().xml,2);
@@ -166,6 +167,10 @@ function JSJaCSend(aJSJaCPacket) {
 
 function JSJaCHandleResponse(pID) {
 	var xmldoc = this._prepareResponse();
+
+	if (!xmldoc)
+		return null;
+
 	var rPacket;
 	this.oDbg.log("xmldoc.firstChild.childNodes.length: "+xmldoc.firstChild.childNodes.length,3);
 	for (var i=0; i<xmldoc.firstChild.childNodes.length; i++) {
