@@ -92,6 +92,11 @@ function JSJaCHBCPrepareResponse(req) {
 		return null;
 	}
 
+	return req.responseXML;
+
+	/* FIXME: code below doesn't work - but problem described still
+		 exists */
+
 	/* it would be really nice if we could just use req.responseXML here.
 	 * unfortunately given body element has a namespace attribute which
 	 * causes that childNodes are prepended with some qualifying
@@ -120,6 +125,7 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 	this.wait = 60;
   this.hold = 1;
+	this.register = register;
 	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
 
 	this.keys = new JSJaCHBCKeys(this.oDbg); // generate first set of keys
@@ -164,7 +170,7 @@ function JSJaCHBCGetStreamID() {
 	
 	this._process(timerval); // start polling
 	
-	if (register)
+	if (this.register)
 		this._doReg();
 	else
 		this._doAuth();
