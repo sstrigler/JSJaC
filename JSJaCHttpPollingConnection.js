@@ -91,6 +91,11 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass) {
 
 	this.oDbg.log(this.req.responseText,4);
 
+	if (!this.req.responseXML || this.req.responseText == '') {
+		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
+		return;
+	}
+
 	// extract session ID
 	var aPList = this.req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
