@@ -93,10 +93,6 @@ function JSJaCHPCPrepareResponse(req) {
 			break;
 		case '-3':
 			this.oDbg.log("Key Sequence Error",1);
-			if (this.keys.indexAt < JSJaCHPC_NKEYS-2) { // shit happens, try to fix it somehow (dirty)
-				this.keys.indexAt = this.keys.indexAt+2;
-				return;
-			}
 			break;
 		}
 		clearTimeout(this.timeout); // remove timer
