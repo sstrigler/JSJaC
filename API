@@ -14,8 +14,12 @@ boolean: connected()
 	checks if connection is connected
 	RETURNS: boolean - true if connected, false otherwise
 
-void: send(JSJaCPacket: aJSJaCPacket)
-	appends aJSJaCPacket to send queue.
+void: send(JSJaCPacket: aJSJaCPacket [, function: callback])
+	appends aJSJaCPacket to send queue. registers callback if given
+
+	PARAMS: aJSJaCPacket
+          callback - a callback to call when reply with same id comes in
+                     id is set automatically if none set
 
 
 void: registerHandler(string: event, function: handler)
