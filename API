@@ -1,3 +1,4 @@
+
 JSJaCConnection
 ===============
 
@@ -17,26 +18,26 @@ boolean: connected()
 void: send(JSJaCPacket: aJSJaCPacket [, function: callback [, any: arg]])
 	appends aJSJaCPacket to send queue. registers callback if given
 
-	PARAMS: aJSJaCPacket
-          callback - a callback to call when reply with same id comes in
-                     id is set automatically if none set
-          arg - optional arg to call callback (callback is called with callback(aJSJaCPacket, arg))
+	PARAMS: aJSJaCPacket - packet to send
+	        callback - a callback to call when reply with same id comes in
+	                   id is set automatically if none set
+	        arg - optional arg to call callback 
+	              [callback is called with callback(aJSJaCPacket, arg)]
 
 
 void: registerHandler(string: event, function: handler)
 	register a handler for event. if event happens handler is called.
 
-	PARAMS: event - known events so far: 'message','iq','presence','ondisconnect', 
-                  'onconnect', 'onerror'
+	PARAMS: event - known events so far: 'message','iq','presence',
+                        'ondisconnect', 'onconnect', 'onerror'
 
-	        handler - the function to be called. for events 'message', 'iq' and
-	                  'presence' the handler gets passed an JSJaCPacket as
-	                  argument for processing. 'onerror' an error packet is supplied
-
-void: process(int: timeout_msec)
-	starts polling at given timeout (timeout messured in msec)
-
-	PARAMS: timeout_msec
+	        handler - the function to be called. for events 'message', 'iq'
+	                  and 'presence' the handler gets passed an JSJaCPacket 
+	                  as argument for processing. 
+	                  'onerror' an error node is supplied, e.g.: 
+	                  <error code='404' type='cancel'>
+	                    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+	                  </error>
 
 void: setPollInterval(int: timeout_msec)
 	change polling interval to timeout_msec
@@ -55,13 +56,18 @@ void: connect(string: http_base,
               string: jabber_server, 
               string: username, 
               string: resource, 
-              string: password)
+              string: password,
+              int: timeout_msec,
+              boolean: register)
 
-	PARAMS: http_base - base address to communicate with http polling component
+	PARAMS: http_base - base address to communicate with http polling 
+	                    component
 	        jabber_server - the jabber server to use for authentication
 	        username
 	        resource
 	        password
+	        timout_msec - polling interval given in msec
+	        register - whether to register as new account
 
 void: disconnect()
 	disconnects from server
@@ -110,6 +116,9 @@ DOMDocument: getDoc()
 
 DOMElement: getNode()
 	returns top level node
+
+JSJaCNode: clone()
+  returns a (deep) copy of calling packet
 
 JSJaCIQ
 =======
