@@ -1,5 +1,3 @@
-var re = new RegExp(/<body [^>]+>(.*)<\/body>/i);
-
 function JSJaCHttpBindingConnection(oDbg) {
 	this.base = JSJaCConnection;
 	this.base(oDbg);
@@ -69,25 +67,6 @@ function JSJaCHBCPrepareResponse(req) {
 	}
 
 	return req.responseXML;
-
-	/* FIXME: code below doesn't work - but problem described still
-		 exists */
-
-	/* it would be really nice if we could just use req.responseXML here.
-	 * unfortunately given body element has a namespace attribute which
-	 * causes that childNodes are prepended with some qualifying
-	 * namespaceURI if treated seperately. if someone knows a more
-	 * elegant solution to this, please let me know!
-	 */
-
-	re.exec(req.responseText);
-	try {
-		var response = XmlDocument.create();
-		response.loadXML("<body>"+RegExp.$1+"</body>");
-		return response;
-	} catch (e) {
-		return null;
-	}
 }
 
 function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,register) {
@@ -122,7 +101,7 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	
 	this.oDbg.log(this.req.responseText,4);
 	
-	if (this.req.responseText.match(/sid=[\'"]([^\'"]+)[\'"]/))
+	if (this.req.responseText.match(/sid=[\'\"]([^\'\"]+)[\'\"]/))
 			this.sid = RegExp.$1;
 	this.oDbg.log("got sid: "+this.sid,2);
 
@@ -139,7 +118,7 @@ function JSJaCHBCGetStreamID() {
 	this.oDbg.log(this.req.responseText,4);
 
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/authid=[\'"]([^\'"]+)[\'"]/)) {
+	if (this.req.responseText.match(/authid=[\'\"]([^\'\"]+)[\'\"]/)) {
 			this.streamid = RegExp.$1;
 			this.oDbg.log("got streamid: "+this.streamid,2);
 	} else {
