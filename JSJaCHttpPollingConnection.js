@@ -118,6 +118,8 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.username = username;
 	this.resource = resource;
 	this.pass = pass;
+	this.timerval = timerval;
+	this.register = register;
 
 	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
 
@@ -168,9 +170,9 @@ function JSJaCHPCGetStream() {
 
 	this._connected = true;
 
-	this._process(timerval); // start polling
+	this._process(this.timerval); // start polling
 
-	if (register)
+	if (this.register)
 		this._doReg();
 	else
 		this._doAuth();

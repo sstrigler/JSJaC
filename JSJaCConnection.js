@@ -93,6 +93,7 @@ function JSJaCConnection(oDbg) {
 	this._doAuth2 = JSJaCAuth2;
 	this._doAuth3 = JSJaCAuth3;
 	this._sendQueue = JSJaCSendQueue;
+	this._sendEmpty = JSJaCSendEmpty;
 }
 
 function JSJaCReg() {
@@ -240,6 +241,12 @@ function JSJaCSyncSend(aPacket) {
 	this.oDbg.log("sending: " + reqstr,4);
 	xmlhttp.send(reqstr);
 	this._handleResponse(xmlhttp);
+}
+
+function JSJaCSendEmpty() {
+	oCon.req = oCon._setupRequest(false);
+	oCon.req.send(oCon._getRequestString());
+	oCon._getStreamID(); // handle response
 }
 
 function JSJaCHandleResponse(req) {
