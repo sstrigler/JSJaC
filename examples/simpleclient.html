@@ -2,12 +2,13 @@
 <html>
   <head>
     <title>JSJaC Simple Client</title>
-		<!--script language="JavaScript" type="text/javascript" src="../Debugger.js"></script-->
+		<script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../xmlextras.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../JSJaCConnection.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../JSJaCPacket.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../JSJaCHttpPollingConnection.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../JSJaCHttpBindingConnection.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			<!--
 function htmlEnc(str) {
@@ -64,10 +65,13 @@ function handleError(errPacket) {
 }
 
 function doLogin(aForm) {
-	//oDbg = new Debugger(4,'JSJaC Simple Client');
-	//oCon = new JSJaCHttpPollingConnection(oDbg);
 
-	oCon = new JSJaCHttpPollingConnection();
+//  	oCon = new JSJaCHttpBindingConnection();
+ 	oCon = new JSJaCHttpPollingConnection();
+
+// 	oDbg = new Debugger(2,'JSJaC Simple Client');
+// 	oCon = new JSJaCHttpPollingConnection(oDbg);
+// 	oDbg.start();
 
 	oCon.registerHandler('message',handleMessage);
 	oCon.registerHandler('presence',handlePresence);
@@ -116,7 +120,7 @@ onunload = function() { if (typeof(oCon) != 'undefined' && oCon.disconnect) oCon
 
 		<div id="sendmsg_pane" style="display:none;">
 			<h2>Incoming:</h2>
-			<iframe name="iResp" id="iResp" style="width:100%;height:300px;"></iframe>
+			<iframe name="iResp" id="iResp" style="width:100%;height:250px;"></iframe>
 			<h2>Send Message</h2>
 			<form name="sendForm" onSubmit="return sendMsg(this);">
 				To: <input type="text" name="sendTo"><br>
@@ -128,7 +132,7 @@ onunload = function() { if (typeof(oCon) != 'undefined' && oCon.disconnect) oCon
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Tue Feb 22 14:47:31 CET 2005
+Last modified: Wed Mar 16 21:23:03 CET 2005
 <!-- hhmts end -->
   </body>
 </html>
