@@ -89,10 +89,13 @@ function JSJaCIQ() {
 	};
 
 	this.getQuery = function() {
-		return this.getNod().getElementsByTagName('query').item(0);
+		return this.getNode().getElementsByTagName('query').item(0);
 	};
 	this.getQueryXMLNS = function() {
-		return this.getQuery.getAttribute('xmlns');
+		if (this.getQuery())
+			return this.getQuery().getAttribute('xmlns');
+		else
+			return null;
 	};
 }
 
