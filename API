@@ -14,14 +14,9 @@ boolean: connected()
 	checks if connection is connected
 	RETURNS: boolean - true if connected, false otherwise
 
-JSJaCPacket: send(JSJaCPacket: aJSJaCPacket)
-	sends aJSJaCPacket
+void: send(JSJaCPacket: aJSJaCPacket)
+	appends aJSJaCPacket to send queue.
 
-	RETURNS: JSJaCPacket if aJSJaCPacket.getType() == 'iq', null otherwise
-	         In more detail: If sending an IQ packet, send behaves
-	         sychronously and returns the result of the iq
-	         query. Otherwise sending is done asynchronously and null is
-	         returned.
 
 void: registerHandler(string: event, function: handler)
 	register a handler for event. if event happens handler is called.
