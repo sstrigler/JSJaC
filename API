@@ -1,0 +1,169 @@
+JSJaCConnection
+===============
+
+This is a somewhat abstract base class. You can't instantiate objects
+from it but it provides functionality common to all specific backends
+like JSJaCHttpPollingConnection.
+
+constructor: JSJaCConnection(Debugger: oDbg)
+
+	PARAMS: oDbg - typeof Debugger (optional - may be null)
+
+
+boolean: connected()
+	checks if connection is connected
+	RETURNS: boolean - true if connected, false otherwise
+
+JSJaCPacket: send(JSJaCPacket: aJSJaCPacket)
+	sends aJSJaCPacket
+
+	RETURNS: JSJaCPacket if aJSJaCPacket.getType() == 'iq', null otherwise
+	         In more detail: If sending an IQ packet, send behaves
+	         sychronously and returns the result of the iq
+	         query. Otherwise sending is done asynchronously and null is
+	         returned.
+
+void: registerHandler(string: event, function: handler)
+	register a handler for event. if event happens handler is called.
+
+	PARAMS: event - known events so far: 'message','iq','presence','ondisconnect'
+
+	        handler - the function to be called. for events 'message', 'iq' and
+	                  'presence' the handler gets passed an JSJaCPacket as
+	                  argument for processing
+
+void: process(int: timeout_msec)
+	starts polling at given timeout (timeout messured in msec)
+
+	PARAMS: timeout_msec
+
+void: setPollInterval(int: timeout_msec)
+	change polling interval to timeout_msec
+
+	PARAMS: timeout_msec
+
+JSJaCHttpPollingConnection
+==========================
+Implements communication with an HTTP Polling Component.
+
+constructor: JSJaCHttpPollingConnection(Debugger:oDbg)
+	see JSJaCConnection
+
+
+void: connect(string: http_base, 
+              string: jabber_server, 
+              string: username, 
+              string: resource, 
+              string: password)
+
+	PARAMS: http_base - base address to communicate with http polling component
+	        jabber_server - the jabber server to use for authentication
+	        username
+	        resource
+	        password
+
+void: disconnect()
+	disconnects from server
+
+JSJaCPacket
+===========
+Abstract base class for jabber packets.
+
+string: pType()
+	returns type of top level node (either 'message', 'iq' or 'presence')
+
+JSJaCPacket: setTo(string: to)
+JSJaCPacket: setFrom(string: from)
+JSJaCPacket: setID(string: id)
+JSJaCPacket: setType(string: type)
+JSJaCPacket: setXMLLang(string: xmllang)
+JSJaCPacket: setXMLNS(string: xmlns)
+	setters for common attributes of top level nodes.
+
+	PARAMS: value to set attribute to
+	RETURNS: the packet itself again
+
+string: getTo()
+string: getFrom()
+string: getID()
+string: getType()
+string: getXMLLang()
+string: getXMLNS()
+	getters for common attributes of top level nodes
+
+DOMDocument: getDoc()
+	Returns internal DOMDocument. This is where you can do your own
+	stuff like creating new childs and so on. Most notably you would
+	use it like follows:
+
+	var iq = new JSJaCIQ();
+	iq.setType('get');
+	iq.getDoc().xml => "<iq type='get'/>"
+
+	query = iq.setQuery('jabber:iq:private');
+	iq.getDoc().xml => "<iq type='get'><query xmlns='jabber:iq:private' /></iq>'
+
+	query.appendChild(iq.getDoc().createElement('storage')).setAttribute('xmlns','storage:bookmarks');
+	iq.getDoc().xml => "<iq type='get'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'></query></iq>'
+
+
+DOMElement: getNode()
+	returns top level node
+
+JSJaCIQ
+=======
+An IQ packet
+
+constructor: JSJaCIQ()
+
+JSJaCIQ: setIQ(to,from,type,id)
+	convenient method to set some attributes at once
+
+DOMElement: setQuery(string: xmlns)
+	creates new query child element. inserts it at top level node and returns it
+
+	PARAMS: xmlns - namespace attribute for query
+
+	RETURNS: DOMElement that has been created
+
+DOMElement: getQuery()
+	returns query element
+
+string: getQueryXMLNS()
+	returns xmlns attribute of query element
+
+JSJaCPresence
+=============
+A presence packet
+
+constructor: JSJaCPresence()
+
+JSJaCPresence: setShow(string: show)
+	creates 'show' child element and sets its CDATA to show (should be one of 'away','xa','dnd' or 'chat')
+
+JSJaCPresence: setStatus(string: status)
+	creates 'status' child element and sets its CDATA to status
+
+JSJaCPresence: setPriority(string: prio)
+	creates 'priority' child element and sets its CDATA to prio
+
+JSJaCPresence: setPresence(string: show, string: status, string: prio)
+	conveniant method to set some values at once
+
+string: getShow()
+string: getStatus()
+string: getPriority()
+	return value of corresponding element
+
+JSJaCMessage
+============
+A message packet
+
+JSJaCMessage: setBody(string: body)
+	creates 'body' element with value body
+JSJaCMessage: setSubject(string: subject)
+	creates 'subject' element with value subject
+
+string: getBody()
+string: getSubject()
+	return value of corresponding element

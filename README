@@ -35,7 +35,12 @@ the following javascript files:
 * JSJaCPacket.js
 * JSJaCHTTPPollingConnection.js
 
-Due to security restrictions you will have to enable mod_proxy and mod_rewrite for apache web server and add a RewriteRule for the domain which serves your web application so that request on a certain base address (which can be chosen by yourself) are redirect by use of apaches built in proxy module to the http base address of the jabber servers http polling or binding adresse. E.g.:
+Due to security restrictions you will have to enable mod_proxy and
+mod_rewrite for apache web server and add a RewriteRule for the domain
+which serves your web application so that request on a certain base
+address (which can be chosen by yourself) are redirect by use of
+apaches built in proxy module to the http base address of the jabber
+servers http polling or binding adresse. E.g.:
 
 %<---
 <VirtualHost *>
