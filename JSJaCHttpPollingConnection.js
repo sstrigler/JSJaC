@@ -146,7 +146,7 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	}
 	this.oDbg.log("got sid: "+this.sid,2);
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/id=['"](.+?)['"]/))
+	if (this.req.responseText.match(/id=[\'"](.+?)[\'"]/))
 			this.streamid = RegExp.$1;
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
