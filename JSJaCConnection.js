@@ -173,7 +173,7 @@ function JSJaCHandleResponse(pID) {
 		if (pID && xmldoc.firstChild.childNodes.item(i).getAttribute('id') == pID)
 			rPacket = JSJaCPWrapNode(xmldoc.firstChild.childNodes.item(i));
 		else
-			this.handleEvent(xmldoc.firstChild.childNodes.item(i).nodeName,JSJaCPWrapNode(xmldoc.firstChild.childNodes.item(i)));
+			this.handleEvent(xmldoc.firstChild.childNodes.item(i).nodeName,JSJaCPWrapNode(xmldoc.firstChild.childNodes.item(i).cloneNode(true)));
 	}
 	if (this.sendQueue.length) {
 		var aPacket = this.sendQueue[0];
