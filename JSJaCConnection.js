@@ -182,13 +182,24 @@ function JSJaCSendQueue() {
 		if (oCon.req.readyState == 4) {
 			oCon.oDbg.log("async recv: "+oCon.req.responseText,4);
 			oCon._handleResponse();
-			if (oCon._pQueue.length)
-				oCon._sendQueue();
+ 			if (oCon._pQueue.length)
+ 				oCon._sendQueue();
 		}
 	};
 
+	if (typeof(this.req.onerror) != 'undefined') {
+		this.req.onerror = function() {
+			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+				return;
+			oCon.oDbg.log('XmlHttpRequest error',1);
+			if (oCon._pQueue.length)
+				oCon._sendQueue();
+			return true;
+		};
+	}
+
 	var xml = '';
-	for (var i in this._pQueue)
+	for (var i=0; i<this._pQueue.length; i++)
 		xml += this._pQueue[i].getDoc().xml;
 	this._pQueue = new Array(); // empty packet queue
 	var reqstr = this._getRequestString(xml);
@@ -203,7 +214,6 @@ function JSJaCHandleResponse() {
 	if (!xmldoc)
 		return null;
 
-	var rPacket;
 	this.oDbg.log("xmldoc.firstChild.childNodes.length: "+xmldoc.firstChild.childNodes.length,3);
 	for (var i=0; i<xmldoc.firstChild.childNodes.length; i++) {
 		this.oDbg.log("xmldoc.firstChild.childNodes.item("+i+").nodeName: "+xmldoc.firstChild.childNodes.item(i).nodeName,3);
