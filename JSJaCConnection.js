@@ -51,18 +51,21 @@ function JSJaCConnection(oDbg) {
 			if (this._regIDs[i] && i == aJSJaCPacket.getID()) {
 				var pID = aJSJaCPacket.getID();
 				this.oDbg.log("handling "+pID,3);
-				this._regIDs[i](aJSJaCPacket);
+				this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg);
 				this._unregisterPID(pID);
 				return true;
 			}
 		}
 		return false;
 	};
-	this._registerPID = function(aJSJaCPacket,callback) {
-		if (!aJSJaCPacket || !aJSJaCPacket.getID() || !callback)
+	this._registerPID = function(pID,cb,arg) {
+		if (!pID || !cb)
 			return false;
-		this._regIDs[aJSJaCPacket.getID()] = callback;
-		this.oDbg.log("registered "+aJSJaCPacket.getID(),3);
+		this._regIDs[pID] = new Object();
+		this._regIDs[pID].cb = cb;
+		if (arg)
+			this._regIDs[pID].arg = arg;
+		this.oDbg.log("registered "+pID,3);
 		return true;
 	};
 	this._unregisterPID = function(pID) {
@@ -84,6 +87,7 @@ function JSJaCConnection(oDbg) {
 	};
 
 	this._handleResponse = JSJaCHandleResponse;
+	this._doReg = JSJaCReg;
 	this._doAuth = JSJaCAuth;
 	this._doAuth2 = JSJaCAuth2;
 	this._doAuth3 = JSJaCAuth3;
@@ -91,22 +95,41 @@ function JSJaCConnection(oDbg) {
 	oCon.auth1_done = false;
 }
 
-function JSJaCAuth() {
+function JSJaCReg() {
+	/* ***
+	 * In-Band Registration see JEP-0077
+	 */
+
+	var iq = new JSJaCIQ();
+	iq.setType('set','reg1');
+	var query = iq.setQuery('jabber:iq:register');
+	query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(this.username));
+	query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(this.pass));
+		
+	this.send(iq,this._doAuth);
+}
+
+function JSJaCAuth(iq) {
+	/* ***
+	 * Non-SASL Authentication as described in JEP-0078
+	 */
+
+	if (iq && iq.getType() == 'error') { // we failed to register
+		oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+		return;
+	}
+
 	if (oCon.auth1_done)
 		return;
-	/* ***
-	 * check for available authentication methods
-	 * following JEP-0078 digest and plaintext are supported
-	 */
 	var iq = new JSJaCIQ();
-	iq.setIQ(this.server,null,'get','auth1');
+	iq.setIQ(oCon.server,null,'get','auth1');
 	var query = iq.setQuery('jabber:iq:auth');
 
 	var aNode = iq.getDoc().createElement('username');
-	aNode.appendChild(iq.getDoc().createTextNode(this.username));
+	aNode.appendChild(iq.getDoc().createTextNode(oCon.username));
 	query.appendChild(aNode);
 
-	this.send(iq,this._doAuth2);
+	oCon.send(iq,oCon._doAuth2);
 	setTimeout("oCon._doAuth();",2000); // retry - dirty hack for broken mozilla
 }
 
@@ -142,23 +165,24 @@ function JSJaCAuth2(iq) {
 function JSJaCAuth3(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
-		// [TODO] handle error
+		if (iq.getType() == 'error')
+			oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
 	} else
 		oCon.handleEvent('onconnect');
 }
 
-function JSJaCSend(aJSJaCPacket,callback) {
+function JSJaCSend(aJSJaCPacket,cb,arg) {
 	// remember id for response if callback present
-	if (aJSJaCPacket && callback) {
+	if (aJSJaCPacket && cb) {
 		if (!aJSJaCPacket.getID())
 			aJSJaCPacket.setID('JSJaCID_'+this._ID++); // generate an ID
 
 		// register callback with id
-		this._registerPID(aJSJaCPacket,callback);
+		this._registerPID(aJSJaCPacket.getID(),cb,arg);
 	}
 
 	if (aJSJaCPacket)
-		this._pQueue = this._pQueue.concat(aJSJaCPacket);
+		this._pQueue = this._pQueue.concat(aJSJaCPacket.clone());
 
 	this._sendQueue();
 	return;
@@ -224,3 +248,14 @@ function JSJaCHandleResponse() {
 
 	return null;
 }
+
+function JSJaCError(code,type,condition) {
+	var xmldoc = XmlDocument.create();
+	xmldoc.appendChild(xmldoc.createElement('error'));
+	xmldoc.firstChild.setAttribute('code',code);
+	xmldoc.firstChild.setAttribute('type',type);
+	xmldoc.firstChild.appendChild(xmldoc.createElement(condition));
+	xmldoc.firstChild.firstChild.setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
+	return xmldoc.firstChild.cloneNode(true);
+}
+																
