@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>JSJaC Simple Client</title>
+		<script language="JavaScript" type="text/javascript" src="../Debugger.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../xmlextras.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../JSJaCConnection.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../JSJaCPacket.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../JSJaCHttpPollingConnection.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			<!--
+function htmlEnc(str) {
+	if (!str)
+		return null;
+
+  str = str.replace(/&/g,"&amp;");
+  str = str.replace(/</g,"&lt;");
+  str = str.replace(/>/g,"&gt;");
+  return str;
+}
+
+function handleEvent(aJSJaCPacket) {
+	frames['iResp'].document.body.innerHTML += htmlEnc(aJSJaCPacket.getDoc().xml) + '<hr>';
+}
+
+function handleMessage(aJSJaCPacket) {
+	var html = '';
+	html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br>';
+	html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size=1>';
+	frames['iResp'].document.body.innerHTML += html;
+}
+
+function handlePresence(aJSJaCPacket) {
+	var html = '';
+	if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
+		html += '<b>'+aJSJaCPacket.getFrom()+' has become available.</b>';
+	else {
+		html += '<b>'+aJSJaCPacket.getFrom()+' has set his presence to ';
+		if (aJSJaCPacket.getType())
+			html += aJSJaCPacket.getType() + '.</b>';
+		else
+			html += aJSJaCPacket.getShow() + '.</b>';
+		if (aJSJaCPacket.getStatus())
+			html += ' ('+htmlEnc(aJSJaCPacket.getStatus())+')';
+	}
+	html += '<hr noshade size=1>';
+	frames['iResp'].document.body.innerHTML += html;
+}
+
+function doLogin(aForm) {
+	oDbg = new Debugger(4,'JSJaC Simple Client');
+	oCon = new JSJaCHttpPollingConnection(oDbg);
+
+	oCon.registerHandler('message',handleMessage);
+	oCon.registerHandler('presence',handlePresence);
+	oCon.registerHandler('iq',handleEvent);
+
+	oCon.connect(aForm.http_base.value,aForm.server.value,aForm.username.value,'test',aForm.password.value);
+
+	if (oCon.connected()) {
+
+		document.getElementById('login_pane').style.display = 'none';
+		document.getElementById('sendmsg_pane').style.display = '';
+		
+		oCon.send(new JSJaCPresence());
+		oCon.process(2000);
+
+	} else
+		document.getElementById('login_err').innerHTML = "Couldn't connect. Please try again...";
+
+	return false;
+}
+
+function sendMsg(aForm) {
+	var aMsg = new JSJaCMessage();
+	aMsg.setTo(aForm.sendTo.value);
+	aMsg.setBody(aForm.msg.value);
+	oCon.send(aMsg);
+
+	aForm.msg.value = '';
+
+	return false;
+}
+
+onunload = function() { if (typeof(oCon) != 'undefined' && oCon.disconnect) oCon.disconnect(); };
+
+			//-->
+		</script>
+  </head>
+
+  <body>
+    <h1>JSJaC Simple Client</h1>
+
+		<div id="login_pane">
+			<h2>Login</h2>
+			<div id="login_err"></div>
+			<form name="loginForm" onSubmit="return doLogin(this);">
+				<table>
+						<tr><th>HTTP Polling Base</th><td><input type="text" name="http_base"></td></tr>
+						<tr><th>Jabber Server</th><td><input type="text" name="server"></td></tr>
+						<tr><th>Username</th><td><input type="text" name="username"></td></tr>
+						<tr><th>Password</th><td><input type="password" name="password"></td></tr>
+						<tr><td>&nbsp;</td><td><input type="submit" value="Login"></td></tr>
+				</table>
+			</form>
+		</div>
+
+		<div id="sendmsg_pane" style="display:none;">
+			<h2>Incoming:</h2>
+			<iframe name="iResp" id="iResp" style="width:100%;height:300px;"></iframe>
+			<h2>Send Message</h2>
+			<form name="sendForm" onSubmit="return sendMsg(this);">
+				To: <input type="text" name="sendTo"><br>
+				<textarea name="msg" rows=3 cols=80></textarea><br>
+				<input type="submit" value="Send">
+		</div>
+
+    <hr>
+    <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
+<!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
+<!-- hhmts start -->
+Last modified: Fri Oct  8 18:25:10 CEST 2004
+<!-- hhmts end -->
+  </body>
+</html>
