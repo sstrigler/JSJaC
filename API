@@ -14,22 +14,24 @@ boolean: connected()
 	checks if connection is connected
 	RETURNS: boolean - true if connected, false otherwise
 
-void: send(JSJaCPacket: aJSJaCPacket [, function: callback])
+void: send(JSJaCPacket: aJSJaCPacket [, function: callback [, any: arg]])
 	appends aJSJaCPacket to send queue. registers callback if given
 
 	PARAMS: aJSJaCPacket
           callback - a callback to call when reply with same id comes in
                      id is set automatically if none set
+          arg - optional arg to call callback (callback is called with callback(aJSJaCPacket, arg))
 
 
 void: registerHandler(string: event, function: handler)
 	register a handler for event. if event happens handler is called.
 
-	PARAMS: event - known events so far: 'message','iq','presence','ondisconnect'
+	PARAMS: event - known events so far: 'message','iq','presence','ondisconnect', 
+                  'onconnect', 'onerror'
 
 	        handler - the function to be called. for events 'message', 'iq' and
 	                  'presence' the handler gets passed an JSJaCPacket as
-	                  argument for processing
+	                  argument for processing. 'onerror' an error packet is supplied
 
 void: process(int: timeout_msec)
 	starts polling at given timeout (timeout messured in msec)
