@@ -57,7 +57,7 @@ function JSJaCHPCPrepareResponse() {
 	if (!this.connected())
 		return null;
 
-	// handle error
+	/* handle error */
 	// proxy error (!)
 	if (this.req.status != 200) {
 		this.oDbg.log("invalid response:\n" + this.req.responseText,1);
@@ -65,6 +65,7 @@ function JSJaCHPCPrepareResponse() {
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
+		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return null;
 	} 
 
@@ -90,12 +91,17 @@ function JSJaCHPCPrepareResponse() {
 			break;
 		case '-3':
 			this.oDbg.log("Key Sequence Error",1);
+			if (this.keys.indexAt < JSJaCHPC_NKEYS-2) { // shit happens, try to fix it somehow (dirty)
+				this.keys.indexAt = this.keys.indexAt+2;
+				return;
+			}
 			break;
 		}
 		clearTimeout(this.timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
+		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		return null;
 	}
 
@@ -105,7 +111,7 @@ function JSJaCHPCPrepareResponse() {
 	return response;
 }
 
-function JSJaCHPCConnect(http_base,server,username,resource,pass) {
+function JSJaCHPCConnect(http_base,server,username,resource,pass,register) {
 	// initial request to get sid and streamid
 
 	this.http_base = http_base || '/';
@@ -125,6 +131,7 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass) {
 	this.req.send("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
 
 	if (!this.req.responseXML || this.req.responseText == '') {
+		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
 		return;
 	}
@@ -146,14 +153,18 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass) {
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
 	this._connected = true;
-	this._doAuth();
+	if (register)
+		this._doReg();
+	else
+		this._doAuth();
 }
 
 function JSJaCHPCDisconnect() {
 	if (!this.connected())
 		return;
 
-	clearTimeout(this.timeout); // remove timer
+	if (this.timeout)
+		clearTimeout(this.timeout); // remove timer
 
 	this.req = this._setupRequest(false);
 
