@@ -100,6 +100,8 @@ function JSJaCMessage() {
 	this.base = JSJaCPacket;
 	this.base('message');
 
+	this.setXMLNS('jabber:client');
+
 	this.setBody = function(body) {
 		var aNode = this.getNode().appendChild(this.getDoc().createElement('body'));
 		aNode.appendChild(this.getDoc().createTextNode(body));
