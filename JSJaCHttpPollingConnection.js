@@ -11,6 +11,8 @@ function JSJaCHttpPollingConnection(oDbg) {
 	this._prepareResponse = JSJaCHPCPrepareResponse;
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._setupRequest = JSJaCHPCSetupRequest;
+	this._getStreamID = JSJaCHPCGetStream;
+	this._sendEmpty = JSJaCHPCSendEmpty;
 }
 
 function JSJaCHPCKeys(oDbg) {
@@ -127,16 +129,8 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.oDbg.log("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>",4);
 	this.req.send("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
 
-	if (!this.req.responseXML || this.req.responseText == '') {
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
-		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
-		return;
-	}
-
-	this.oDbg.log(this.req.getAllResponseHeaders(),4);
-	this.oDbg.log(this.req.responseText,4);
-
 	// extract session ID
+	this.oDbg.log(this.req.getAllResponseHeaders(),4);
 	var aPList = this.req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
 	for (var i=0;i<aPList.length;i++) {
@@ -145,6 +139,28 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 			this.sid = aArg[1];
 	}
 	this.oDbg.log("got sid: "+this.sid,2);
+
+	/* wait for initial stream response to extract streamid needed
+	 * for digest auth
+	 */
+	this._getStreamID();
+}
+
+function JSJaCHPCGetStream() {
+
+	if ((!this.req.responseXML || this.req.responseText == '') && !this.keys.lastKey()) {
+		oCon = this;
+		setTimeout("oCon._sendEmpty()",1000);
+		return;
+	}
+	if (this.keys.lastKey()) {
+		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
+		return;
+	}
+
+	this.oDbg.log(this.req.responseText,4);
+
 	// extract stream id used for non-SASL authentication
 	if (this.req.responseText.match(/id=[\'"](.+?)[\'"]/))
 			this.streamid = RegExp.$1;
@@ -158,6 +174,12 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 		this._doReg();
 	else
 		this._doAuth();
+}
+
+function JSJaCHPCSendEmpty() {
+	oCon.req = oCon._setupRequest(false);
+	oCon.req.send(oCon._getRequestString());
+	oCon._getStreamID(); // handle response
 }
 
 function JSJaCHPCDisconnect() {
