@@ -1,39 +1,15 @@
-JSJaCHBC_NKEYS = 5; // number of keys to generate
-
 var re = new RegExp(/<body [^>]+>(.*)<\/body>/i);
 
 function JSJaCHttpBindingConnection(oDbg) {
 	this.base = JSJaCConnection;
 	this.base(oDbg);
 
-	this.keys  = null;	
-	this.setup = false; 
-	
 	this.connect = JSJaCHBCConnect;
 	this.disconnect = JSJaCHBCDisconnect;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
 	this._getRequestString = JSJaCHBCGetRequestString;
 	this._setupRequest = JSJaCHBCSetupRequest;
 	this._getStreamID = JSJaCHBCGetStreamID;
-}
-
-function JSJaCHBCKeys(oDbg) {
-	var seed = Math.random();
-
-	this.k = new Array();
-	this.k[0] = seed.toString();
-	this.oDbg = oDbg;
-
-	for (var i=1; i<JSJaCHBC_NKEYS; i++) {
-		this.k[i] = b64_sha1(this.k[i-1]);
-		oDbg.log(i+": "+this.k[i],4);
-	}
-
-	this.indexAt = JSJaCHBC_NKEYS-1;
-	this.getKey = function() { 
-		return this.k[this.indexAt--]; 
-	};
-	this.lastKey = function() { return (this.indexAt == 0); };
 }
 
 function JSJaCHBCSetupRequest(async) {
@@ -125,24 +101,28 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 	this.wait = 60;
   this.hold = 1;
+	this.timerval = timerval;
 	this.register = register;
 	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
 
-	this.keys = new JSJaCHBCKeys(this.oDbg); // generate first set of keys
-	key = this.keys.getKey();
+	var reqstr = '';
+	if (JSJaC_HAVEKEYS) {
+		this.keys = new JSJaCKeys(this.oDbg); // generate first set of keys
+		key = this.keys.getKey();
+		reqstr += "<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"'/>";
+	} else
+		reqstr += "<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"'/>";
 
 	this.req = this._setupRequest(false);
-
-	this.oDbg.log("send body",4);
-        // Create a body class?
-	this.req.send("<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"'/>");
+	this.oDbg.log(reqstr,4);
+	this.req.send(reqstr);
 
 	// extract session ID
 	this.oDbg.log(this.req.getAllResponseHeaders(),4);
 	
 	this.oDbg.log(this.req.responseText,4);
 	
-	if (this.req.responseText.match(/sid=[\'"](.+?)[\'"]/))
+	if (this.req.responseText.match(/sid=[\'"]([^\'"]+)[\'"]/))
 			this.sid = RegExp.$1;
 	this.oDbg.log("got sid: "+this.sid,2);
 
@@ -159,7 +139,7 @@ function JSJaCHBCGetStreamID() {
 	this.oDbg.log(this.req.responseText,4);
 
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/authid=[\'"](.+?)[\'"]/)) {
+	if (this.req.responseText.match(/authid=[\'"]([^\'"]+)[\'"]/)) {
 			this.streamid = RegExp.$1;
 			this.oDbg.log("got streamid: "+this.streamid,2);
 	} else {
@@ -168,7 +148,7 @@ function JSJaCHBCGetStreamID() {
 		return;
 	}
 	
-	this._process(timerval); // start polling
+	this._process(this.timerval); // start polling
 	
 	if (this.register)
 		this._doReg();

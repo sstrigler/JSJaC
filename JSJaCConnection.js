@@ -1,3 +1,5 @@
+JSJaC_HAVEKEYS = false;  // whether to use keys
+JSJaC_NKEYS    = 64;    // number of keys to generate
 
 /* ******************************
  * JabberConnection 
@@ -15,6 +17,8 @@ function JSJaCConnection(oDbg) {
 
 	this._connected = false;
 	this._ID = 0;
+	this.keys = null;
+
 	this._events = new Array();
 	this._regIDs = new Array();
 	this._pQueue = new Array();
@@ -220,9 +224,10 @@ function JSJaCSendQueue() {
 	}
 
 	var xml = '';
-	for (var i=0; i<this._pQueue.length; i++)
-		xml += this._pQueue[i].getDoc().xml;
-	this._pQueue = new Array(); // empty packet queue
+	while (this._pQueue.length) {
+		xml += this._pQueue[0].getDoc().xml;
+		this._pQueue = this._pQueue.slice(1,this._pQueue.length);
+	}
 	var reqstr = this._getRequestString(xml);
 	this.oDbg.log("sending: " + reqstr,4);
 	this.req.send(reqstr);
@@ -244,6 +249,9 @@ function JSJaCSyncSend(aPacket) {
 }
 
 function JSJaCSendEmpty() {
+	/* send empty request 
+	 * waiting for stream id to be able to proceed with authentication 
+	 */
 	oCon.req = oCon._setupRequest(false);
 	oCon.req.send(oCon._getRequestString());
 	oCon._getStreamID(); // handle response
@@ -278,3 +286,22 @@ function JSJaCError(code,type,condition) {
 	return xmldoc.firstChild.cloneNode(true);
 }
 																
+function JSJaCKeys(oDbg) {
+	var seed = Math.random();
+
+	this.k = new Array();
+	this.k[0] = seed.toString();
+	this.oDbg = oDbg;
+
+	for (var i=1; i<JSJaC_NKEYS; i++) {
+		this.k[i] = b64_sha1(this.k[i-1]);
+		oDbg.log(i+": "+this.k[i],4);
+	}
+
+	this.indexAt = JSJaC_NKEYS-1;
+	this.getKey = function() { 
+		return this.k[this.indexAt--]; 
+	};
+	this.lastKey = function() { return (this.indexAt == 0); };
+	this.size = function() { return this.k.length; };
+}

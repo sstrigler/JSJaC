@@ -1,10 +1,7 @@
-JSJaCHPC_NKEYS = 256; // number of keys to generate
 
 function JSJaCHttpPollingConnection(oDbg) {
 	this.base = JSJaCConnection;
 	this.base(oDbg);
-
-	this.keys = null;
 
 	this.connect = JSJaCHPCConnect;
 	this.disconnect = JSJaCHPCDisconnect;
@@ -12,25 +9,6 @@ function JSJaCHttpPollingConnection(oDbg) {
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._setupRequest = JSJaCHPCSetupRequest;
 	this._getStreamID = JSJaCHPCGetStream;
-}
-
-function JSJaCHPCKeys(oDbg) {
-	var seed = Math.random();
-
-	this.k = new Array();
-	this.k[0] = seed.toString();
-	this.oDbg = oDbg;
-
-	for (var i=1; i<JSJaCHPC_NKEYS; i++) {
-		this.k[i] = b64_sha1(this.k[i-1]);
-		oDbg.log(i+": "+this.k[i],4);
-	}
-
-	this.indexAt = JSJaCHPC_NKEYS-1;
-	this.getKey = function() { 
-		return this.k[this.indexAt--]; 
-	};
-	this.lastKey = function() { return (this.indexAt == 0); };
 }
 
 function JSJaCHPCSetupRequest(async) {
@@ -44,10 +22,13 @@ function JSJaCHPCSetupRequest(async) {
 }
 
 function JSJaCHPCGetRequestString(xml) {
-	var reqstr = this.sid+';'+this.keys.getKey();
-	if (this.keys.lastKey()) {
-		this.keys = new JSJaCHPCKeys(this.oDbg);
-		reqstr += ';'+this.keys.getKey();
+	var reqstr = this.sid;
+	if (JSJaC_HAVEKEYS) {
+		reqstr += ";"+this.keys.getKey();
+		if (this.keys.lastKey()) {
+			this.keys = new JSJaCKeys(this.oDbg);
+			reqstr += ';'+this.keys.getKey();
+		}
 	}
 	reqstr += ',';
 	if (xml)
@@ -122,13 +103,17 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 
 	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
 
-	this.keys = new JSJaCHPCKeys(this.oDbg); // generate first set of keys
-	key = this.keys.getKey();
+	var reqstr = "0";
+	if (JSJaC_HAVEKEYS) {
+		this.keys = new JSJaCKeys(this.oDbg); // generate first set of keys
+		key = this.keys.getKey();
+		reqstr += ";"+key;
+	}
+	reqstr += ",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>";
+	this.oDbg.log(reqstr,4);
 
-	this.req = this._setupRequest(false);
-
-	this.oDbg.log("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>",4);
-	this.req.send("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
+	this.req = this._setupRequest(false);	
+	this.req.send(reqstr);
 
 	// extract session ID
 	this.oDbg.log(this.req.getAllResponseHeaders(),4);
@@ -149,21 +134,16 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 
 function JSJaCHPCGetStream() {
 
-	if ((!this.req.responseXML || this.req.responseText == '') && !this.keys.lastKey()) {
+	if (!this.req.responseXML || this.req.responseText == '') {
 		oCon = this;
 		setTimeout("oCon._sendEmpty()",1000);
-		return;
-	}
-	if (this.keys.lastKey()) {
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
-		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
 		return;
 	}
 
 	this.oDbg.log(this.req.responseText,4);
 
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/id=[\'"](.+?)[\'"]/))
+	if (this.req.responseText.match(/id=[\'"]([^\'"]+)[\'"]/))
 			this.streamid = RegExp.$1;
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
@@ -186,7 +166,10 @@ function JSJaCHPCDisconnect() {
 
 	this.req = this._setupRequest(false);
 
-	this.req.send(this.sid+";"+this.keys.getKey()+",</stream:stream>");
+	if (JSJaC_HAVEKEYS)
+		this.req.send(this.sid+";"+this.keys.getKey()+",</stream:stream>");
+	else
+		this.req.send(this.sid+",</stream:stream>");
 	this.oDbg.log("Disconnected: "+this.req.responseText,2);
 	this._connected = false;
 	this.handleEvent('ondisconnect');
