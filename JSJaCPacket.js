@@ -9,12 +9,48 @@ function JSJaCPacket(name) {
 	this.getDoc = function() { return this.doc; };
 	this.getNode = function() { return this.doc.firstChild; };
 
-	this.setTo = function(to) { this.getNode().setAttribute('to',to); return this; };
-	this.setFrom = function(from) { this.getNode().setAttribute('from',from); return this; };
-	this.setID = function(id) { this.getNode().setAttribute('id',id); return this; };
-	this.setType = function(type) { this.getNode().setAttribute('type',type); return this; };
-	this.setXMLLang = function(xmllang) { this.getNode().setAttribute('xml:lang',xmllang); return this; };
-	this.setXMLNS = function(xmlns) { this.getNode().setAttribute('xmlns',xmlns); return this; };
+	this.setTo = function(to) { 
+		if (!to || to == '')
+			this.getNode().removeAttribute('to');
+		else
+			this.getNode().setAttribute('to',to); 
+		return this; 
+	};
+	this.setFrom = function(from) {
+		if (!from || from == '')
+			this.getNode().removeAttribute('from');
+		else
+			this.getNode().setAttribute('from',from);
+		return this;
+	};
+	this.setID = function(id) { 
+		if (!id || id == '')
+			this.getNode().removeAttribute('id');
+		else
+			this.getNode().setAttribute('id',id); 
+		return this; 
+	};
+	this.setType = function(type) { 
+		if (!type || type == '')
+			this.getNode().removeAttribute('type');
+		else
+			this.getNode().setAttribute('type',type);
+		return this; 
+	};
+	this.setXMLLang = function(xmllang) {
+		if (!xmllang || xmllang == '')
+			this.getNode().removeAttribute('xml:lang');
+		else
+			this.getNode().setAttribute('xml:lang',xmllang);
+		return this;
+	};
+	this.setXMLNS = function(xmlns) {
+		if (!xmlns || xmlns == '')
+			this.getNode().removeAttribute('xmlns');
+		else
+			this.getNode().setAttribute('xmlns',xmlns); 
+		return this; 
+	};
 
 	this.getTo = function() { return this.getNode().getAttribute('to'); }
 	this.getFrom = function() { return this.getNode().getAttribute('from'); }
