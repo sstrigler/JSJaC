@@ -147,7 +147,7 @@ function JSJaCHPCGetStream() {
 	this.oDbg.log(this.req.responseText,4);
 
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/id=[\'"]([^\'"]+)[\'"]/))
+	if (this.req.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
 			this.streamid = RegExp.$1;
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
