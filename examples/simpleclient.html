@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>JSJaC Simple Client</title>
-		<script language="JavaScript" type="text/javascript" src="../Debugger.js"></script>
+		<!--script language="JavaScript" type="text/javascript" src="../Debugger.js"></script-->
 		<script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../xmlextras.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../JSJaCConnection.js"></script>
@@ -48,26 +48,34 @@ function handlePresence(aJSJaCPacket) {
 	frames['iResp'].document.body.innerHTML += html;
 }
 
-function doLogin(aForm) {
-	oDbg = new Debugger(4,'JSJaC Simple Client');
-	oCon = new JSJaCHttpPollingConnection(oDbg);
-
-	oCon.registerHandler('message',handleMessage);
-	oCon.registerHandler('presence',handlePresence);
-	oCon.registerHandler('iq',handleEvent);
-
-	oCon.connect(aForm.http_base.value,aForm.server.value,aForm.username.value,'test',aForm.password.value);
-
-	if (oCon.connected()) {
+function handleConnected() {
 
 		document.getElementById('login_pane').style.display = 'none';
 		document.getElementById('sendmsg_pane').style.display = '';
 		
 		oCon.send(new JSJaCPresence());
-		oCon.process(2000);
 
-	} else
+}
+
+
+function handleError(errPacket) { 
+
 		document.getElementById('login_err').innerHTML = "Couldn't connect. Please try again...";
+}
+
+function doLogin(aForm) {
+	//oDbg = new Debugger(4,'JSJaC Simple Client');
+	//oCon = new JSJaCHttpPollingConnection(oDbg);
+
+	oCon = new JSJaCHttpPollingConnection();
+
+	oCon.registerHandler('message',handleMessage);
+	oCon.registerHandler('presence',handlePresence);
+	oCon.registerHandler('iq',handleEvent);
+	oCon.registerHandler('onconnect',handleConnected);
+	oCon.registerHandler('onerror',handleError);
+
+	oCon.connect(aForm.http_base.value,aForm.server.value,aForm.username.value,'test',aForm.password.value,2000,0);
 
 	return false;
 }
@@ -120,7 +128,7 @@ onunload = function() { if (typeof(oCon) != 'undefined' && oCon.disconnect) oCon
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Fri Oct  8 18:25:10 CEST 2004
+Last modified: Tue Feb 22 14:47:31 CET 2005
 <!-- hhmts end -->
   </body>
 </html>
