@@ -1,5 +1,7 @@
 JSJaCHBC_NKEYS = 5; // number of keys to generate
 
+var re = new RegExp(/<body [^>]+>(.*)<\/body>/i);
+
 function JSJaCHttpBindingConnection(oDbg) {
 	this.base = JSJaCConnection;
 	this.base(oDbg);
@@ -78,11 +80,8 @@ function JSJaCHBCPrepareResponse(req) {
 		return null;
 	} 
 
-	var response = XmlDocument.create();
-	response.loadXML(req.responseText);
-
 	// Check for errors from the server
-  var body = response.firstChild;
+  var body = req.responseXML.firstChild;
 	if (body.getAttribute("type") == "terminate") {
 		this.oDbg.log("invalid response:\n" + req.responseText,1);
 		clearTimeout(this.timeout); // remove timer
@@ -92,8 +91,22 @@ function JSJaCHBCPrepareResponse(req) {
 		this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
 		return null;
 	}
-	
-	return response;
+
+	/* it would be really nice if we could just use req.responseXML here.
+	 * unfortunately given body element has a namespace attribute which
+	 * causes that childNodes are prepended with some qualifying
+	 * namespaceURI if treated seperately. if someone knows a more
+	 * elegant solution to this, please let me know!
+	 */
+
+	re.exec(req.responseText);
+	try {
+		var response = XmlDocument.create();
+		response.loadXML("<body>"+RegExp.$1+"</body>");
+		return response;
+	} catch (e) {
+		return null;
+	}
 }
 
 function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,register) {
