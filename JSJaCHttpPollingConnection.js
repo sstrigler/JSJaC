@@ -12,7 +12,6 @@ function JSJaCHttpPollingConnection(oDbg) {
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._setupRequest = JSJaCHPCSetupRequest;
 	this._getStreamID = JSJaCHPCGetStream;
-	this._sendEmpty = JSJaCHPCSendEmpty;
 }
 
 function JSJaCHPCKeys(oDbg) {
@@ -176,12 +175,6 @@ function JSJaCHPCGetStream() {
 		this._doReg();
 	else
 		this._doAuth();
-}
-
-function JSJaCHPCSendEmpty() {
-	oCon.req = oCon._setupRequest(false);
-	oCon.req.send(oCon._getRequestString());
-	oCon._getStreamID(); // handle response
 }
 
 function JSJaCHPCDisconnect() {
