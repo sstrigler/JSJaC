@@ -1,4 +1,4 @@
-JSJaCHPC_NKEYS = 10; // number of keys to generate
+JSJaCHPC_NKEYS = 100; // number of keys to generate
 
 function JSJaCHttpPollingConnection(oDbg) {
 	this.base = JSJaCConnection;
@@ -58,6 +58,16 @@ function JSJaCHPCPrepareResponse() {
 		return null;
 
 	// handle error
+	// proxy error (!)
+	if (this.req.status != 200) {
+		this.oDbg.log("invalid response:\n" + this.req.responseText,1);
+		clearTimeout(this.timeout); // remove timer
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+		return null;
+	} 
+
 	var aPList = this.req.getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
 	for (var i=0;i<aPList.length;i++) {
@@ -89,16 +99,6 @@ function JSJaCHPCPrepareResponse() {
 		return null;
 	}
 
-	// proxy error (!)
-	if (!this.req.responseXML && this.req.responseText != '') {
-		this.oDbg.log("invalid response (can't parse):" + this.req.responseText,1);
-		clearTimeout(this.timeout); // remove timer
-		this._connected = false;
-		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		return null;
-	} 
-
 	var response = XmlDocument.create();
 
 	response.loadXML("<body>"+this.req.responseText+"</body>");
@@ -121,16 +121,15 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass) {
 
 	this.req = this._setupRequest(false);
 
-
 	this.oDbg.log("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>",4);
 	this.req.send("0;"+key+",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
-
-	this.oDbg.log(this.req.responseText,4);
 
 	if (!this.req.responseXML || this.req.responseText == '') {
 		this.oDbg.log("Couldn't instantiate stream. Giving up...",1);
 		return;
 	}
+
+	this.oDbg.log(this.req.responseText,4);
 
 	// extract session ID
 	var aPList = this.req.getResponseHeader('Set-Cookie');
