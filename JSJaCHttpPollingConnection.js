@@ -54,7 +54,18 @@ function JSJaCHPCGetRequestString(aJSJaCPacket) {
 }
 
 function JSJaCHPCPrepareResponse() {
+	// handle error
+	if (!this.req.responseXML && this.req.responseText != '') {
+		this.oDbg.log("invalid response (can't parse):" + this.req.responseText,1);
+		clearTimeout(this.timeout); // remove timer
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+		return null;
+	}
+
 	var response = XmlDocument.create();
+
 	response.loadXML("<body>"+this.req.responseText+"</body>");
 	return response;
 }
@@ -99,6 +110,7 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass) {
 }
 
 function JSJaCHPCDisconnect() {
+	clearTimeout(this.timeout); // remove timer
 	this.req = XmlHttp.create();
 	this.req.open("POST",this.http_base,false);
 	this.req.send(this.sid+";"+this.keys.getKey()+",</stream:stream>");
