@@ -75,10 +75,6 @@ function JSJaCPacket(name) {
 	this.clone = function() {
 		return JSJaCPWrapNode(this.getNode());
 	}
-
-
-	this.setXMLNS('jabber:client');
-
 } 
 
 function JSJaCPresence() {
