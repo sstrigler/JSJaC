@@ -86,7 +86,7 @@ function JSJaCHPCPrepareResponse(req) {
 		return null;
 	}
 
-	if (req.responseText == '')
+	if (!req.responseText || req.responseText == '')
 		return null;
 
 	var response = XmlDocument.create();

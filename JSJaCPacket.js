@@ -1,13 +1,21 @@
 function JSJaCPacket(name) {
+	this.name = name;
+
+	/* [TODO]
+	 * For W3C Dom Level 3 compliant browsers we need to have an
+	 * XmlDocument.create that allows creating appropriate top-level
+	 * nodes as they may not be altered afterwards 
+	 */
 
 	this.doc = XmlDocument.create();
 
 	this.doc.appendChild(this.doc.createElement(name));
 
-	this.pType = function() { return name };
+	this.pType = function() { return this.name; };
 
 	this.getDoc = function() { return this.doc; };
-	this.getNode = function() { return this.doc.firstChild; };
+	this.getNode = function() {
+			return this.getDoc().firstChild; };
 
 	this.setTo = function(to) { 
 		if (!to || to == '')
@@ -59,6 +67,10 @@ function JSJaCPacket(name) {
 	this.getXMLLang = function() { return this.getNode().getAttribute('xml:lang'); };
 	this.getXMLNS = function() { return this.getNode().getAttribute('xmlns',xmlns); };
 
+	this.xml = function() { 
+		return this.getDoc().xml ? this.getDoc().xml : (new XMLSerializer()).serializeToString(this.doc); 
+	};
+
 	this._childElVal = function(nodeName) {
 		for (var i=0; i<this.getNode().childNodes.length; i++) {
 			if (this.getNode().childNodes.item(i).nodeName == nodeName) {
@@ -70,11 +82,17 @@ function JSJaCPacket(name) {
 		}
 		return null;
 	}
-	this._replaceNode = function(aNode) { return this.doc.replaceChild(aNode.cloneNode(true),this.doc.firstChild); };
 
-	this.clone = function() {
-		return JSJaCPWrapNode(this.getNode());
-	}
+	this._replaceNode = function(aNode) {
+		/* hot-fix for safari
+		 * don't ask - just shake heads
+		 */
+		if (this.getDoc().importNode)
+			this.getDoc().importNode(aNode,true);
+		return this.getDoc().replaceChild(aNode.cloneNode(true),this.getNode()); 
+	};
+
+	this.clone = function() {	return JSJaCPWrapNode(this.getNode()); }
 } 
 
 function JSJaCPresence() {

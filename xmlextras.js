@@ -109,10 +109,8 @@ XmlDocument.create = function () {
 	throw new Error("Your browser does not support XmlDocument objects");
 };
 
-// Create the loadXML method and xml getter for Mozilla
-if (window.DOMParser &&
-	window.XMLSerializer &&
-	window.Node && Node.prototype && Node.prototype.__defineGetter__) {
+// Create the loadXML method 
+if (window.DOMParser) {
 
 	// XMLDocument did not extend the Document interface in some versions
 	// of Mozilla. Extend both!
@@ -131,7 +129,14 @@ if (window.DOMParser &&
 			this.appendChild(this.importNode(doc2.childNodes[i], true));
 		}
 	};
-	
+}
+
+// Create xml getter for Mozilla
+/* IMPORTANT NOTE
+ * Usage of this .xml getter method is deprecated 
+ */
+if (window.XMLSerializer &&
+		window.Node && Node.prototype && Node.prototype.__defineGetter__) {
 	
 	/*
 	 * xml getter

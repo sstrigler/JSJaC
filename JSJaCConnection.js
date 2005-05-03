@@ -84,7 +84,6 @@ function JSJaCConnection(oDbg) {
 		if (timerval)
 			this.setPollInterval(timerval);
 		this.send();
-		this.timeout = setTimeout("oCon._process()",this.timerval);
 	};
 	this.setPollInterval = function(timerval) {
 		if (!timerval || isNaN(timerval)) {
@@ -139,7 +138,7 @@ function JSJaCAuth(iq) {
 }
 
 function JSJaCAuth2(iq) {
-	oCon.oDbg.log("got iq: " + iq.getDoc().xml,4);
+	oCon.oDbg.log("got iq: " + iq.xml(),4);
 	var use_digest = false;
 	for (var aChild=iq.getNode().firstChild.firstChild; aChild!=null; aChild=aChild.nextSibling) {
 		if (aChild.nodeName == 'digest') {
@@ -193,9 +192,10 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 		this._registerPID(aJSJaCPacket.getID(),cb,arg);
 	}
 
-	if (aJSJaCPacket)
+	if (aJSJaCPacket) {
+		this.oDbg.log(aJSJaCPacket.xml());
 		this._pQueue = this._pQueue.concat(aJSJaCPacket.clone());
-
+	}
 	this._sendQueue();
 	return;
 }
@@ -205,6 +205,9 @@ function JSJaCSendQueue() {
 		this.oDbg.log("Connection lost ...",1);
 		return;
 	}
+
+	if (this.timeout)
+		clearTimeout(this.timeout);
 
 	if (typeof(this.req) != 'undefined' && this.req.readyState != 4)
 		return;
@@ -220,6 +223,9 @@ function JSJaCSendQueue() {
 			oCon._handleResponse(oCon.req);
  			if (oCon._pQueue.length)
  				oCon._sendQueue();
+			else
+				oCon.timeout = setTimeout("oCon._process()",oCon.timerval); // schedule next tick
+
 		}
 	};
 
@@ -230,13 +236,17 @@ function JSJaCSendQueue() {
 			oCon.oDbg.log('XmlHttpRequest error',1);
 			if (oCon._pQueue.length)
 				oCon._sendQueue();
+			else
+				oCon.timeout = setTimeout("oCon._process()",oCon.timerval); // schedule next tick
 			return true;
 		};
 	}
 
 	var xml = '';
 	while (this._pQueue.length) {
-		xml += this._pQueue[0].getDoc().xml;
+		var curNode = this._pQueue[0];
+		this.oDbg.log(curNode.xml());
+		xml += curNode.xml();
 		this._pQueue = this._pQueue.slice(1,this._pQueue.length);
 	}
 	var reqstr = this._getRequestString(xml);
@@ -246,6 +256,9 @@ function JSJaCSendQueue() {
 }
 
 function JSJaCSyncSend(aPacket) {
+	if (!aPacket)
+		return;
+
 	if (!this.connected()) {
 		this.oDbg.log("Connection lost ...",1);
 		return;
@@ -253,7 +266,7 @@ function JSJaCSyncSend(aPacket) {
 
 	var xmlhttp = this._setupRequest(false);
 
-	var reqstr = this._getRequestString(aPacket.getDoc().xml);
+	var reqstr = this._getRequestString(aPacket.xml());
 	this.oDbg.log("sending: " + reqstr,4);
 	xmlhttp.send(reqstr);
 	this._handleResponse(xmlhttp);
@@ -265,7 +278,9 @@ function JSJaCSyncSend(aPacket) {
  */
 function JSJaCSendEmpty() {
 	oCon.req = oCon._setupRequest(false);
-	oCon.req.send(oCon._getRequestString());
+	var reqstr = oCon._getRequestString();
+	oCon.oDbg.log("sending: " + reqstr,4);
+	oCon.req.send(reqstr);
 	oCon._getStreamID(); // handle response
 }
 
@@ -293,7 +308,11 @@ function JSJaCHandleResponse(req) {
  */
 function JSJaCError(code,type,condition) {
 	var xmldoc = XmlDocument.create();
-	xmldoc.appendChild(xmldoc.createElement('error'));
+	if (xmldoc.documentElement)
+		xmldoc.documentElement.appendChild(xmldoc.createElement('error'));
+	else 
+		xmldoc.appendChild(xmldoc.createElement('error'));
+
 	xmldoc.firstChild.setAttribute('code',code);
 	xmldoc.firstChild.setAttribute('type',type);
 	xmldoc.firstChild.appendChild(xmldoc.createElement(condition));

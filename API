@@ -98,6 +98,12 @@ string: getXMLLang()
 string: getXMLNS()
 	getters for common attributes of top level nodes
 
+string: xml()
+	returns string representation of DOM xml tree
+
+[IMPORTANT NOTE: Usage of getDoc().xml is DEPRECATED as it not
+support by browsers other than IE and Mozilla based ones]
+
 DOMDocument: getDoc()
 	Returns internal DOMDocument. This is where you can do your own
 	stuff like creating new childs and so on. Most notably you would
@@ -105,13 +111,13 @@ DOMDocument: getDoc()
 
 	var iq = new JSJaCIQ();
 	iq.setType('get');
-	iq.getDoc().xml => "<iq type='get'/>"
+	iq.xml() => "<iq type='get'/>"
 
 	query = iq.setQuery('jabber:iq:private');
-	iq.getDoc().xml => "<iq type='get'><query xmlns='jabber:iq:private' /></iq>'
+	iq.xml() => "<iq type='get'><query xmlns='jabber:iq:private' /></iq>'
 
 	query.appendChild(iq.getDoc().createElement('storage')).setAttribute('xmlns','storage:bookmarks');
-	iq.getDoc().xml => "<iq type='get'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'></query></iq>'
+	iq.xml() => "<iq type='get'><query xmlns='jabber:iq:private'><storage xmlns='storage:bookmarks'></query></iq>'
 
 
 DOMElement: getNode()
