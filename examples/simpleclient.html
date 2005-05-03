@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>JSJaC Simple Client</title>
-    <script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
     <script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
     <script language="JavaScript" type="text/javascript" src="../xmlextras.js"></script>
     <script language="JavaScript" type="text/javascript" src="../JSJaCConnection.js"></script>
@@ -63,11 +62,8 @@ function handleError(errPacket) {
 }
 
 function doLogin(aForm) {
- 	var dbg = new Debugger(0,'simpleclient');
- 	dbg.start();
-
-	con = new JSJaCHttpBindingConnection(dbg);
-	//con = new JSJaCHttpPollingConnection();
+//	con = new JSJaCHttpBindingConnection();
+	con = new JSJaCHttpPollingConnection();
 
 	con.registerHandler('message',handleMessage);
 	con.registerHandler('presence',handlePresence);
@@ -169,7 +165,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Thu Apr 28 15:32:33 CEST 2005
+Last modified: Tue May  3 16:54:51 CEST 2005
 <!-- hhmts end -->
   </body>
 </html>
