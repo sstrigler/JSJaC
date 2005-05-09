@@ -26,7 +26,7 @@ function JSJaCHPCGetRequestString(xml) {
 	if (JSJaC_HAVEKEYS) {
 		reqstr += ";"+this.keys.getKey();
 		if (this.keys.lastKey()) {
-			this.keys = new JSJaCKeys(this.oDbg);
+			this.keys = new JSJaCKeys(b64_sha1,this.oDbg);
 			reqstr += ';'+this.keys.getKey();
 		}
 	}
@@ -109,7 +109,7 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 
 	var reqstr = "0";
 	if (JSJaC_HAVEKEYS) {
-		this.keys = new JSJaCKeys(this.oDbg); // generate first set of keys
+		this.keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
 		key = this.keys.getKey();
 		reqstr += ";"+key;
 	}

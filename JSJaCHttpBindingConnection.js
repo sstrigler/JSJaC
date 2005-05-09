@@ -44,6 +44,13 @@ function JSJaCHBCGetRequestString(xml) {
 	this.rid++;
 		
 	var reqstr = "<body rid='"+this.rid+"' sid='"+this.sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
+	if (JSJaC_HAVEKEYS) {
+		reqstr += "key='"+this.keys.getKey()+"' ";
+	  if (this.keys.lastKey()) {
+			this.keys = new JSJaCKeys(hex_sha1,this.oDbg);
+			reqstr += "newkey='"+this.keys.getKey()+"' ";
+		}
+	}
 	if (xml) {
 		reqstr += ">" + xml + "</body>";
 	} else {
@@ -104,9 +111,9 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 
 	var reqstr = '';
 	if (JSJaC_HAVEKEYS) {
-		this.keys = new JSJaCKeys(this.oDbg); // generate first set of keys
+		this.keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
 		key = this.keys.getKey();
-		reqstr += "<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"'/>";
+		reqstr += "<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"' newkey='"+key+"'/>";
 	} else
 		reqstr += "<body hold='"+this.hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this.wait+"' rid='"+this.rid+"'/>";
 

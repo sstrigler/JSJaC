@@ -323,7 +323,7 @@ function JSJaCError(code,type,condition) {
 /* ***
  * set of sha1 hash keys for securing sessions
  */											
-function JSJaCKeys(oDbg) {
+function JSJaCKeys(func,oDbg) {
 	var seed = Math.random();
 
 	this.k = new Array();
@@ -331,7 +331,7 @@ function JSJaCKeys(oDbg) {
 	this.oDbg = oDbg;
 
 	for (var i=1; i<JSJaC_NKEYS; i++) {
-		this.k[i] = b64_sha1(this.k[i-1]);
+		this.k[i] = func(this.k[i-1]);
 		oDbg.log(i+": "+this.k[i],4);
 	}
 
