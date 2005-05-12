@@ -56,7 +56,7 @@ function JSJaCHBCSetupRequest(async) {
 function JSJaCHBCGetRequestString(xml) {
 	this._rid++;
 		
-	var reqstr = "<body rid='"+this._rid+"' sid='"+this.sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
+	var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
 	if (JSJaC_HAVEKEYS) {
 		reqstr += "key='"+this._keys.getKey()+"' ";
 		if (this._keys.lastKey()) {
@@ -145,8 +145,8 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	var body = this.req.responseXML.firstChild;
 
 	// get session ID
-	this.sid = body.getAttribute('sid');
-	this.oDbg.log("got sid: "+this.sid,2);
+	this._sid = body.getAttribute('sid');
+	this.oDbg.log("got sid: "+this._sid,2);
 
 	// get attributes from response body
 	if (body.getAttribute('polling'))
@@ -208,11 +208,11 @@ function JSJaCHBCDisconnect() {
 	this._rid++;
 	this.req = this._setupRequest(false);
 
-	var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this.sid+"' rid='"+this._rid+"'><presence type='unavailable' xmlns='jabber:client' ";
+	var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this._sid+"' rid='"+this._rid+"'";
 	if (JSJaC_HAVEKEYS) {
-		reqstr += "key='"+this._keys.getKey()+"' ";
+		reqstr += " key='"+this._keys.getKey()+"'";
 	}
-	reqstr += "/></body>"
+	reqstr += "><presence type='unavailable' xmlns='jabber:client'/></body>"
 	this.req.send(reqstr);
 
 	this.oDbg.log("Disconnected: "+this.req.responseText,2);

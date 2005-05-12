@@ -20,7 +20,7 @@ function JSJaCHPCSetupRequest(async) {
 }
 
 function JSJaCHPCGetRequestString(xml) {
-	var reqstr = this.sid;
+	var reqstr = this._sid;
 	if (JSJaC_HAVEKEYS) {
 		reqstr += ";"+this._keys.getKey();
 		if (this._keys.lastKey()) {
@@ -125,9 +125,9 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	for (var i=0;i<aPList.length;i++) {
 		aArg = aPList[i].split("=");
 		if (aArg[0] == 'ID')
-			this.sid = aArg[1];
+			this._sid = aArg[1];
 	}
-	this.oDbg.log("got sid: "+this.sid,2);
+	this.oDbg.log("got sid: "+this._sid,2);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
@@ -170,9 +170,9 @@ function JSJaCHPCDisconnect() {
 	this.req = this._setupRequest(false);
 
 	if (JSJaC_HAVEKEYS)
-		this.req.send(this.sid+";"+this._keys.getKey()+",</stream:stream>");
+		this.req.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
 	else
-		this.req.send(this.sid+",</stream:stream>");
+		this.req.send(this._sid+",</stream:stream>");
 	this.oDbg.log("Disconnected: "+this.req.responseText,2);
 	this._connected = false;
 	this.handleEvent('ondisconnect');
