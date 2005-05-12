@@ -1,3 +1,10 @@
+JSJaC v0.3.x
+============
+* Initial support for http binding (in polling mode though)
+
+* Initial support for safari (thanks to Matthew Hershberger)
+
+
 JSJaC v0.2
 ==========
 
