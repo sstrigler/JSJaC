@@ -14,8 +14,7 @@ function JSJaCPacket(name) {
 	this.pType = function() { return this.name; };
 
 	this.getDoc = function() { return this.doc; };
-	this.getNode = function() {
-			return this.getDoc().firstChild; };
+	this.getNode = function() {	return this.getDoc().firstChild; };
 
 	this.setTo = function(to) { 
 		if (!to || to == '')
@@ -92,7 +91,7 @@ function JSJaCPacket(name) {
 		return this.getDoc().replaceChild(aNode.cloneNode(true),this.getNode()); 
 	};
 
-	this.clone = function() {	return JSJaCPWrapNode(this.getNode()); }
+	this.clone = function() { return JSJaCPWrapNode(this.getNode()); }
 } 
 
 function JSJaCPresence() {

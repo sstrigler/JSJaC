@@ -16,24 +16,14 @@ function JSJaCConnection(oDbg) {
 	}
 
 	this._connected = false;
-	this._ID = 0;
-	this.keys = null;
-
 	this._events = new Array();
-	this._regIDs = new Array();
+	this._keys = null;
+	this._ID = 0;
 	this._pQueue = new Array();
+	this._regIDs = new Array();
 
 	this.connected = function() { return this._connected; };
-	this.send = JSJaCSend;
-	this.syncSend = JSJaCSyncSend;
-	this.registerHandler = function(event,handler) {
-		event = event.toLowerCase(); // don't be case-sensitive here
-		if (!this._events[event])
-			this._events[event] = new Array(handler);
-		else
-			this._events[event] = this._events[event].concat(handler);
-		this.oDbg.log("registered handler for event '"+event+"'",2);
-	};
+	this.getPollInterval = function() { return this._timerval; };
 	this.handleEvent = function(event,arg) {
 		event = event.toLowerCase(); // don't be case-sensitive here
 		this.oDbg.log("incoming event '"+event+"'",3);
@@ -49,6 +39,29 @@ function JSJaCConnection(oDbg) {
 			}
 		}
 	};
+	this.registerHandler = function(event,handler) {
+		event = event.toLowerCase(); // don't be case-sensitive here
+		if (!this._events[event])
+			this._events[event] = new Array(handler);
+		else
+			this._events[event] = this._events[event].concat(handler);
+		this.oDbg.log("registered handler for event '"+event+"'",2);
+	};
+	this.send = JSJaCSend;
+	this.setPollInterval = function(timerval) {
+		if (!timerval || isNaN(timerval)) {
+			this.oDbg.log("Invalid timerval: " + timerval,1);
+			return -1;
+		}
+		this._timerval = timerval;
+		return this._timerval;
+	};
+	this.syncSend = JSJaCSyncSend;
+
+	this._doReg = JSJaCReg;
+	this._doAuth = JSJaCAuth;
+	this._doAuth2 = JSJaCAuth2;
+	this._doAuth3 = JSJaCAuth3;
 	this._handlePID = function(aJSJaCPacket) {
 		if (!aJSJaCPacket.getID())
 			return false;
@@ -63,6 +76,12 @@ function JSJaCConnection(oDbg) {
 		}
 		return false;
 	};
+	this._handleResponse = JSJaCHandleResponse;
+	this._process = function(timerval) {
+		if (timerval)
+			this.setPollInterval(timerval);
+		this.send();
+	};
 	this._registerPID = function(pID,cb,arg) {
 		if (!pID || !cb)
 			return false;
@@ -73,6 +92,8 @@ function JSJaCConnection(oDbg) {
 		this.oDbg.log("registered "+pID,3);
 		return true;
 	};
+	this._sendEmpty = JSJaCSendEmpty;
+	this._sendQueue = JSJaCSendQueue;
 	this._unregisterPID = function(pID) {
 		if (!this._regIDs[pID])
 			return false;
@@ -80,26 +101,6 @@ function JSJaCConnection(oDbg) {
 		this.oDbg.log("unregistered "+pID,3);
 		return true;
 	};
-	this._process = function(timerval) {
-		if (timerval)
-			this.setPollInterval(timerval);
-		this.send();
-	};
-	this.setPollInterval = function(timerval) {
-		if (!timerval || isNaN(timerval)) {
-			this.oDbg.log("Invalid timerval: " + timerval,1);
-			return;
-		}
-		this.timerval = timerval;
-	};
-
-	this._handleResponse = JSJaCHandleResponse;
-	this._doReg = JSJaCReg;
-	this._doAuth = JSJaCAuth;
-	this._doAuth2 = JSJaCAuth2;
-	this._doAuth3 = JSJaCAuth3;
-	this._sendQueue = JSJaCSendQueue;
-	this._sendEmpty = JSJaCSendEmpty;
 }
 
 function JSJaCReg() {
@@ -206,8 +207,8 @@ function JSJaCSendQueue() {
 		return;
 	}
 
-	if (this.timeout)
-		clearTimeout(this.timeout);
+	if (this._timeout)
+		clearTimeout(this._timeout);
 
 	if (typeof(this.req) != 'undefined' && this.req.readyState != 4)
 		return;
@@ -237,7 +238,7 @@ function JSJaCSendQueue() {
 			if (oCon._pQueue.length)
 				oCon._sendQueue();
 			else
-				oCon.timeout = setTimeout("oCon._process()",oCon.timerval); // schedule next tick
+				oCon._timeout = setTimeout("oCon._process()",oCon._timerval); // schedule next tick
 			return true;
 		};
 	}
@@ -297,7 +298,7 @@ function JSJaCHandleResponse(req) {
 		if (typeof(aJSJaCPacket.pType) == 'undefined') // didn't parse as proper XMPP packet
 			continue;
 		if (!this._handlePID(aJSJaCPacket))
-				this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
+			this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
 	}
 
 	return null;
@@ -326,19 +327,19 @@ function JSJaCError(code,type,condition) {
 function JSJaCKeys(func,oDbg) {
 	var seed = Math.random();
 
-	this.k = new Array();
-	this.k[0] = seed.toString();
+	this._k = new Array();
+	this._k[0] = seed.toString();
 	this.oDbg = oDbg;
 
 	for (var i=1; i<JSJaC_NKEYS; i++) {
-		this.k[i] = func(this.k[i-1]);
-		oDbg.log(i+": "+this.k[i],4);
+		this._k[i] = func(this._k[i-1]);
+		oDbg.log(i+": "+this._k[i],4);
 	}
 
 	this.indexAt = JSJaC_NKEYS-1;
 	this.getKey = function() { 
-		return this.k[this.indexAt--]; 
+		return this._k[this.indexAt--]; 
 	};
 	this.lastKey = function() { return (this.indexAt == 0); };
-	this.size = function() { return this.k.length; };
+	this.size = function() { return this._k.length; };
 }

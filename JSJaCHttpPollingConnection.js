@@ -1,33 +1,31 @@
-
 function JSJaCHttpPollingConnection(oDbg) {
 	this.base = JSJaCConnection;
 	this.base(oDbg);
 
 	this.connect = JSJaCHPCConnect;
 	this.disconnect = JSJaCHPCDisconnect;
-	this._prepareResponse = JSJaCHPCPrepareResponse;
+
 	this._getRequestString = JSJaCHPCGetRequestString;
-	this._setupRequest = JSJaCHPCSetupRequest;
 	this._getStreamID = JSJaCHPCGetStream;
+	this._isPolling = function() { return true; };
+	this._prepareResponse = JSJaCHPCPrepareResponse;
+	this._setupRequest = JSJaCHPCSetupRequest;
 }
 
 function JSJaCHPCSetupRequest(async) {
  	var req = XmlHttp.create();
-
 	req.open("POST",this.http_base,async);
-
 	req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-
 	return req;
 }
 
 function JSJaCHPCGetRequestString(xml) {
 	var reqstr = this.sid;
 	if (JSJaC_HAVEKEYS) {
-		reqstr += ";"+this.keys.getKey();
-		if (this.keys.lastKey()) {
-			this.keys = new JSJaCKeys(b64_sha1,this.oDbg);
-			reqstr += ';'+this.keys.getKey();
+		reqstr += ";"+this._keys.getKey();
+		if (this._keys.lastKey()) {
+			this._keys = new JSJaCKeys(b64_sha1,this.oDbg);
+			reqstr += ';'+this._keys.getKey();
 		}
 	}
 	reqstr += ',';
@@ -44,7 +42,7 @@ function JSJaCHPCPrepareResponse(req) {
 	// proxy error (!)
 	if (req.status != 200) {
 		this.oDbg.log("invalid response:\n" + req.responseText,1);
-		clearTimeout(this.timeout); // remove timer
+		clearTimeout(this._timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -78,7 +76,7 @@ function JSJaCHPCPrepareResponse(req) {
 			this.oDbg.log("Key Sequence Error",1);
 			break;
 		}
-		clearTimeout(this.timeout); // remove timer
+		clearTimeout(this._timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -102,15 +100,16 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.username = username;
 	this.resource = resource;
 	this.pass = pass;
-	this.timerval = timerval;
 	this.register = register;
+
+	this.setPollInterval(timerval);
 
 	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
 
 	var reqstr = "0";
 	if (JSJaC_HAVEKEYS) {
-		this.keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
-		key = this.keys.getKey();
+		this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
+		key = this._keys.getKey();
 		reqstr += ";"+key;
 	}
 	reqstr += ",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>";
@@ -140,7 +139,7 @@ function JSJaCHPCGetStream() {
 
 	if (!this.req.responseXML || this.req.responseText == '') {
 		oCon = this;
-		setTimeout("oCon._sendEmpty()",1000);
+		this._timeout = setTimeout("oCon._sendEmpty()",1000);
 		return;
 	}
 
@@ -153,7 +152,7 @@ function JSJaCHPCGetStream() {
 
 	this._connected = true;
 
-	this._process(this.timerval); // start polling
+	this._process(); // start polling
 
 	if (this.register)
 		this._doReg();
@@ -165,13 +164,13 @@ function JSJaCHPCDisconnect() {
 	if (!this.connected())
 		return;
 
-	if (this.timeout)
-		clearTimeout(this.timeout); // remove timer
+	if (this._timeout)
+		clearTimeout(this._timeout); // remove timer
 
 	this.req = this._setupRequest(false);
 
 	if (JSJaC_HAVEKEYS)
-		this.req.send(this.sid+";"+this.keys.getKey()+",</stream:stream>");
+		this.req.send(this.sid+";"+this._keys.getKey()+",</stream:stream>");
 	else
 		this.req.send(this.sid+",</stream:stream>");
 	this.oDbg.log("Disconnected: "+this.req.responseText,2);

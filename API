@@ -15,15 +15,10 @@ boolean: connected()
 	checks if connection is connected
 	RETURNS: boolean - true if connected, false otherwise
 
-void: send(JSJaCPacket: aJSJaCPacket [, function: callback [, any: arg]])
-	appends aJSJaCPacket to send queue. registers callback if given
-
-	PARAMS: aJSJaCPacket - packet to send
-	        callback - a callback to call when reply with same id comes in
-	                   id is set automatically if none set
-	        arg - optional arg to call callback 
-	              [callback is called with callback(aJSJaCPacket, arg)]
-
+boolean: isPolling()
+	whether this connection is using polling
+	RETURNS: true if polling is used (thus indicating it makes sense to use
+	         setPollInterval)
 
 void: registerHandler(string: event, function: handler)
 	register a handler for event. if event happens handler is called.
@@ -39,10 +34,21 @@ void: registerHandler(string: event, function: handler)
 	                    <item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
 	                  </error>
 
-void: setPollInterval(int: timeout_msec)
+void: send(JSJaCPacket: aJSJaCPacket [, function: callback [, any: arg]])
+	appends aJSJaCPacket to send queue. registers callback if given
+
+	PARAMS: aJSJaCPacket - packet to send
+	        callback - a callback to call when reply with same id comes in
+	                   id is set automatically if none set
+	        arg - optional arg to call callback 
+	              [callback is called with callback(aJSJaCPacket, arg)]
+
+int: setPollInterval(int: timeout_msec)
 	change polling interval to timeout_msec
 
 	PARAMS: timeout_msec
+	RETURNS: actual value the polling interval has been set to. 
+	         -1 on failure.
 
 JSJaCHttpPollingConnection
 ==========================
