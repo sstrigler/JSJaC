@@ -21,6 +21,7 @@ function JSJaCConnection(oDbg) {
 	this._ID = 0;
 	this._pQueue = new Array();
 	this._regIDs = new Array();
+	this._req = new Array();
 
 	this.connected = function() { return this._connected; };
 	this.getPollInterval = function() { return this._timerval; };
@@ -101,6 +102,9 @@ function JSJaCConnection(oDbg) {
 		this.oDbg.log("unregistered "+pID,3);
 		return true;
 	};
+ 	oCon = this;
+ 	if (!this.isPolling)
+ 		setInterval("oCon._sendQueue()",1);
 }
 
 function JSJaCReg() {
@@ -194,10 +198,15 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 	}
 
 	if (aJSJaCPacket) {
-		this.oDbg.log(aJSJaCPacket.xml());
-		this._pQueue = this._pQueue.concat(aJSJaCPacket.clone());
+		try {
+			this._pQueue = this._pQueue.concat(aJSJaCPacket.xml());
+		} catch (e) {
+			this.oDbg.log(e.toString(),1);
+		}
 	}
-	this._sendQueue();
+
+	if (this.isPolling())
+		this._sendQueue();
 	return;
 }
 
@@ -210,50 +219,62 @@ function JSJaCSendQueue() {
 	if (this._timeout)
 		clearTimeout(this._timeout);
 
-	if (typeof(this.req) != 'undefined' && this.req.readyState != 4)
+	var slot = this._getFreeSlot();
+	
+	if (slot < 0)
 		return;
 
-	this.req = this._setupRequest(true);
+	if (typeof(this._req[slot]) != 'undefined' && this._req[slot].readyState != 4) {
+		this.oDbg.log("Slot "+slot+" is not ready");
+		return;
+	}
+		
+	if (!this.isPolling() && this._pQueue.length == 0 && this._req[(slot+1)%2] && this._req[(slot+1)%2].readyState != 4) {
+		return;
+	}
+
+	if (!this.isPolling())
+		this.oDbg.log("Found working slot at "+slot,2);
+
+	this._req[slot] = this._setupRequest(true);
 
 	/* setup onload handler for async send */
-	this.req.onreadystatechange = function() {
+	this._req[slot].onreadystatechange = function() {
 		if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
 			return;
-		if (oCon.req.readyState == 4) {
-			oCon.oDbg.log("async recv: "+oCon.req.responseText,4);
-			oCon._handleResponse(oCon.req);
+		if (oCon._req[slot].readyState == 4) {
+			oCon.oDbg.log("async recv: "+oCon._req[slot].responseText,4);
+			oCon._handleResponse(oCon._req[slot]);
  			if (oCon._pQueue.length)
  				oCon._sendQueue();
 			else
-				oCon.timeout = setTimeout("oCon._process()",oCon.timerval); // schedule next tick
+				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
 
 		}
 	};
 
-	if (typeof(this.req.onerror) != 'undefined') {
-		this.req.onerror = function() {
+	if (typeof(this._req[slot].onerror) != 'undefined') {
+		this._req[slot].onerror = function(e) {
 			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
 				return;
 			oCon.oDbg.log('XmlHttpRequest error',1);
 			if (oCon._pQueue.length)
 				oCon._sendQueue();
 			else
-				oCon._timeout = setTimeout("oCon._process()",oCon._timerval); // schedule next tick
-			return true;
+				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
+			return false;
 		};
 	}
 
 	var xml = '';
 	while (this._pQueue.length) {
 		var curNode = this._pQueue[0];
-		this.oDbg.log(curNode.xml());
-		xml += curNode.xml();
+		xml += curNode;
 		this._pQueue = this._pQueue.slice(1,this._pQueue.length);
 	}
 	var reqstr = this._getRequestString(xml);
 	this.oDbg.log("sending: " + reqstr,4);
-	this.req.send(reqstr);
-
+	this._req[slot].send(reqstr);
 }
 
 function JSJaCSyncSend(aPacket) {
@@ -265,6 +286,16 @@ function JSJaCSyncSend(aPacket) {
 		return;
 	}
 
+	this.oDbg.log("sync send");
+	
+	/* can't do synchronuous send on http binding as it 
+	 * would block until request timeouts 
+	 */
+	if (!this.isPolling()) {
+		this.send(aPacket);
+		return;
+	}
+	
 	var xmlhttp = this._setupRequest(false);
 
 	var reqstr = this._getRequestString(aPacket.xml());
