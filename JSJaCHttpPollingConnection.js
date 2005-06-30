@@ -4,18 +4,26 @@ function JSJaCHttpPollingConnection(oDbg) {
 
 	this.connect = JSJaCHPCConnect;
 	this.disconnect = JSJaCHPCDisconnect;
+	this.isPolling = function() { return true; };
 
+	this._getFreeSlot = function() {
+		if (typeof(this._req[0]) == 'undefined' || this._req[0].readyState == 4)
+			return 0; 
+		else
+			return -1;
+	}
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._getStreamID = JSJaCHPCGetStream;
-	this._isPolling = function() { return true; };
 	this._prepareResponse = JSJaCHPCPrepareResponse;
 	this._setupRequest = JSJaCHPCSetupRequest;
 }
 
 function JSJaCHPCSetupRequest(async) {
  	var req = XmlHttp.create();
-	req.open("POST",this.http_base,async);
-	req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+	try {
+		req.open("POST",this.http_base,async);
+		req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+	} catch(e) { this.oDbg.log(e,1); }
 	return req;
 }
 
@@ -115,12 +123,12 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 	reqstr += ",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>";
 	this.oDbg.log(reqstr,4);
 
-	this.req = this._setupRequest(false);	
-	this.req.send(reqstr);
+	this._req[0] = this._setupRequest(false);	
+	this._req[0].send(reqstr);
 
 	// extract session ID
-	this.oDbg.log(this.req.getAllResponseHeaders(),4);
-	var aPList = this.req.getResponseHeader('Set-Cookie');
+	this.oDbg.log(this._req[0].getAllResponseHeaders(),4);
+	var aPList = this._req[0].getResponseHeader('Set-Cookie');
 	aPList = aPList.split(";");
 	for (var i=0;i<aPList.length;i++) {
 		aArg = aPList[i].split("=");
@@ -137,16 +145,16 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 
 function JSJaCHPCGetStream() {
 
-	if (!this.req.responseXML || this.req.responseText == '') {
+	if (!this._req[0].responseXML || this._req[0].responseText == '') {
 		oCon = this;
 		this._timeout = setTimeout("oCon._sendEmpty()",1000);
 		return;
 	}
 
-	this.oDbg.log(this.req.responseText,4);
+	this.oDbg.log(this._req.responseText,4);
 
 	// extract stream id used for non-SASL authentication
-	if (this.req.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
+	if (this._req[0].responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
 			this.streamid = RegExp.$1;
 	this.oDbg.log("got streamid: "+this.streamid,2);
 
@@ -167,13 +175,13 @@ function JSJaCHPCDisconnect() {
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 
-	this.req = this._setupRequest(false);
-
+	this._req = this._setupRequest(false);
+	
 	if (JSJaC_HAVEKEYS)
-		this.req.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
+		this._req.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
 	else
-		this.req.send(this._sid+",</stream:stream>");
-	this.oDbg.log("Disconnected: "+this.req.responseText,2);
+		this._req.send(this._sid+",</stream:stream>");
+	this.oDbg.log("Disconnected: "+this._req.responseText,2);
 	this._connected = false;
 	this.handleEvent('ondisconnect');
 }
