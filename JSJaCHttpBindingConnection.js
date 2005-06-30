@@ -1,4 +1,5 @@
-JSJaCHBC_MAX_HOLD = 0;
+var JSJaCHBC_MAX_HOLD = 1;
+var JSJACHBC_MAX_WAIT = 300; 
 
 function JSJaCHttpBindingConnection(oDbg) {
 	this.base = JSJaCConnection;
@@ -7,7 +8,7 @@ function JSJaCHttpBindingConnection(oDbg) {
 	this._hold = JSJaCHBC_MAX_HOLD;
 	this._inactivity = 0;
 	this._min_polling = 0;
-	this._wait = 60;  
+	this._wait = JSJACHBC_MAX_WAIT;  
 
 	this.connect = JSJaCHBCConnect;
 	this.disconnect = JSJaCHBCDisconnect;
@@ -17,8 +18,10 @@ function JSJaCHttpBindingConnection(oDbg) {
 			this.oDbg.log("Invalid timerval: " + timerval,1);
 			return -1;
 		}
-		if (!this.isPolling())
+		if (!this.isPolling()) {
+			this._timerval = 1;
 			return -1;
+		}
 		if (this._min_polling && timerval < this._min_polling*1000)
 			this._timerval = this._min_polling*1000;
 		else if (this._inactivity && timerval > this._inactivity*1000)
@@ -42,13 +45,20 @@ function JSJaCHttpBindingConnection(oDbg) {
 		return this._hold;
 	};
 	this._setupRequest = JSJaCHBCSetupRequest;
+	
+	this._getFreeSlot = function() {
+		for (var i=0; i<this._hold+1; i++)
+			if (typeof(this._req[i]) == 'undefined' || this._req[i].readyState == 4)
+				return i;
+		return -1; // nothing found
+	}
 }
 
 function JSJaCHBCSetupRequest(async) {
 	var req = XmlHttp.create();
 	try {
 		req.open("POST",this.http_base,async);
-		req.setRequestHeader('Content-Type','text/xml');
+		req.setRequestHeader('Content-Type','text/xml; charset=utf-8');
 	} catch(e) { this.oDbg.log(e,1); }
 	return req;
 }
@@ -75,6 +85,9 @@ function JSJaCHBCGetRequestString(xml) {
 
 function JSJaCHBCPrepareResponse(req) {
 	if (!this.connected())
+		return null;
+
+	if (typeof(req) == 'undefined' || !req)
 		return null;
 
 	/* handle error */
@@ -131,18 +144,19 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	} else
 		reqstr += "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this._wait+"' rid='"+this._rid+"'/>";
 
-	this.req = this._setupRequest(false);
+	var slot = this._getFreeSlot();
+	this._req[slot] = this._setupRequest(false);
 	this.oDbg.log(reqstr,4);
-	this.req.send(reqstr);
+	this._req[slot].send(reqstr);
 
-	this.oDbg.log(this.req.getAllResponseHeaders(),4);
-	this.oDbg.log(this.req.responseText,4);
+	this.oDbg.log(this._req[slot].getAllResponseHeaders(),4);
+	this.oDbg.log(this._req[slot].responseText,4);
 
-	if (!this.req.responseXML || !this.req.responseXML.firstChild) {
+	if (!this._req[slot].responseXML || !this._req[slot].responseXML.firstChild) {
 		this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
 		return;
 	}
-	var body = this.req.responseXML.firstChild;
+	var body = this._req[slot].responseXML.firstChild;
 
 	// get session ID
 	this._sid = body.getAttribute('sid');
@@ -166,18 +180,18 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
 	 */
-	this._getStreamID();
+	this._getStreamID(slot);
 }
 
-function JSJaCHBCGetStreamID() {
+function JSJaCHBCGetStreamID(slot) {
 
-	this.oDbg.log(this.req.responseText,4);
+	this.oDbg.log(this._req[slot].responseText,4);
 
-	if (!this.req.responseXML || !this.req.responseXML.firstChild) {
+	if (!this._req[slot].responseXML || !this._req[slot].responseXML.firstChild) {
 		this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
 		return;
 	}
-	var body = this.req.responseXML.firstChild;
+	var body = this._req[slot].responseXML.firstChild;
 
 	// extract stream id used for non-SASL authentication
 	if (body.getAttribute('authid')) {
@@ -185,7 +199,7 @@ function JSJaCHBCGetStreamID() {
 		this.oDbg.log("got streamid: "+this.streamid,2);
 	} else {
 		oCon = this;
-		setTimeout("oCon._sendEmpty()",this.getPollInterval());
+		this._timeout = setTimeout("oCon._sendEmpty()",this.getPollInterval());
 		return;
 	}
 	
@@ -194,7 +208,7 @@ function JSJaCHBCGetStreamID() {
 	else
 		this._doAuth();
 
-	setTimeout("oCon._process()",this.getPollInterval());
+	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
 
@@ -206,16 +220,18 @@ function JSJaCHBCDisconnect() {
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 	this._rid++;
-	this.req = this._setupRequest(false);
+	
+	var xmlhttp = this._setupRequest(false);
+
 
 	var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this._sid+"' rid='"+this._rid+"'";
 	if (JSJaC_HAVEKEYS) {
 		reqstr += " key='"+this._keys.getKey()+"'";
 	}
 	reqstr += "><presence type='unavailable' xmlns='jabber:client'/></body>"
-	this.req.send(reqstr);
+	xmlhttp.send(reqstr);
 
-	this.oDbg.log("Disconnected: "+this.req.responseText,2);
+	this.oDbg.log("Disconnected: "+xmlhttp.responseText,2);
 	this._connected = false;
 	this.handleEvent('ondisconnect');
 }
