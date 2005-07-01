@@ -102,9 +102,6 @@ function JSJaCConnection(oDbg) {
 		this.oDbg.log("unregistered "+pID,3);
 		return true;
 	};
- 	oCon = this;
- 	if (!this.isPolling)
- 		setInterval("oCon._sendQueue()",1);
 }
 
 function JSJaCReg() {

@@ -52,6 +52,13 @@ function JSJaCHttpBindingConnection(oDbg) {
 				return i;
 		return -1; // nothing found
 	}
+
+	/* start sending from queue for not polling connections */
+	oCon = this;
+ 	if (!this.isPolling())
+ 		setInterval("oCon._sendQueue()",1);
+
+
 }
 
 function JSJaCHBCSetupRequest(async) {
