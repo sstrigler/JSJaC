@@ -6,22 +6,15 @@ implementation of web based jabber clients. For communication with a
 jabber server it needs to support either [1]HTTP Polling or [2]HTTP
 Binding. JSJaC has an object oriented design which should be quite
 easy to use. Communication is done by using the HTTPRequest
-object. Your browser must support this.
-
-Support for HTTP-Binding is not implemented at the moment as there are
-no jabber servers available that support this. As soon as there is a
-server side implementation of HTTP-Binding available, JSJaC will
-support it too.
+object also refered to as AJAX technology. Your browser must support 
+this.
 
 License
 =======
 
-JSJaC is licensed under the terms of the GNU General Public License
-(GPL). This basically means that you have to license applications
-based on JSJaC under the terms of the GPL too. If you want to develop
-commercial application an alternative commercial license is
-available. Please contact Stefan Strigler <steve@zeank.in-berlin.de>
-for information.
+JSJaC is licensed under the terms of the GNU Lesser General Public 
+License (LGPL). Please refer to the file named 'COPYING' that came with 
+this distribution for details.
 
 Usage
 =====
@@ -48,7 +41,7 @@ servers http polling or binding adresse. E.g.:
   DocumentRoot /home/jabber/jwchat/htdocs
   AddDefaultCharset UTF-8
   RewriteEngine On
-	RewriteRule ^/http-poll/ http://jabber.mydomain.com:5280/http-poll/ [P]
+  RewriteRule ^/http-poll/ http://jabber.mydomain.com:5280/http-poll/ [P]
 </VirtualHost>
 %<---
 
@@ -91,21 +84,18 @@ Supported Browsers and Platforms
 Windows
 -------
 * Internet Explorer v5.0 or newer
-* Mozilla
+* Mozilla/Firefox and any other Gecko based browsers
 * Netscape v6.0 or newer
-* Opera v7.6
 
 Linux/UNI*X
 -----------
-* Mozilla
-* Konqueror
+* Mozilla/Firefox and any other Gecko based browsers
 * Netscape v6.0 or newer
-* Opera v7.6
 
 Macintosh
 ---------
-* Mozilla
-* Safari
+* Mozilla/Firefox and any other Gecko based browsers
+* Safari (in development, please help out by submitting bug reports)
 
 
 [1] http://www.jabber.org/jeps/jep-0025.html
