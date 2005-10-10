@@ -1,9 +1,9 @@
 var JSJaCHBC_MAX_HOLD = 1;
 var JSJACHBC_MAX_WAIT = 300; 
 
-function JSJaCHttpBindingConnection(oDbg) {
+function JSJaCHttpBindingConnection(oArg) {
 	this.base = JSJaCConnection;
-	this.base(oDbg);
+	this.base(oArg);
 
 	this._hold = JSJaCHBC_MAX_HOLD;
 	this._inactivity = 0;
@@ -35,9 +35,7 @@ function JSJaCHttpBindingConnection(oDbg) {
 	this._getStreamID = JSJaCHBCGetStreamID;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
 	this._setHold = function(hold)  {
-		if (!hold || isNaN(hold))
-			return -1;
-		if (hold < 0)
+		if (!hold || isNaN(hold) || hold < 0)
 			hold = 0;
 		else if (hold > JSJaCHBC_MAX_HOLD)
 			hold = JSJaCHBC_MAX_HOLD;
@@ -52,19 +50,12 @@ function JSJaCHttpBindingConnection(oDbg) {
 				return i;
 		return -1; // nothing found
 	}
-
-	/* start sending from queue for not polling connections */
-	oCon = this;
- 	if (!this.isPolling())
- 		setInterval("oCon._sendQueue()",1);
-
-
 }
 
 function JSJaCHBCSetupRequest(async) {
 	var req = XmlHttp.create();
 	try {
-		req.open("POST",this.http_base,async);
+		req.open("POST",this._httpbase,async);
 		req.setRequestHeader('Content-Type','text/xml; charset=utf-8');
 	} catch(e) { this.oDbg.log(e,1); }
 	return req;
@@ -130,26 +121,37 @@ function JSJaCHBCPrepareResponse(req) {
 	return req.responseXML;
 }
 
-function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,register) {
+function JSJaCHBCConnect(oArg) {
 	// initial request to get sid and streamid
 
-	this.http_base = http_base || '/';
-	this.server = server || 'localhost';
-	this.username = username;
-	this.resource = resource;
-	this.pass = pass;
-	this.register = register;
-	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
+	this.domain = oArg.domain || 'localhost';
+	this.username = oArg.username;
+	this.resource = oArg.resource;
+	this.pass = oArg.pass;
+	this.register = oArg.register;
+	this.oDbg.log("httpbase: " + this._httpbase + "\domain:" + this.domain,2);
+	this.host = oArg.host || this.domain;
+	this.port = oArg.port || 5222;
+	if (oArg.secure) {
+		this.secure = 'true';
+		if (!oArg.port)
+			this.port = 5223;
+	} else 
+		this.secure = 'false';
 
 	this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 
-	var reqstr = '';
+	var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.domain+"' wait='"+this._wait+"' rid='"+this._rid+"'";
+	if (oArg.host || oArg.port)
+		reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
+	if (oArg.secure)
+		reqstr += " secure='"+this.secure+"'";
 	if (JSJaC_HAVEKEYS) {
 		this._keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
 		key = this._keys.getKey();
-		reqstr += "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this._wait+"' rid='"+this._rid+"' newkey='"+key+"'/>";
-	} else
-		reqstr += "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.server+"' wait='"+this._wait+"' rid='"+this._rid+"'/>";
+		reqstr += " newkey='"+key+"'";
+	}
+	reqstr += "/>";
 
 	var slot = this._getFreeSlot();
 	this._req[slot] = this._setupRequest(false);
@@ -159,11 +161,17 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 	this.oDbg.log(this._req[slot].getAllResponseHeaders(),4);
 	this.oDbg.log(this._req[slot].responseText,4);
 
-	if (!this._req[slot].responseXML || !this._req[slot].responseXML.firstChild) {
+	if (!this._req[slot].responseXML) {
+		this.oDbg.log("initial response broken",1);
 		this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
 		return;
 	}
-	var body = this._req[slot].responseXML.firstChild;
+	var body = this._req[slot].responseXML.getElementsByTagName("body").item(0);
+	if (!body || body.getAttribute("xmlns") != "http://jabber.org/protocol/httpbind") {
+		this.oDbg.log("no body element or incorrect body in initial response",1);
+		this.handleEvent("onerror",JSJaCError("500","cancel","service-unavailable"));
+		return;
+	}								 
 
 	// get session ID
 	this._sid = body.getAttribute('sid');
@@ -171,18 +179,24 @@ function JSJaCHBCConnect(http_base,server,username,resource,pass,timerval,regist
 
 	// get attributes from response body
 	if (body.getAttribute('polling'))
-		this.min_polling = body.getAttribute('polling');
+		this._min_polling = body.getAttribute('polling');
 
 	if (body.getAttribute('inactivity'))
-		this.inactivity = body.getAttribute('inactivity');
+		this._inactivity = body.getAttribute('inactivity');
 	
 	if (body.getAttribute('requests'))
-		this._setHold(body.getAttribute('requests'));
+		var hold = this._setHold(body.getAttribute('requests')-1);
+	this.oDbg.log("set hold to " + hold,2);
 
 	// must be done after response attributes have been collected
-	this.setPollInterval(timerval);
+	this.setPollInterval(this._timerval);
 
+	/* start sending from queue for not polling connections */
 	this._connected = true;
+	oCon = this;
+ 	if (!this.isPolling())
+ 		this._interval= setInterval("oCon._sendQueue()",1);
+
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth

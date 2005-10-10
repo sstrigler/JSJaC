@@ -1,6 +1,6 @@
-function JSJaCHttpPollingConnection(oDbg) {
+function JSJaCHttpPollingConnection(oArg) {
 	this.base = JSJaCConnection;
-	this.base(oDbg);
+	this.base(oArg);
 
 	this.connect = JSJaCHPCConnect;
 	this.disconnect = JSJaCHPCDisconnect;
@@ -21,7 +21,7 @@ function JSJaCHttpPollingConnection(oDbg) {
 function JSJaCHPCSetupRequest(async) {
  	var req = XmlHttp.create();
 	try {
-		req.open("POST",this.http_base,async);
+		req.open("POST",this._httpbase,async);
 		req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
 	} catch(e) { this.oDbg.log(e,1); }
 	return req;
@@ -100,19 +100,19 @@ function JSJaCHPCPrepareResponse(req) {
 	return response;
 }
 
-function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,register) {
+function JSJaCHPCConnect(oArg) {
 	// initial request to get sid and streamid
 
-	this.http_base = http_base || '/';
-	this.server = server || 'localhost';
-	this.username = username;
-	this.resource = resource;
-	this.pass = pass;
-	this.register = register;
+	this.domain = oArg.domain || 'localhost';
+	this.username = oArg.username;
+	this.resource = oArg.resource || 'jsjac';
+	this.pass = oArg.pass;
+	this.register = oArg.register;
+	this.authtype = oArg.authtype || 'nonsasl';
 
-	this.setPollInterval(timerval);
-
-	this.oDbg.log("http_base: " + this.http_base + "\nserver:" + server,2);
+	this.anonhost = oArg.anonhost;
+	if (this.anonhost)
+		this.authtype = 'saslanon';
 
 	var reqstr = "0";
 	if (JSJaC_HAVEKEYS) {
@@ -120,7 +120,13 @@ function JSJaCHPCConnect(http_base,server,username,resource,pass,timerval,regist
 		key = this._keys.getKey();
 		reqstr += ";"+key;
 	}
-	reqstr += ",<stream:stream to='"+this.server+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>";
+	var streamto = this.domain;
+	if (this.anonhost)
+		streamto = this.anonhost;
+	reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'";
+	if (this.authtype != 'nonsasl')
+		reqstr += " version='1.0'";
+	reqstr += ">";
 	this.oDbg.log(reqstr,4);
 
 	this._req[0] = this._setupRequest(false);	
@@ -151,21 +157,43 @@ function JSJaCHPCGetStream() {
 		return;
 	}
 
-	this.oDbg.log(this._req.responseText,4);
+	this.oDbg.log(this._req[0].responseText,4);
 
-	// extract stream id used for non-SASL authentication
-	if (this._req[0].responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
+	if (this.authtype == 'saslanon') {
+		try {
+			var doc = XmlDocument.create();
+			doc.loadXML(this._req[0].responseText+'</stream:stream>');
+				
+			if (!this._doSASLAnonAuth(doc))
+				return;
+		} catch(e) {
+			this.oDbg.log("loadXML: "+e.toString(),1);
+		}
+	} else if (this.authtype == 'sasl') {
+		try {
+			var doc = XmlDocument.create();
+			doc.loadXML(this._req[0].responseText+'</stream:stream>');
+				
+			if (!this._doSASLAuth(doc))
+				return;
+		} catch(e) {
+			this.oDbg.log("loadXML: "+e.toString(),1);
+		}
+	} else {
+
+		// extract stream id used for non-SASL authentication
+		if (this._req[0].responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
 			this.streamid = RegExp.$1;
-	this.oDbg.log("got streamid: "+this.streamid,2);
+		this.oDbg.log("got streamid: "+this.streamid,2);
+		
+		if (this.register)
+			this._doReg();
+		else
+			this._doAuth();
+	}
 
 	this._connected = true;
-
-	this._process(); // start polling
-
-	if (this.register)
-		this._doReg();
-	else
-		this._doAuth();
+	this._process(this._timerval); // start polling
 }
 
 function JSJaCHPCDisconnect() {
@@ -175,13 +203,13 @@ function JSJaCHPCDisconnect() {
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 
-	this._req = this._setupRequest(false);
+	this._req[0] = this._setupRequest(false);
 	
 	if (JSJaC_HAVEKEYS)
-		this._req.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
+		this._req[0].send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
 	else
-		this._req.send(this._sid+",</stream:stream>");
-	this.oDbg.log("Disconnected: "+this._req.responseText,2);
+		this._req[0].send(this._sid+",</stream:stream>");
+	this.oDbg.log("Disconnected: "+this._req[0].responseText,2);
 	this._connected = false;
 	this.handleEvent('ondisconnect');
 }
