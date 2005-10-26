@@ -18,10 +18,10 @@ function JSJaCHttpBindingConnection(oArg) {
 			this.oDbg.log("Invalid timerval: " + timerval,1);
 			return -1;
 		}
-		if (!this.isPolling()) {
-			this._timerval = 1;
-			return -1;
-		}
+// 		if (!this.isPolling()) {
+// 			this._timerval = 1;
+// 			return -1;
+// 		}
 		if (this._min_polling && timerval < this._min_polling*1000)
 			this._timerval = this._min_polling*1000;
 		else if (this._inactivity && timerval > this._inactivity*1000)
@@ -31,6 +31,7 @@ function JSJaCHttpBindingConnection(oArg) {
 		return this._timerval;
 	};
 
+	this._checkQueue = JSJaCHBCCheckQueue;
 	this._getRequestString = JSJaCHBCGetRequestString;
 	this._getStreamID = JSJaCHBCGetStreamID;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
@@ -91,8 +92,10 @@ function JSJaCHBCPrepareResponse(req) {
 	/* handle error */
 	
 	if (req.status != 200) {
-		this.oDbg.log("invalid response:\n" + req.responseText,1);
+		this.oDbg.log("invalid response ("+req.status+"):\n" + req.getAllResponseHeaders()+"\n"+req.responseText,1);
 		clearTimeout(this._timeout); // remove timer
+		if (!this.isPolling())
+			clearInterval(this._interval);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -195,8 +198,7 @@ function JSJaCHBCConnect(oArg) {
 	this._connected = true;
 	oCon = this;
  	if (!this.isPolling())
- 		this._interval= setInterval("oCon._sendQueue()",1);
-
+ 		this._interval= setInterval("oCon._checkQueue()",1);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
@@ -232,12 +234,20 @@ function JSJaCHBCGetStreamID(slot) {
 	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
+function JSJaCHBCCheckQueue() {
+	if (this._pQueue.length != 0)
+		this._sendQueue();
+	return true;
+}
 
 function JSJaCHBCDisconnect() {
 	
 	if (!this.connected())
 		return;
-	
+
+	if (!this.isPolling())
+		clearInterval(this._interval);
+
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 	this._rid++;

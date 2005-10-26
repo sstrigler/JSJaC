@@ -372,8 +372,7 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 		}
 	}
 
-	if (this.isPolling())
-		this._sendQueue();
+	this._sendQueue();
 	return;
 }
 
