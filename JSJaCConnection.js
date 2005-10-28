@@ -60,7 +60,6 @@ function JSJaCConnection(oArg) {
 		return this._timerval;
 	};
 	this.setPollInterval(oArg.timerval);
-	this.syncSend = JSJaCSyncSend;
 
 	this._checkQueue = JSJaCHBCCheckQueue;
 
@@ -370,34 +369,6 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 	}
 
 	return;
-}
-
-function JSJaCSyncSend(aPacket) {
-	if (!aPacket)
-		return;
-
-	if (!this.connected()) {
-		this.oDbg.log("Connection lost ...",1);
-		return;
-	}
-
-	/* can't do synchronuous send on http binding as it 
-	 * would block until request timeouts 
-	 */
-	if (!this.isPolling()) {
-		this.oDbg.log("doing normal send");
-		this.send(aPacket);
-		return;
-	}
-
-	this.oDbg.log("sync send");
-		
-	var xmlhttp = this._setupRequest(false);
-
-	var reqstr = this._getRequestString(aPacket.xml());
-	this.oDbg.log("sending: " + reqstr,4);
-	xmlhttp.send(reqstr);
-	this._handleResponse(xmlhttp);
 }
 
 function JSJaCProcess(timerval) {
