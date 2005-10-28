@@ -31,7 +31,6 @@ function JSJaCHttpBindingConnection(oArg) {
 		return this._timerval;
 	};
 
-	this._checkQueue = JSJaCHBCCheckQueue;
 	this._getRequestString = JSJaCHBCGetRequestString;
 	this._getStreamID = JSJaCHBCGetStreamID;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
@@ -196,9 +195,9 @@ function JSJaCHBCConnect(oArg) {
 
 	/* start sending from queue for not polling connections */
 	this._connected = true;
+
 	oCon = this;
- 	if (!this.isPolling())
- 		this._interval= setInterval("oCon._checkQueue()",1);
+	this._interval= setInterval("oCon._checkQueue()",1);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
@@ -234,26 +233,23 @@ function JSJaCHBCGetStreamID(slot) {
 	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
-function JSJaCHBCCheckQueue() {
-	if (this._pQueue.length != 0)
-		this._sendQueue();
-	return true;
-}
-
 function JSJaCHBCDisconnect() {
 	
 	if (!this.connected())
 		return;
+
+	// make sure queue is empty
+	this._checkQueue();
 
 	if (!this.isPolling())
 		clearInterval(this._interval);
 
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
+
 	this._rid++;
 	
 	var xmlhttp = this._setupRequest(false);
-
 
 	var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this._sid+"' rid='"+this._rid+"'";
 	if (JSJaC_HAVEKEYS) {

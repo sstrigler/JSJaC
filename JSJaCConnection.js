@@ -62,6 +62,8 @@ function JSJaCConnection(oArg) {
 	this.setPollInterval(oArg.timerval);
 	this.syncSend = JSJaCSyncSend;
 
+	this._checkQueue = JSJaCHBCCheckQueue;
+
 	this._doReg = JSJaCReg;
 	this._doAuth = JSJaCAuth;
 	this._doAuth2 = JSJaCAuth2;
@@ -92,11 +94,7 @@ function JSJaCConnection(oArg) {
 		return false;
 	};
 	this._handleResponse = JSJaCHandleResponse;
-	this._process = function(timerval) {
-		if (timerval)
-			this.setPollInterval(timerval);
-		this.send();
-	};
+	this._process = JSJaCProcess;
 	this._registerPID = function(pID,cb,arg) {
 		if (!pID || !cb)
 			return false;
@@ -108,7 +106,6 @@ function JSJaCConnection(oArg) {
 		return true;
 	};
 	this._sendEmpty = JSJaCSendEmpty;
-	this._sendQueue = JSJaCSendQueue;
 	this._unregisterPID = function(pID) {
 		if (!this._regIDs[pID])
 			return false;
@@ -372,18 +369,47 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 		}
 	}
 
-	if (this.isPolling())
-		this._sendQueue();
 	return;
 }
 
-function JSJaCSendQueue() {
+function JSJaCSyncSend(aPacket) {
+	if (!aPacket)
+		return;
+
+	if (!this.connected()) {
+		this.oDbg.log("Connection lost ...",1);
+		return;
+	}
+
+	/* can't do synchronuous send on http binding as it 
+	 * would block until request timeouts 
+	 */
+	if (!this.isPolling()) {
+		this.oDbg.log("doing normal send");
+		this.send(aPacket);
+		return;
+	}
+
+	this.oDbg.log("sync send");
+		
+	var xmlhttp = this._setupRequest(false);
+
+	var reqstr = this._getRequestString(aPacket.xml());
+	this.oDbg.log("sending: " + reqstr,4);
+	xmlhttp.send(reqstr);
+	this._handleResponse(xmlhttp);
+}
+
+function JSJaCProcess(timerval) {
 	if (!this.connected()) {
 		this.oDbg.log("Connection lost ...",1);
 		if (this._interval)
 			clearInterval(this._interval);
 		return;
 	}
+
+	if (timerval)
+		this.setPollInterval(timerval);
 
 	if (this._timeout)
 		clearTimeout(this._timeout);
@@ -415,9 +441,9 @@ function JSJaCSendQueue() {
 			oCon.oDbg.log("async recv: "+oCon._req[slot].responseText,4);
 			oCon._handleResponse(oCon._req[slot]);
  			if (oCon._pQueue.length)
- 				oCon._sendQueue();
+ 				oCon._process();
 			else
-				oCon._timeout = setTimeout("oCon._sendQueue()",oCon.getPollInterval()); // schedule next tick
+				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
 
 		}
 	};
@@ -428,9 +454,9 @@ function JSJaCSendQueue() {
 				return;
 			oCon.oDbg.log('XmlHttpRequest error',1);
 			if (oCon._pQueue.length)
-				oCon._sendQueue();
+				oCon._process();
 			else
-				oCon._timeout = setTimeout("oCon._sendQueue()",oCon.getPollInterval()); // schedule next tick
+				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
 			return false;
 		};
 	}
@@ -446,31 +472,10 @@ function JSJaCSendQueue() {
 	this._req[slot].send(reqstr);
 }
 
-function JSJaCSyncSend(aPacket) {
-	if (!aPacket)
-		return;
-
-	if (!this.connected()) {
-		this.oDbg.log("Connection lost ...",1);
-		return;
-	}
-
-	this.oDbg.log("sync send");
-	
-	/* can't do synchronuous send on http binding as it 
-	 * would block until request timeouts 
-	 */
-	if (!this.isPolling()) {
-		this.send(aPacket);
-		return;
-	}
-	
-	var xmlhttp = this._setupRequest(false);
-
-	var reqstr = this._getRequestString(aPacket.xml());
-	this.oDbg.log("sending: " + reqstr,4);
-	xmlhttp.send(reqstr);
-	this._handleResponse(xmlhttp);
+function JSJaCHBCCheckQueue() {
+	if (this._pQueue.length != 0)
+		this._process();
+	return true;
 }
 
 /* ***
