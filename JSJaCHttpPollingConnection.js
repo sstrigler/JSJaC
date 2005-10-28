@@ -203,6 +203,8 @@ function JSJaCHPCDisconnect() {
 	if (!this.connected())
 		return;
 
+	this._checkQueue();
+
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 
