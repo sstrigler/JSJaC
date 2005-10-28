@@ -372,7 +372,8 @@ function JSJaCSend(aJSJaCPacket,cb,arg) {
 		}
 	}
 
-	this._sendQueue();
+	if (this.isPolling())
+		this._sendQueue();
 	return;
 }
 
@@ -416,7 +417,7 @@ function JSJaCSendQueue() {
  			if (oCon._pQueue.length)
  				oCon._sendQueue();
 			else
-				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
+				oCon._timeout = setTimeout("oCon._sendQueue()",oCon.getPollInterval()); // schedule next tick
 
 		}
 	};
@@ -429,7 +430,7 @@ function JSJaCSendQueue() {
 			if (oCon._pQueue.length)
 				oCon._sendQueue();
 			else
-				oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval()); // schedule next tick
+				oCon._timeout = setTimeout("oCon._sendQueue()",oCon.getPollInterval()); // schedule next tick
 			return false;
 		};
 	}
