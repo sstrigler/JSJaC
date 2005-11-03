@@ -144,7 +144,7 @@ function JSJaCHPCConnect(oArg) {
 	this.oDbg.log("got sid: "+this._sid,2);
 
 	oCon = this;
-	this._interval= setInterval("oCon._checkQueue()",1);
+	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth

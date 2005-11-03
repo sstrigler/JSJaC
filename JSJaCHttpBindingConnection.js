@@ -197,7 +197,7 @@ function JSJaCHBCConnect(oArg) {
 	this._connected = true;
 
 	oCon = this;
-	this._interval= setInterval("oCon._checkQueue()",1);
+	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth

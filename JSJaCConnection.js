@@ -1,6 +1,7 @@
 JSJaC_HAVEKEYS = true;  // whether to use keys
 JSJaC_NKEYS    = 64;    // number of keys to generate
 
+JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
 /* ******************************
  * JabberConnection 
  * somewhat abstract base class
