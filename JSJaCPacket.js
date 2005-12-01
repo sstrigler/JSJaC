@@ -58,7 +58,7 @@ function JSJaCPacket(name) {
 			this.getNode().setAttribute('xmlns',xmlns); 
 		return this; 
 	};
-
+	this.setXMLNS('jabber:client');
 	this.getTo = function() { return this.getNode().getAttribute('to'); }
 	this.getFrom = function() { return this.getNode().getAttribute('from'); }
 	this.getID = function() { return this.getNode().getAttribute('id'); }
