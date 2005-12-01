@@ -204,7 +204,19 @@ function JSJaCHBCConnect(oArg) {
 		this.oDbg.log("no body element or incorrect body in initial response",1);
 		this.handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
 		return;
-	}								 
+	}
+
+	// Check for errors from the server
+	if (body.getAttribute("type") == "terminate") {
+		this.oDbg.log("invalid response:\n" + this._req[slot].responseText,1);
+		clearTimeout(this._timeout); // remove timer
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		return;
+	}
+
 
 	// get session ID
 	this._sid = body.getAttribute('sid');
