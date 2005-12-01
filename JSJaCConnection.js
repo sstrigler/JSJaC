@@ -180,7 +180,7 @@ function JSJaCAuth2(iq) {
  * check if auth' was successful
  */
 function JSJaCAuth3(iq) {
-	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
+	if (iq.getType() != 'result') { // auth' failed
 		oCon.disconnect();
 		if (iq.getType() == 'error')
 			oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
@@ -463,15 +463,15 @@ function JSJaCSendEmpty() {
 }
 
 function JSJaCHandleResponse(req) {
-	var xmldoc = this._prepareResponse(req);
+	var rootEl = this._prepareResponse(req);
 
-	if (!xmldoc)
+	if (!rootEl)
 		return null;
 
-	this.oDbg.log("xmldoc.firstChild.childNodes.length: "+xmldoc.firstChild.childNodes.length,3);
-	for (var i=0; i<xmldoc.firstChild.childNodes.length; i++) {
-		this.oDbg.log("xmldoc.firstChild.childNodes.item("+i+").nodeName: "+xmldoc.firstChild.childNodes.item(i).nodeName,3);
-		var aJSJaCPacket = JSJaCPWrapNode(xmldoc.firstChild.childNodes.item(i));
+	this.oDbg.log("childNodes: "+rootEl.childNodes.length,3);
+	for (var i=0; i<rootEl.childNodes.length; i++) {
+		this.oDbg.log("rootEl.childNodes.item("+i+").nodeName: "+rootEl.childNodes.item(i).nodeName,3);
+		var aJSJaCPacket = JSJaCPWrapNode(rootEl.childNodes.item(i));
 		if (typeof(aJSJaCPacket.pType) == 'undefined') // didn't parse as proper XMPP packet
 			continue;
 		if (!this._handlePID(aJSJaCPacket))
