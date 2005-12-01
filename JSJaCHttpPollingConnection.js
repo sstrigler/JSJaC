@@ -97,7 +97,7 @@ function JSJaCHPCPrepareResponse(req) {
 
 	var response = XmlDocument.create();
 	response.loadXML("<body>"+req.responseText+"</body>");
-	return response;
+	return response.documentElement;
 }
 
 function JSJaCHPCConnect(oArg) {
@@ -109,6 +109,9 @@ function JSJaCHPCConnect(oArg) {
 	this.pass = oArg.pass;
 	this.register = oArg.register;
 	this.authtype = oArg.authtype || 'nonsasl';
+
+	this.jid = this.username + '@' + this.domain;
+	this.fulljid = this.jid + this.resource;
 
 	this.anonhost = oArg.anonhost;
 	if (this.anonhost)
