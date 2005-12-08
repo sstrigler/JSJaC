@@ -455,11 +455,31 @@ function JSJaCHBCCheckQueue() {
  * waiting for stream id to be able to proceed with authentication 
  */
 function JSJaCSendEmpty() {
-	oCon.req = oCon._setupRequest(false);
-	var reqstr = oCon._getRequestString();
-	oCon.oDbg.log("sending: " + reqstr,4);
-	oCon.req.send(reqstr);
-	oCon._getStreamID(); // handle response
+	var slot = this._getFreeSlot();
+	this._req[slot] = this._setupRequest(true);
+
+	oCon = this;
+	this._req[slot].onreadystatechange = function() {
+		if (typeof(oCon) == 'undefined' || !oCon)
+			return;
+		if (oCon._req[slot].readyState == 4) {
+			oCon.oDbg.log("async recv: "+oCon._req[slot].responseText,4);
+			oCon._getStreamID(slot); // handle response
+		}
+	}
+
+	if (typeof(this._req[slot].onerror) != 'undefined') {
+		this._req[slot].onerror = function(e) {
+			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+				return;
+			oCon.oDbg.log('XmlHttpRequest error',1);
+			return false;
+		};
+	}
+
+	var reqstr = this._getRequestString();
+	this.oDbg.log("sending: " + reqstr,4);
+	this._req[slot].send(reqstr);
 }
 
 function JSJaCHandleResponse(req) {
