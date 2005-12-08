@@ -313,18 +313,38 @@ function JSJaCHBCDisconnect() {
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
 
-	this._rid++;
-	
-	var xmlhttp = this._setupRequest(false);
+	var slot = this._getFreeSlot();
+	this._req[slot] = this._setupRequest(true);
 
+	oCon = this;
+	this._req[slot].onreadystatechange = function() {
+		if (typeof(oCon) == 'undefined' || !oCon)
+			return;
+		if (oCon._req[slot].readyState == 4) {
+			oCon.oDbg.log("Disconnected: "+oCon._req[slot].responseText,2);
+		}
+		oCon._connected = false;
+		oCon.handleEvent('ondisconnect');
+	}
+
+	if (typeof(this._req[slot].onerror) != 'undefined') {
+		this._req[slot].onerror = function(e) {
+			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+				return;
+			oCon.oDbg.log('XmlHttpRequest error',1);
+			oCon._connected = false;
+			oCon.handleEvent('ondisconnect');
+			return false;
+		};
+	}
+
+	this._rid++;
 	var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this._sid+"' rid='"+this._rid+"'";
 	if (JSJaC_HAVEKEYS) {
 		reqstr += " key='"+this._keys.getKey()+"'";
 	}
 	reqstr += "><presence type='unavailable' xmlns='jabber:client'/></body>";
-	xmlhttp.send(reqstr);
+	this.oDbg.log(reqstr,4);
 
-	this.oDbg.log("Disconnected: "+xmlhttp.responseText,2);
-	this._connected = false;
-	this.handleEvent('ondisconnect');
+	this._req[slot].send(reqstr);	
 }
