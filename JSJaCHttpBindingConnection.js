@@ -30,6 +30,7 @@ function JSJaCHttpBindingConnection(oArg) {
 
 	this._getRequestString = JSJaCHBCGetRequestString;
 	this._getStreamID = JSJaCHBCGetStreamID;
+	this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
 	this._setHold = function(hold)  {
 		if (!hold || isNaN(hold) || hold < 0)
@@ -187,10 +188,32 @@ function JSJaCHBCConnect(oArg) {
 	reqstr += "/>";
 
 	var slot = this._getFreeSlot();
-	this._req[slot] = this._setupRequest(false);
+	this._req[slot] = this._setupRequest(true);
 	this.oDbg.log(reqstr,4);
-	this._req[slot].send(reqstr);
 
+	oCon = this;
+	this._req[slot].onreadystatechange = function() {
+		if (typeof(oCon) == 'undefined' || !oCon)
+			return;
+		if (oCon._req[slot].readyState == 4) {
+			oCon.oDbg.log("async recv: "+oCon._req[slot].responseText,4);
+			oCon._handleInitialResponse(slot); // handle response
+		}
+	}
+
+	if (typeof(this._req[slot].onerror) != 'undefined') {
+		this._req[slot].onerror = function(e) {
+			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+				return;
+			oCon.oDbg.log('XmlHttpRequest error',1);
+			return false;
+		};
+	}
+
+	this._req[slot].send(reqstr);
+}
+
+function JSJaCHBCHandleInitialResponse(slot) {
 	this.oDbg.log(this._req[slot].getAllResponseHeaders(),4);
 	this.oDbg.log(this._req[slot].responseText,4);
 
