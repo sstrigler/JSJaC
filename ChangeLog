@@ -1,3 +1,14 @@
+JSJaC v0.5
+==========
+	* lots of bug fixes and minor improvements
+	* make use of asynchronous request wherever possible
+	* fixed simpleclient
+	* fixed API docs
+
+JSJaC v0.4
+==========
+	* must have missed that - sorry
+
 JSJaC v0.3.x
 ============
 * Initial support for http binding (in polling mode though)
