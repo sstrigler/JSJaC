@@ -15,10 +15,11 @@ This is a somewhat abstract base class. You can't instantiate objects
 from it but it provides functionality common to all specific backends
 like JSJaCHttpPollingConnection.
 
-constructor: JSJaCConnection(Debugger: oDbg)
+constructor: JSJaCConnection(oArgs[JSON notation!])
 
-	PARAMS: oDbg - typeof Debugger (optional - may be null)
-
+	PARAMS: httpbase - http base address of service to be used
+          timerval - initial poll interval in msec
+          oDbg     - typeof Debugger (optional)
 
 boolean: connected()
 	checks if connection is connected
@@ -67,22 +68,58 @@ constructor: JSJaCHttpPollingConnection(Debugger:oDbg)
 	see JSJaCConnection
 
 
-void: connect(string: http_base, 
-              string: jabber_server, 
-              string: username, 
-              string: resource, 
-              string: password,
-              int: timeout_msec,
-              boolean: register)
+void: connect(oArgs)
 
-	PARAMS: http_base - base address to communicate with http polling 
-	                    component
-	        jabber_server - the jabber server to use for authentication
-	        username
-	        resource
-	        password
-	        timout_msec - polling interval given in msec
-	        register - whether to register as new account
+	oArgs := string: domain,     # jabber domain
+           string: username,   # jabber username
+           string: resource,   # resource
+           string: pass,       # password
+
+           boolean: register,  # whether to register a new account
+                               # (using in-band registration of available) 
+                               # [optional]
+
+           string: authtype,   # one of 'sasl' (not implemented), 
+                               # 'saslanon' and 'nonsasl' 
+                               # [optional, default: nonasl]
+
+           string: anonhost    # hostname of sasl anonymous service 
+                               # automagically sets authtype to saslanon
+                               # [optional]
+
+void: disconnect()
+	disconnects from server
+
+JSJaCHttpBindingConnection
+==========================
+Implements communication with an HTTP Binding Service (aka Connection Manager).
+
+constructor: JSJaCHttpBindingConnection(oArgs[JSON notation!])
+	see JSJaCConnection
+
+void: connect(oArgs[JSON notation])
+	oArgs := string: domain,     # jabber domain
+           string: username,   # jabber username
+           string: resource,   # resource
+           string: pass,       # password
+
+           boolean: register,  # whether to register a new account
+                               # (using in-band registration of available) 
+                               # [optional, default: false]
+
+           string: host,       # connect host [optional, default: domain]
+
+           int: port,          # port of connect host 
+                               # [optional, default: 5222]
+
+           boolean: secure,    # whether to indicate that SSL should be 
+                               # used to connect to remote host 
+                               # [optional, default: false]
+
+           int: wait           # time in seconds the connection manager 
+                               # is allowed to hold an idle request 
+                               # [optional, default: 300]
+
 
 void: disconnect()
 	disconnects from server
