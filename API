@@ -1,4 +1,13 @@
 
+
+[[ IMPORTANT NOTE: ]]
+
+This API documentation is broken at the moment,
+arguments for constructors of JSJaCHttpPollingConnection and (which is
+completely undocumented so far) JSJaCHttpBindingConnection and their
+accompanying connect methods have changed.
+
+
 JSJaCConnection
 ===============
 
