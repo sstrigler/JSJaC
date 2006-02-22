@@ -1,5 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>JSJaC Simple Client</title>
     <script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
@@ -8,6 +9,14 @@
     <script language="JavaScript" type="text/javascript" src="../JSJaCPacket.js"></script>
     <script language="JavaScript" type="text/javascript" src="../JSJaCHttpPollingConnection.js"></script>
     <script language="JavaScript" type="text/javascript" src="../JSJaCHttpBindingConnection.js"></script>
+
+ <!--  
+	if you want to enable debugging uncomment line below
+	debugger available at http://zeank.in-berlin.de/  
+	 -->
+  <!--  <script language="JavaScript" type="text/javascript" src="Debugger.js"></script> -->
+
+
     <script language="JavaScript" type="text/javascript">
       <!--
 function htmlEnc(str) {
@@ -17,17 +26,19 @@ function htmlEnc(str) {
   str = str.replace(/&/g,"&amp;");
   str = str.replace(/</g,"&lt;");
   str = str.replace(/>/g,"&gt;");
+  str = str.replace(/\"/g,"&quot;");
+	str = str.replace(/\n/g,"<br />");
   return str;
 }
 
 function handleEvent(aJSJaCPacket) {
-	document.getElementById('iResp').innerHTML += htmlEnc(aJSJaCPacket.xml()) + '<hr>';
+	document.getElementById('iResp').innerHTML += "IN (raw):<br/>" +htmlEnc(aJSJaCPacket.xml()) + '<hr noshade size="1"/>';
 }
 
 function handleMessage(aJSJaCPacket) {
 	var html = '';
-	html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br>';
-	html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size=1>';
+	html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
+	html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
 	document.getElementById('iResp').innerHTML += html;
 }
 
@@ -57,23 +68,46 @@ function handleConnected() {
 }
 
 
-function handleError(errPacket) {
-	document.getElementById('login_err').innerHTML = "Couldn't connect. Please try again...";
+function handleError(e) {
+	document.getElementById('login_err').innerHTML = "Couldn't connect. Please try again...<br />"+ 
+		htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+"\nCondition: "+e.firstChild.nodeName); 
 }
 
 function doLogin(aForm) {
-//	con = new JSJaCHttpBindingConnection();
-	con = new JSJaCHttpPollingConnection();
 
-	con.registerHandler('message',handleMessage);
-	con.registerHandler('presence',handlePresence);
-	con.registerHandler('iq',handleEvent);
-	con.registerHandler('onconnect',handleConnected);
-	con.registerHandler('onerror',handleError);
+	try {
 
-	con.connect(aForm.http_base.value,aForm.server.value,aForm.username.value,'test',aForm.password.value,2000,0);
+		// setup args for contructor
+		oArgs = new Object();
+		oArgs.httpbase = aForm.http_base.value;
+		oArgs.timerval = 2000;
 
-	return false;
+		if (typeof(oDbg) != 'undefined')
+			oArgs.oDbg = oDbg;
+
+		if (aForm.backend[0].checked)
+			con = new JSJaCHttpBindingConnection(oArgs);
+		else
+			con = new JSJaCHttpPollingConnection(oArgs);
+
+		con.registerHandler('message',handleMessage);
+		con.registerHandler('presence',handlePresence);
+		con.registerHandler('iq',handleEvent);
+		con.registerHandler('onconnect',handleConnected);
+		con.registerHandler('onerror',handleError);
+
+		// setup args for connect method
+		oArgs = new Object();
+		oArgs.domain = aForm.server.value;
+		oArgs.username = aForm.username.value;
+		oArgs.resource = 'jsjac_simpleclient';
+		oArgs.pass = aForm.password.value;
+		con.connect(oArgs);
+	} catch (e) {
+		document.getElementById('login_err').innerHTML = e.toString();
+	} finally {
+		return false;
+	}
 }
 
 function sendMsg(aForm) {
@@ -87,12 +121,20 @@ function sendMsg(aForm) {
 	return false;
 }
 
+function init() {
+	if (typeof(Debugger) == 'function') {
+		oDbg = new Debugger(4,'simpleclient');
+		oDbg.start();
+	}
+}
+onload = init;
+
 onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.disconnect(); };
 
 			//-->
 		</script>
 		<style type="text/css">
-			<!--
+/*<![CDATA[*/
 			body {
 			font-family: "Bitstream Vera Sans", sans;
 			font-size: 0.8em;
@@ -130,7 +172,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
 			.spaced {
 			margin-bottom: 4px;
 			}
-			//-->
+/*]]>*/
 		</style>
   </head>
 
@@ -142,11 +184,12 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
 			<div id="login_err"></div>
 			<form name="loginForm" onSubmit="return doLogin(this);">
 				<table>
-						<tr><th>HTTP Base</th><td><input type="text" name="http_base"></td></tr>
-						<tr><th>Jabber Server</th><td><input type="text" name="server"></td></tr>
-						<tr><th>Username</th><td><input type="text" name="username"></td></tr>
-						<tr><th>Password</th><td><input type="password" name="password"></td></tr>
-						<tr><td>&nbsp;</td><td><input type="submit" value="Login"></td></tr>
+						<tr><th>Backend Type</th><td><input type="radio" name="backend" value="binding" id="backend1" tabindex="1"/> <label for="backend1">HTTP Binding</label><br /> <input type="radio" name="backend" value="polling" id="backend2" tabindex="2"/> <label for="backend2">HTTP Polling</label></td></tr>
+						<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3"></td></tr>
+						<tr><th><label for="server">Jabber Server</label></th><td><input type="text" name="server" id="server" tabindex="4"></td></tr>
+						<tr><th><label for="username">Username</label></th><td><input type="text" name="username" id="username" tabindex="5"></td></tr>
+						<tr><th><label for="password">Password</label></th><td><input type="password" name="password" id="password" tabindex="6"></td></tr>
+						<tr><td>&nbsp;</td><td><input type="submit" value="Login" tabindex="7"></td></tr>
 				</table>
 			</form>
 		</div>
@@ -165,7 +208,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Tue May  3 16:54:51 CEST 2005
+Last modified: Wed Feb 22 19:27:50 CET 2006
 <!-- hhmts end -->
   </body>
 </html>
