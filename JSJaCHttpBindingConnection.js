@@ -214,8 +214,13 @@ function JSJaCHBCConnect(oArg) {
 }
 
 function JSJaCHBCHandleInitialResponse(slot) {
-	this.oDbg.log(this._req[slot].getAllResponseHeaders(),4);
-	this.oDbg.log(this._req[slot].responseText,4);
+	try {
+		// This will throw an error on Mozilla when the connection was refused
+		this.oDbg.log(this._req[slot].getAllResponseHeaders(),4);
+		this.oDbg.log(this._req[slot].responseText,4);
+	} catch(ex) {
+		this.oDbg.log("No response",4);
+	}
 
 	if (!this._req[slot].responseXML) {
 		this.oDbg.log("initial response broken",1);
@@ -311,6 +316,7 @@ function JSJaCHBCDisconnect() {
 		clearTimeout(this._timeout); // remove timer
 
 	var slot = this._getFreeSlot();
+	// Intentionally synchronous
 	this._req[slot] = this._setupRequest(false);
 
 	this._rid++;
@@ -327,9 +333,12 @@ function JSJaCHBCDisconnect() {
 	}
 
 	reqstr += "<presence type='unavailable' xmlns='jabber:client'/></body>";
-	this.oDbg.log(reqstr,4);
 
+	// Wait for response (for a limited time, 5s)
+	var abortTimerID = setTimeout("this._req[slot].abort();", 5000);
+	this.oDbg.log("Disconnecting: " + reqstr,4);
 	this._req[slot].send(reqstr);	
+	clearTimeout(abortTimerID);
 
 	oCon.oDbg.log("Disconnected: "+oCon._req[slot].responseText,2);
 	oCon._connected = false;
