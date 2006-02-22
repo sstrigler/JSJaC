@@ -4,7 +4,7 @@ JSJaC - JavaScript Jabber Client Library
 JSJaC is a jabber client library written in JavaScript to ease
 implementation of web based jabber clients. For communication with a
 jabber server it needs to support either [1]HTTP Polling or [2]HTTP
-Binding. JSJaC has an object oriented design which should be quite
+Binding. JSJaC has an object oriented interface which should be quite
 easy to use. Communication is done by using the HTTPRequest
 object also refered to as AJAX technology. Your browser must support 
 this.
@@ -28,12 +28,12 @@ the following javascript files:
 * JSJaCPacket.js
 * JSJaCHTTPPollingConnection.js
 
-Due to security restrictions you will have to enable mod_proxy and
-mod_rewrite for apache web server and add a RewriteRule for the domain
-which serves your web application so that request on a certain base
-address (which can be chosen by yourself) are redirect by use of
-apaches built in proxy module to the http base address of the jabber
-servers http polling or binding adresse. E.g.:
+Due to security restrictions you will have to proxy requests like
+mod_proxy and mod_rewrite for apache web servers can do and add a
+RewriteRule for the domain which serves your web application so that
+request on a certain base address (which can be chosen by yourself)
+are redirect by use of apaches built in proxy module to the http base
+address of the jabber servers http polling or binding adresse. E.g.:
 
 %<---
 <VirtualHost *>
