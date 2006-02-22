@@ -173,6 +173,9 @@ function JSJaCHBCConnect(oArg) {
 	this.jid = this.username + '@' + this.domain;
 	this.fulljid = this.jid + this.resource;
 
+	if (oArg.wait)
+		this._wait = oArg.wait;
+
 	this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 
 	var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.domain+"' wait='"+this._wait+"' rid='"+this._rid+"'";
