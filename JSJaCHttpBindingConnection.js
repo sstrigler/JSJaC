@@ -104,7 +104,7 @@ function JSJaCHBCPrepareResponse(req) {
 	} 
 
 	var body = req.responseXML.documentElement;
-	if (!body || body.tagName != 'body' || body.getAttribute('xmlns') != 'http://jabber.org/protocol/httpbind') {
+	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("invalid response:\n" + req.responseText,1);
 		clearTimeout(this._timeout); // remove timer
 		this._connected = false;
@@ -176,6 +176,9 @@ function JSJaCHBCConnect(oArg) {
 	if (oArg.wait)
 		this._wait = oArg.wait;
 
+	if (oArg.xmllang && oArg.xmllang != '')
+		this._xmllang = oArg.xmllang;
+
 	this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 
 	var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.domain+"' wait='"+this._wait+"' rid='"+this._rid+"'";
@@ -188,6 +191,8 @@ function JSJaCHBCConnect(oArg) {
 		key = this._keys.getKey();
 		reqstr += " newkey='"+key+"'";
 	}
+	if (this._xmllang)
+		reqstr += " xml:lang='"+this._xmllang + "'";
 	reqstr += "/>";
 
 	var slot = this._getFreeSlot();
@@ -231,7 +236,7 @@ function JSJaCHBCHandleInitialResponse(slot) {
 		return;
 	}
 	var body = this._req[slot].responseXML.documentElement;
-	if (!body || body.tagName != 'body' || body.getAttribute('xmlns') != 'http://jabber.org/protocol/httpbind') {
+	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("no body element or incorrect body in initial response",1);
 		this.handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
 		return;
