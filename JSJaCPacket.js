@@ -14,7 +14,7 @@ function JSJaCPacket(name) {
 	this.pType = function() { return this.name; };
 
 	this.getDoc = function() { return this.doc; };
-	this.getNode = function() {	return this.getDoc().firstChild; };
+	this.getNode = function() {	return this.getDoc().documentElement; };
 
 	this.setTo = function(to) { 
 		if (!to || to == '')
