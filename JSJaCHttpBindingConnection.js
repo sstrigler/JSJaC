@@ -141,6 +141,8 @@ function JSJaCHBCInherit(oArg) {
 	this._inactivity = oArg.inactivity;
 	this._setHold(oArg.requests-1);
 	this.setPollInterval(this._timerval);
+	if (oArg.wait)
+		this._wait = oArg.wait; // for whatever reason
 
 	this._connected = true;
 
