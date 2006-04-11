@@ -16,24 +16,15 @@ JSJaC is licensed under the terms of the GNU Lesser General Public
 License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
-Usage
-=====
-
-In order to use JSJaC within your web application you have to include
-the following javascript files:
-
-* sha1.js
-* xmlextras.js
-* JSJaCConnection.js
-* JSJaCPacket.js
-* JSJaCHTTPPollingConnection.js
+Hints on Usage
+==============
 
 Due to security restrictions you will have to proxy requests like
 mod_proxy and mod_rewrite for apache web servers can do and add a
 RewriteRule for the domain which serves your web application so that
 request on a certain base address (which can be chosen by yourself)
-are redirect by use of apaches built in proxy module to the http base
-address of the jabber servers http polling or binding adresse. E.g.:
+are redirect by use of apache's built in proxy module to the http base
+address of the HTTP Polling or HTTP Binding service. E.g.:
 
 %<---
 <VirtualHost *>
@@ -45,38 +36,10 @@ address of the jabber servers http polling or binding adresse. E.g.:
 </VirtualHost>
 %<---
 
-Now start using it by:
-
-%<-----
-var oDbg = new Debugger();
-var oCon = new JabberHTTPPollingConnection(oDbg);
-
-oCon.connect("http://jabber.mydomain.com/http-poll/","jabber.mydomain.com","test","web","secret"); // login in user with name "test", resource "web" and password "secret"
-
-if (oCon.connected())
-  oDbg.log("Connected");
-else {
-  oDbg.log("Connection failed");
-  return;
-}
-
-/* register handlers */
-oCon.registerHandler("message",handleMessage);
-oCon.registerHandler("presence",handlePresence);
-oCon.registerHandler("iq",handleIQ);
-
-/* send presence */
-oCon.send(new JSJaCPresence());
-
-/* start handling incoming packets */
-oCon.process(2000); // poll every 2 seconds
-%<----
+For an example on how to use this library within your web application
+please have to look at 'examples/simpleclient.html'.
 
 Note: JSJaCConnection supports use of [3]Debugger which is available separately.
-
-For a more detailed example how to use this lib please have a look at
-the examples subdirectory.
-
 
 Supported Browsers and Platforms
 ================================
@@ -100,3 +63,4 @@ Macintosh
 
 [1] http://www.jabber.org/jeps/jep-0025.html
 [2] http://www.jabber.org/jeps/jep-0124.html
+[3] http://zeank.in-berlin.de/javascript-debug-logger/

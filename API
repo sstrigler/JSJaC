@@ -1,25 +1,10 @@
 
-
-[[ IMPORTANT NOTE: ]]
-
-This API documentation is broken at the moment,
-arguments for constructors of JSJaCHttpPollingConnection and (which is
-completely undocumented so far) JSJaCHttpBindingConnection and their
-accompanying connect methods have changed.
-
-
-JSJaCConnection
+JSJaCConnection (abstract)
 ===============
 
 This is a somewhat abstract base class. You can't instantiate objects
 from it but it provides functionality common to all specific backends
 like JSJaCHttpPollingConnection.
-
-constructor: JSJaCConnection(oArgs[JSON notation!])
-
-	PARAMS: httpbase - http base address of service to be used
-          timerval - initial poll interval in msec
-          oDbg     - typeof Debugger (optional)
 
 boolean: connected()
 	checks if connection is connected
@@ -64,11 +49,13 @@ JSJaCHttpPollingConnection
 ==========================
 Implements communication with an HTTP Polling Component.
 
-constructor: JSJaCHttpPollingConnection(Debugger:oDbg)
-	see JSJaCConnection
+constructor: JSJaCHttpPollingConnection(oArgs[JSON notation!])
 
+	oArgs:= string: httpbase,    # http base address of service to be used
+          int:    timerval,     # initial poll interval in msec
+          object: oDbg         # typeof Debugger (optional)
 
-void: connect(oArgs)
+void: connect(oArgs[JSON notation!])
 
 	oArgs := string: domain,     # jabber domain
            string: username,   # jabber username
@@ -95,9 +82,13 @@ JSJaCHttpBindingConnection
 Implements communication with an HTTP Binding Service (aka Connection Manager).
 
 constructor: JSJaCHttpBindingConnection(oArgs[JSON notation!])
-	see JSJaCConnection
+
+	oArgs:= string: httpbase,    # http base address of service to be used
+          int:    timerval,     # initial poll interval in msec
+          object: oDbg         # typeof Debugger (optional)
 
 void: connect(oArgs[JSON notation])
+
 	oArgs := string: domain,     # jabber domain
            string: username,   # jabber username
            string: resource,   # resource
