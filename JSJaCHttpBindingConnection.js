@@ -232,12 +232,13 @@ function JSJaCHBCHandleInitialResponse(slot) {
 		this.oDbg.log("No response",4);
 	}
 
-	if (!this._req[slot].responseXML) {
-		this.oDbg.log("initial response broken",1);
+	if (this._req[slot].status != 200 || !this._req[slot].responseXML) {
+		this.oDbg.log("initial response broken (status: "+this._req[slot].status+")",1);
 		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return;
 	}
 	var body = this._req[slot].responseXML.documentElement;
+
 	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("no body element or incorrect body in initial response",1);
 		this.handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
