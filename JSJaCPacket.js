@@ -49,23 +49,22 @@ function JSJaCPacket(name) {
 			this.getNode().setAttribute('xml:lang',xmllang);
 		return this;
 	};
-	this.setXMLNS = function(xmlns) {
-		if (!xmlns || xmlns == '')
-			this.getNode().removeAttribute('xmlns');
-		else
-			this.getNode().setAttribute('xmlns',xmlns); 
-		return this; 
-	};
 
 	this.getTo = function() { return this.getNode().getAttribute('to'); }
 	this.getFrom = function() { return this.getNode().getAttribute('from'); }
 	this.getID = function() { return this.getNode().getAttribute('id'); }
 	this.getType = function() { return this.getNode().getAttribute('type'); }
 	this.getXMLLang = function() { return this.getNode().getAttribute('xml:lang'); };
-	this.getXMLNS = function() { return this.getNode().getAttribute('xmlns',xmlns); };
+	this.getXMLNS = function() { return this.getNode().namespaceURI; };
 
 	this.xml = function() { 
-		return this.getDoc().xml ? this.getDoc().xml : (new XMLSerializer()).serializeToString(this.doc); 
+		if (this.getDoc().xml)
+			return this.getDoc().xml;
+		var xml = (new XMLSerializer()).serializeToString(this.getNode()); // opera needs the node
+		if (typeof(xml) != 'undefined') 
+			return xml;
+		return (new XMLSerializer()).serializeToString(this.doc); // oldschool
+
 	};
 
 	this._childElVal = function(nodeName) {
@@ -101,8 +100,6 @@ function JSJaCPacket(name) {
 function JSJaCPresence() {
 	this.base = JSJaCPacket;
 	this.base('presence');
-
-	//	this.setXMLNS('jabber:client');
 
 	this.setStatus = function(status) {
 		this.getNode().appendChild(this.getDoc().createElement('status')).appendChild(this.getDoc().createTextNode(status));
@@ -147,8 +144,16 @@ function JSJaCIQ() {
 		return this; 
 	};
 	this.setQuery = function(xmlns) {
-		query = this.getNode().appendChild(this.getDoc().createElement('query'));
-		query.setAttribute('xmlns',xmlns);
+		var query;
+ 		try {
+ 			query = this.getDoc().createElementNS(xmlns,'query');
+ 		} catch (e) {
+			// fallback
+			query = this.getDoc().createElement('query');
+		}
+		if (query && query.getAttribute('xmlns') != xmlns) // fix opera 8.5x
+			query.setAttribute('xmlns',xmlns);
+		this.getNode().appendChild(query);
 		return query;
 	};
 
@@ -157,7 +162,7 @@ function JSJaCIQ() {
 	};
 	this.getQueryXMLNS = function() {
 		if (this.getQuery())
-			return this.getQuery().getAttribute('xmlns');
+			return this.getQuery().namespaceURI;
 		else
 			return null;
 	};
@@ -166,8 +171,6 @@ function JSJaCIQ() {
 function JSJaCMessage() {
 	this.base = JSJaCPacket;
 	this.base('message');
-
-	//	this.setXMLNS('jabber:client');
 
 	this.setBody = function(body) {
 		var aNode = this.getNode().appendChild(this.getDoc().createElement('body'));

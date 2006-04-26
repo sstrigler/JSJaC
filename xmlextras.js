@@ -92,8 +92,11 @@ XmlDocument.create = function (name,ns) {
 			var doc = document.implementation.createDocument(ns, name, null);
 
 			if (doc.documentElement == null)
-				doc.appendChild(doc.createElement(name)).setAttribute("xmlns",ns);
-			
+					doc.appendChild(doc.createElement(name));
+
+			if (doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
+				doc.documentElement.setAttribute('xmlns',ns);
+
 			// some versions of Moz do not support the readyState property
 			// and the onreadystate event so we patch it!
 			if (doc.readyState == null) {
@@ -108,7 +111,7 @@ XmlDocument.create = function (name,ns) {
 		}
 		if (window.ActiveXObject) {
 			var doc = new ActiveXObject(getDomDocumentPrefix() + ".DomDocument");
-			doc.appendChild(doc.createElement(name)).setAttribute("xmlns",ns);
+			doc.appendChild(doc.createElement(name)).setAttribute('xmlns',ns);
 			return doc;
 		}
 	}
