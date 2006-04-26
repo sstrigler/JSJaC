@@ -14,7 +14,7 @@
 	if you want to enable debugging uncomment line below
 	debugger available at http://zeank.in-berlin.de/  
 	 -->
-  <!--  <script language="JavaScript" type="text/javascript" src="Debugger.js"></script> -->
+<!--		<script language="JavaScript" type="text/javascript" src="Debugger.js"></script> -->
 
 
     <script language="JavaScript" type="text/javascript">
@@ -63,13 +63,14 @@ function handlePresence(aJSJaCPacket) {
 function handleConnected() {
 	document.getElementById('login_pane').style.display = 'none';
 	document.getElementById('sendmsg_pane').style.display = '';
-		
+	document.getElementById('err').innerHTML = '';
+
 	con.send(new JSJaCPresence());
 }
 
 
 function handleError(e) {
-	document.getElementById('login_err').innerHTML = "Couldn't connect. Please try again...<br />"+ 
+	document.getElementById('err').innerHTML = "Couldn't connect. Please try again...<br />"+ 
 		htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+"\nCondition: "+e.firstChild.nodeName); 
 }
 
@@ -104,13 +105,19 @@ function doLogin(aForm) {
 		oArgs.pass = aForm.password.value;
 		con.connect(oArgs);
 	} catch (e) {
-		document.getElementById('login_err').innerHTML = e.toString();
+		document.getElementById('err').innerHTML = e.toString();
 	} finally {
 		return false;
 	}
 }
 
 function sendMsg(aForm) {
+	if (aForm.msg.value == '')
+		return;
+
+	if (aForm.sendTo.value.indexOf('@') == -1)
+		aForm.sendTo.value += '@' + con.domain;
+
 	var aMsg = new JSJaCMessage();
 	aMsg.setTo(aForm.sendTo.value);
 	aMsg.setBody(aForm.msg.value);
@@ -129,6 +136,7 @@ function init() {
 }
 onload = init;
 
+onerror = function(e) { document.getElementById('err').innerHTML = e; return false; };
 onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.disconnect(); };
 
 			//-->
@@ -179,10 +187,11 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
   <body>
     <h1>JSJaC Simple Client</h1>
 
+		<div id="err"></div>
+
 		<div id="login_pane">
 			<h2>Login</h2>
-			<div id="login_err"></div>
-			<form name="loginForm" onSubmit="return doLogin(this);">
+			<form name="loginForm" onSubmit="return doLogin(this);" action="#">
 				<table>
 						<tr><th>Backend Type</th><td><input type="radio" name="backend" value="binding" id="backend1" tabindex="1"/> <label for="backend1">HTTP Binding</label><br /> <input type="radio" name="backend" value="polling" id="backend2" tabindex="2"/> <label for="backend2">HTTP Polling</label></td></tr>
 						<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3"></td></tr>
@@ -198,17 +207,18 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
 			<h2>Incoming:</h2>
 			<div name="iResp" id="iResp"></div>
 			<h2>Send Message</h2>
-			<form name="sendForm" onSubmit="return sendMsg(this);">
-				<div class="spaced"><b>To:</b> <input type="text" name="sendTo"></div>
-				<div class="spaced"><textarea name="msg" id='msgArea' rows=3 cols=80></textarea></div>
-				<div class="spaced"><input type="submit" value="Send"></div>
+			<form name="sendForm" onSubmit="return sendMsg(this);" action="#">
+				<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>
+				<div class="spaced"><textarea name="msg" id='msgArea' rows="3" cols="80" tabindex="2"></textarea></div>
+				<div class="spaced"><input type="submit" value="Send" tabindex="3"></div>
+			</form>
 		</div>
 
     <hr>
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Wed Feb 22 19:27:50 CET 2006
+Last modified: Wed Apr 26 15:16:38 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>
