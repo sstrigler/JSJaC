@@ -134,12 +134,10 @@ function JSJaCAuth(iq) {
 	/* ***
 	 * Non-SASL Authentication as described in JEP-0078
 	 */
-
 	if (iq && iq.getType() == 'error') { // we failed to register
 		oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
 		return;
 	}
-
 	var iq = new JSJaCIQ();
 	iq.setIQ(oCon.server,null,'get','auth1');
 	var query = iq.setQuery('jabber:iq:auth');

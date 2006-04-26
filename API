@@ -84,7 +84,7 @@ Implements communication with an HTTP Binding Service (aka Connection Manager).
 constructor: JSJaCHttpBindingConnection(oArgs[JSON notation!])
 
 	oArgs:= string: httpbase,    # http base address of service to be used
-          int:    timerval,     # initial poll interval in msec
+          int:    timerval,    # initial poll interval in msec
           object: oDbg         # typeof Debugger (optional)
 
 void: connect(oArgs[JSON notation])
