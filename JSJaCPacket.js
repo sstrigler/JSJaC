@@ -7,9 +7,7 @@ function JSJaCPacket(name) {
 	 * nodes as they may not be altered afterwards 
 	 */
 
-	this.doc = XmlDocument.create();
-
-	this.doc.appendChild(this.doc.createElement(name));
+	this.doc = XmlDocument.create(name,"jabber:client");
 
 	this.pType = function() { return this.name; };
 
@@ -58,7 +56,7 @@ function JSJaCPacket(name) {
 			this.getNode().setAttribute('xmlns',xmlns); 
 		return this; 
 	};
-	this.setXMLNS('jabber:client');
+
 	this.getTo = function() { return this.getNode().getAttribute('to'); }
 	this.getFrom = function() { return this.getNode().getAttribute('from'); }
 	this.getID = function() { return this.getNode().getAttribute('id'); }
@@ -83,12 +81,18 @@ function JSJaCPacket(name) {
 	}
 
 	this._replaceNode = function(aNode) {
-		/* hot-fix for safari
-		 * don't ask - just shake heads
-		 */
-		if (this.getDoc().importNode)
-			this.getDoc().importNode(aNode,true);
-		return this.getDoc().replaceChild(aNode.cloneNode(true),this.getNode()); 
+		// copy attribs
+		for (var i=0; i<aNode.attributes.length; i++)
+			if (aNode.attributes.item(i).nodeName != 'xmlns')
+				this.getNode().setAttribute(aNode.attributes.item(i).nodeName,aNode.attributes.item(i).nodeValue);
+
+		// copy children
+		for (var i=0; i<aNode.childNodes.length; i++)
+			if (this.getDoc().importNode)
+				this.getNode().appendChild(this.getDoc().importNode(aNode.childNodes.item(i),true));
+			else
+				this.getNode().appendChild(aNode.childNodes.item(i).cloneNode(true));
+				
 	};
 
 	this.clone = function() { return JSJaCPWrapNode(this.getNode()); }
