@@ -121,7 +121,7 @@ XmlDocument.create = function (name,ns) {
 
 		return doc;
 	}
-	catch (ex) { alert(ex.toString()); }
+	catch (ex) { }
 	throw new Error("Your browser does not support XmlDocument objects");
 };
 
