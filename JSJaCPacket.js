@@ -1,12 +1,6 @@
 function JSJaCPacket(name) {
 	this.name = name;
 
-	/* [TODO]
-	 * For W3C Dom Level 3 compliant browsers we need to have an
-	 * XmlDocument.create that allows creating appropriate top-level
-	 * nodes as they may not be altered afterwards 
-	 */
-
 	this.doc = XmlDocument.create(name,"jabber:client");
 
 	this.pType = function() { return this.name; };
