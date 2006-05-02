@@ -91,7 +91,6 @@ XmlDocument.create = function (name,ns) {
 		// DOM2
 		if (document.implementation && document.implementation.createDocument) {
 			doc = document.implementation.createDocument("", "", null);
-
 			// some versions of Moz do not support the readyState property
 			// and the onreadystate event so we patch it!
 			if (doc.readyState == null) {
