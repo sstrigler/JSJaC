@@ -87,15 +87,10 @@ XmlDocument.create = function (name,ns) {
 	name = name || "";
 	ns = ns || "";
 	try {
+		var doc;
 		// DOM2
 		if (document.implementation && document.implementation.createDocument) {
-			var doc = document.implementation.createDocument(ns, name, null);
-
-			if (doc.documentElement == null)
-					doc.appendChild(doc.createElement(name));
-
-			if (doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
-				doc.documentElement.setAttribute('xmlns',ns);
+			doc = document.implementation.createDocument("", "", null);
 
 			// some versions of Moz do not support the readyState property
 			// and the onreadystate event so we patch it!
@@ -107,15 +102,26 @@ XmlDocument.create = function (name,ns) {
 						doc.onreadystatechange();
 				}, false);
 			}
-			return doc;
 		}
-		if (window.ActiveXObject) {
-			var doc = new ActiveXObject(getDomDocumentPrefix() + ".DomDocument");
+		if (window.ActiveXObject)
+			doc = new ActiveXObject(getDomDocumentPrefix() + ".DomDocument");
+
+		try { 
 			doc.appendChild(doc.createElement(name)).setAttribute('xmlns',ns);
-			return doc;
+		} catch (dex) { 
+
+			doc = document.implementation.createDocument(ns,name,null);
+			
+			if (doc.documentElement == null)
+				doc.appendChild(doc.createElement(name));
+
+			if (doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
+				doc.documentElement.setAttribute('xmlns',ns);
 		}
+
+		return doc;
 	}
-	catch (ex) { }
+	catch (ex) { alert(ex.toString()); }
 	throw new Error("Your browser does not support XmlDocument objects");
 };
 
