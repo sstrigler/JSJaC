@@ -49,7 +49,7 @@ function JSJaCHPCPrepareResponse(req) {
 	/* handle error */
 	// proxy error (!)
 	if (req.status != 200) {
-		this.oDbg.log("invalid response:\n" + req.responseText,1);
+		this.oDbg.log("invalid response ("+req.status+"):" + req.responseText+"\n"+req.getAllResponseHeaders(),1);
 		clearTimeout(this._timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
@@ -95,9 +95,12 @@ function JSJaCHPCPrepareResponse(req) {
 	if (!req.responseText || req.responseText == '')
 		return null;
 
-	var response = XmlDocument.create();
-	response.loadXML("<body>"+req.responseText+"</body>");
-	return response.documentElement;
+	var response = XmlDocument.create("body","foobar");
+	if (response.loadXML)
+		return response.loadXML("<body>"+req.responseText+"</body>").documentElement;
+	else if (window.DOMParser) {
+		return (new DOMParser()).parseFromString("<body>"+req.responseText+"</body>", "text/xml").documentElement;
+	} else return null;;
 }
 
 function JSJaCHPCConnect(oArg) {
