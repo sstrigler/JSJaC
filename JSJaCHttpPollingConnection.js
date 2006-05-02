@@ -96,11 +96,12 @@ function JSJaCHPCPrepareResponse(req) {
 		return null;
 
 	var response = XmlDocument.create("body","foobar");
-	if (response.loadXML)
-		return response.loadXML("<body>"+req.responseText+"</body>").documentElement;
-	else if (window.DOMParser) {
+	if (response.loadXML) {
+		response.loadXML("<body>"+req.responseText+"</body>")
+		return response.documentElement;
+	} else if (window.DOMParser)
 		return (new DOMParser()).parseFromString("<body>"+req.responseText+"</body>", "text/xml").documentElement;
-	} else return null;;
+	else return null;;
 }
 
 function JSJaCHPCConnect(oArg) {
