@@ -20,15 +20,16 @@
     <script language="JavaScript" type="text/javascript">
       <!--
 function htmlEnc(str) {
-  if (!str)
-    return null;
+	if (!str)
+		return null;
 
-  str = str.replace(/&/g,"&amp;");
-  str = str.replace(/</g,"&lt;");
-  str = str.replace(/>/g,"&gt;");
-  str = str.replace(/\"/g,"&quot;");
+	str = str.replace(/&/g,"&amp;");
+	str = str.replace(/</g,"&lt;");
+	str = str.replace(/>/g,"&gt;");
+	str = str.replace(/\"/g,"&quot;");
 	str = str.replace(/\n/g,"<br />");
-  return str;
+
+	return str;
 }
 
 function handleEvent(aJSJaCPacket) {
@@ -70,7 +71,7 @@ function handleConnected() {
 
 
 function handleError(e) {
-	document.getElementById('err').innerHTML = "Couldn't connect. Please try again...<br />"+ 
+	document.getElementById('err').innerHTML = "An error occured:<br />"+ 
 		htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+"\nCondition: "+e.firstChild.nodeName); 
 }
 
@@ -113,8 +114,8 @@ function doLogin(aForm) {
 }
 
 function sendMsg(aForm) {
-	if (aForm.msg.value == '')
-		return;
+	if (aForm.msg.value == '' || aForm.sendTo.value == '')
+		return false;
 
 	if (aForm.sendTo.value.indexOf('@') == -1)
 		aForm.sendTo.value += '@' + con.domain;
@@ -219,7 +220,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Wed Apr 26 16:17:23 CEST 2006
+Last modified: Tue May  9 18:48:38 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>
