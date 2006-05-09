@@ -14,7 +14,7 @@
 	if you want to enable debugging uncomment line below
 	debugger available at http://zeank.in-berlin.de/  
 	 -->
-<!--		<script language="JavaScript" type="text/javascript" src="Debugger.js"></script> -->
+	<script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
 
 
     <script language="JavaScript" type="text/javascript">
@@ -75,6 +75,7 @@ function handleError(e) {
 }
 
 function doLogin(aForm) {
+	document.getElementById('err').innerHTML = ''; // reset
 
 	try {
 
@@ -218,7 +219,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Wed Apr 26 15:16:38 CEST 2006
+Last modified: Wed Apr 26 16:17:23 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>
