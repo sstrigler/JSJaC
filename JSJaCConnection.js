@@ -503,11 +503,7 @@ function JSJaCHandleResponse(req) {
  * an error packet for internal use
  */
 function JSJaCError(code,type,condition) {
-	var xmldoc = XmlDocument.create();
-	if (xmldoc.documentElement)
-		xmldoc.documentElement.appendChild(xmldoc.createElement('error'));
-	else 
-		xmldoc.appendChild(xmldoc.createElement('error'));
+	var xmldoc = XmlDocument.create("error","jsjac");
 
 	xmldoc.firstChild.setAttribute('code',code);
 	xmldoc.firstChild.setAttribute('type',type);
