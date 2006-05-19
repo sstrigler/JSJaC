@@ -99,8 +99,9 @@ function JSJaCHPCPrepareResponse(req) {
 		return null;
 
 	var response = XmlDocument.create("body","foobar");
-	if (response.loadXML) {
-		response.loadXML("<body>"+req.responseText+"</body>")
+
+	if (typeof(response.loadXML) != 'undefined') {
+		response.loadXML("<body>"+req.responseText+"</body>");
 		return response.documentElement;
 	} else if (window.DOMParser)
 		return (new DOMParser()).parseFromString("<body>"+req.responseText+"</body>", "text/xml").documentElement;
