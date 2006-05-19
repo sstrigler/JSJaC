@@ -141,7 +141,7 @@ function init() {
 	}
 
 	if (document.cookie) {
-		if (document.forms['loginForm'].backend[0].checked)
+		if (readCookie('btype') == 'binding')
 			con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
 		else
 			con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
@@ -172,7 +172,14 @@ onerror = function(e) {
 
 	return false; 
 };
-onunload = function() { if (typeof(con) != 'undefined' && con.suspend) con.suspend(); };
+onunload = function() { 
+	// save backend type
+	if (document.forms['loginForm'].backend[0].checked)
+		createCookie('btype','binding');
+	else
+		createCookie('btype','polling');
+	if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
+};
 
 			//-->
 		</script>
@@ -253,7 +260,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.suspend) con.suspe
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Fri May 19 16:09:31 CEST 2006
+Last modified: Fri May 19 16:18:07 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>
