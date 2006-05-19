@@ -15,7 +15,7 @@ function JSJaCHttpPollingConnection(oArg) {
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._getStreamID = JSJaCHPCGetStream;
 	this._getSuspendVars = function() {
-	  return ('domain,username,resource,jid,fulljid,_connected,_timerval,_httpbase,_sid,_is_polling').split(',');
+	  return ('domain,username,resource,jid,fulljid,_connected,_timerval,_httpbase,_sid,_is_polling,_keys').split(',');
 	}
 	this._prepareResponse = JSJaCHPCPrepareResponse;
 	this._setupRequest = JSJaCHPCSetupRequest;

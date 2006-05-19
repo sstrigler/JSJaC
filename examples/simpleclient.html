@@ -126,6 +126,14 @@ function sendMsg(aForm) {
 	return false;
 }
 
+function quit() {
+	if (con && con.connected())
+		con.disconnect();
+
+	document.getElementById('login_pane').style.display = '';
+	document.getElementById('sendmsg_pane').style.display = 'none';
+}
+
 function init() {
 	if (typeof(Debugger) == 'function') {
 		oDbg = new Debugger(4,'simpleclient');
@@ -133,7 +141,10 @@ function init() {
 	}
 
 	if (document.cookie) {
-		con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
+		if (document.forms['loginForm'].backend[0].checked)
+			con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
+		else
+			con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
 
 		con.registerHandler('message',handleMessage);
 		con.registerHandler('presence',handlePresence);
@@ -234,7 +245,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.suspend) con.suspe
 			<form name="sendForm" onSubmit="return sendMsg(this);" action="#">
 				<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>
 				<div class="spaced"><textarea name="msg" id='msgArea' rows="3" cols="80" tabindex="2"></textarea></div>
-				<div class="spaced"><input type="submit" value="Send" tabindex="3"></div>
+				<div class="spaced"><input type="submit" value="Send" tabindex="3"> * <input type="button" value="Quit" tabindex="4" onclick="return quit();"></div>
 			</form>
 		</div>
 
@@ -242,7 +253,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.suspend) con.suspe
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Fri May 12 12:39:36 CEST 2006
+Last modified: Fri May 19 16:09:31 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>
