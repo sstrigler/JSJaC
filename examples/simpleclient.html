@@ -3,19 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>JSJaC Simple Client</title>
-    <script language="JavaScript" type="text/javascript" src="../sha1.js"></script>
-    <script language="JavaScript" type="text/javascript" src="../xmlextras.js"></script>
-    <script language="JavaScript" type="text/javascript" src="../JSJaCConnection.js"></script>
-    <script language="JavaScript" type="text/javascript" src="../JSJaCPacket.js"></script>
-    <script language="JavaScript" type="text/javascript" src="../JSJaCHttpPollingConnection.js"></script>
-    <script language="JavaScript" type="text/javascript" src="../JSJaCHttpBindingConnection.js"></script>
 
- <!--  
-	if you want to enable debugging uncomment line below
-	debugger available at http://zeank.in-berlin.de/  
-	 -->
-	<script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
+    <script type="text/javascript" src="../JSJaC.js"></script>
 
+    <!-- if you want to enable debugging uncomment line below
+         debugger available at http://zeank.in-berlin.de/ -->
+    <script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
 
     <script language="JavaScript" type="text/javascript">
       <!--
@@ -73,6 +66,9 @@ function handleConnected() {
 function handleError(e) {
 	document.getElementById('err').innerHTML = "An error occured:<br />"+ 
 		htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+"\nCondition: "+e.firstChild.nodeName); 
+	document.getElementById('login_pane').style.display = '';
+	document.getElementById('sendmsg_pane').style.display = 'none';
+
 }
 
 function doLogin(aForm) {
@@ -135,11 +131,37 @@ function init() {
 		oDbg = new Debugger(4,'simpleclient');
 		oDbg.start();
 	}
+
+	if (document.cookie) {
+		con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
+
+		con.registerHandler('message',handleMessage);
+		con.registerHandler('presence',handlePresence);
+		con.registerHandler('iq',handleEvent);
+		con.registerHandler('onconnect',handleConnected);
+		con.registerHandler('onerror',handleError);
+
+		if (con.resume()) {
+
+			document.getElementById('login_pane').style.display = 'none';
+			document.getElementById('sendmsg_pane').style.display = '';
+			document.getElementById('err').innerHTML = '';
+
+		}
+	}
+
 }
 onload = init;
 
-onerror = function(e) { document.getElementById('err').innerHTML = e; return false; };
-onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.disconnect(); };
+onerror = function(e) { 
+	document.getElementById('err').innerHTML = e; 
+
+	document.getElementById('login_pane').style.display = '';
+	document.getElementById('sendmsg_pane').style.display = 'none';
+
+	return false; 
+};
+onunload = function() { if (typeof(con) != 'undefined' && con.suspend) con.suspend(); };
 
 			//-->
 		</script>
@@ -220,7 +242,7 @@ onunload = function() { if (typeof(con) != 'undefined' && con.disconnect) con.di
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Tue May  9 18:48:38 CEST 2006
+Last modified: Fri May 12 12:39:36 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>

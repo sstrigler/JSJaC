@@ -1,5 +1,6 @@
 JSJaC_HAVEKEYS = true;  // whether to use keys
-JSJaC_NKEYS    = 64;    // number of keys to generate
+JSJaC_NKEYS    = 16;    // number of keys to generate
+JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
 
 JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
 /* ******************************
@@ -9,14 +10,15 @@ JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
 
 function JSJaCConnection(oArg) {
 	oCon = this; // remember reference to ourself
-	if (oArg.oDbg && oArg.oDbg.log)
+	if (oArg && oArg.oDbg && oArg.oDbg.log)
 		this.oDbg = oArg.oDbg; 
 	else {
 		this.oDbg = new Object(); // always initialise a debugger
 		this.oDbg.log = function() { };
 	}
 
-	this._httpbase = oArg.httpbase;
+	if (oArg && oArg.httpbase)
+	  this._httpbase = oArg.httpbase;
 
 	this._connected = false;
 	this._events = new Array();
@@ -25,6 +27,7 @@ function JSJaCConnection(oArg) {
 	this._pQueue = new Array();
 	this._regIDs = new Array();
 	this._req = new Array();
+        this._inactivity = JSJAC_INACTIVITY;
 
 	this.connected = function() { return this._connected; };
 	this.getPollInterval = function() { return this._timerval; };
@@ -51,6 +54,32 @@ function JSJaCConnection(oArg) {
 			this._events[event] = this._events[event].concat(handler);
 		this.oDbg.log("registered handler for event '"+event+"'",2);
 	};
+	this.resume = function() {
+		var s = readCookie('s');
+
+		if (!s)
+			return false;
+
+		s = s.parseJSON();
+
+		for (var i in s)
+			this[i] = s[i];
+
+		// copy keys - not being very generic here :-/
+		if (this._keys) {
+			this._keys2 = new JSJaCKeys();
+			var u = this._keys2._getSuspendVars();
+			for (var i=0; i<u.length; i++) 
+				this._keys2[u[i]] = this._keys[u[i]];
+			this._keys = this._keys2;
+		}
+
+		if (this._connected) {
+			this._interval = setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+			this._timeout = setTimeout("oCon._process()",this.getPollInterval());
+		}
+		return this._connected;
+	}
 	this.send = JSJaCSend;
 	this.setPollInterval = function(timerval) {
 		if (!timerval || isNaN(timerval)) {
@@ -60,7 +89,27 @@ function JSJaCConnection(oArg) {
 		this._timerval = timerval;
 		return this._timerval;
 	};
-	this.setPollInterval(oArg.timerval);
+	if (oArg && oArg.timerval)
+	  this.setPollInterval(oArg.timerval);
+	this.suspend = function() {
+		var u = this._getSuspendVars();
+		var s = new Object();
+
+		for (var i=0; i<u.length; i++) {
+			if (!this[u[i]]) continue; // hu? skip these!
+			if (this[u[i]]._getSuspendVars) {
+				var uo = this[u[i]]._getSuspendVars();
+				var o = new Object();
+				for (var j=0; j<uo.length; j++)
+					o[uo[j]] = this[u[i]][uo[j]];
+			} else
+				var o = this[u[i]];
+
+			s[u[i]] = o;
+		}
+		
+		createCookie('s',s.toJSONString(),this._inactivity)
+	}
 
 	this._checkQueue = JSJaCHBCCheckQueue;
 
@@ -113,6 +162,7 @@ function JSJaCConnection(oArg) {
 		this.oDbg.log("unregistered "+pID,3);
 		return true;
 	};
+
 }
 
 function JSJaCReg() {
@@ -522,15 +572,21 @@ function JSJaCKeys(func,oDbg) {
 	this._k[0] = seed.toString();
 	this.oDbg = oDbg;
 
-	for (var i=1; i<JSJaC_NKEYS; i++) {
-		this._k[i] = func(this._k[i-1]);
-		oDbg.log(i+": "+this._k[i],4);
+	if (func) {
+		for (var i=1; i<JSJaC_NKEYS; i++) {
+			this._k[i] = func(this._k[i-1]);
+			oDbg.log(i+": "+this._k[i],4);
+		}
 	}
 
-	this.indexAt = JSJaC_NKEYS-1;
+	this._indexAt = JSJaC_NKEYS-1;
 	this.getKey = function() { 
-		return this._k[this.indexAt--]; 
+		return this._k[this._indexAt--]; 
 	};
-	this.lastKey = function() { return (this.indexAt == 0); };
+	this.lastKey = function() { return (this._indexAt == 0); };
 	this.size = function() { return this._k.length; };
+
+	this._getSuspendVars = function() {
+	  return ('_k,_indexAt').split(',');
+	}
 }
