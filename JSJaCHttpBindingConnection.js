@@ -30,6 +30,9 @@ function JSJaCHttpBindingConnection(oArg) {
 
 	this._getRequestString = JSJaCHBCGetRequestString;
 	this._getStreamID = JSJaCHBCGetStreamID;
+	this._getSuspendVars = function() {
+	  return ('domain,username,resource,jid,fulljid,host,port,secure,_connected,_timerval,_httpbase,_rid,_sid,_wait,_min_polling,_inactivity,_hold,_keys').split(',');
+	}
 	this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
 	this._setHold = function(hold)  {
@@ -48,110 +51,6 @@ function JSJaCHttpBindingConnection(oArg) {
 				return i;
 		return -1; // nothing found
 	}
-}
-
-function JSJaCHBCSetupRequest(async) {
-	var req = XmlHttp.create();
-	try {
-		req.open("POST",this._httpbase,async);
-		req.setRequestHeader('Content-Type','text/xml; charset=utf-8');
-	} catch(e) { this.oDbg.log(e,1); }
-	return req;
-}
-
-function JSJaCHBCGetRequestString(xml) {
-	this._rid++;
-		
-	var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
-	if (JSJaC_HAVEKEYS) {
-		reqstr += "key='"+this._keys.getKey()+"' ";
-		if (this._keys.lastKey()) {
-			this._keys = new JSJaCKeys(hex_sha1,this.oDbg);
-			reqstr += "newkey='"+this._keys.getKey()+"' ";
-		}
-	}
-	if (xml) {
-		reqstr += ">" + xml + "</body>";
-	} else {
-		reqstr += "/>"; 
-	}
-	 
-	return reqstr;
-}
-
-function JSJaCHBCPrepareResponse(req) {
-	if (!this.connected())
-		return null;
-
-	if (typeof(req) == 'undefined' || !req || typeof(req.status) == 'undefined')
-		return null;
-
-	/* handle error */
-	
-	if (req.status != 200 || !req.responseXML) {
-		this.oDbg.log("invalid response ("+req.status+"):\n" + req.getAllResponseHeaders()+"\n"+req.responseText,1);
-		clearTimeout(this._timeout); // remove timer
-		if (!this.isPolling())
-			clearInterval(this._interval);
-		this._connected = false;
-		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		if (req.status < 500)
-			this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable')); // ???
-		else
-			this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
-		return null;
-	} 
-
-	var body = req.responseXML.documentElement;
-	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
-		this.oDbg.log("invalid response:\n" + req.responseText,1);
-		clearTimeout(this._timeout); // remove timer
-		this._connected = false;
-		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
-		return null;
-
-	}
-
-	// Check for errors from the server
-	if (body.getAttribute("type") == "terminate") {
-		this.oDbg.log("invalid response:\n" + req.responseText,1);
-		clearTimeout(this._timeout); // remove timer
-		this._connected = false;
-		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
-		return null;
-	}
-
-	// no error
-	return req.responseXML.documentElement;
-}
-
-/* inherit an instantiated session */
-function JSJaCHBCInherit(oArg) {
-	this.domain = oArg.domain || 'localhost';
-	this.username = oArg.username;
-	this.resource = oArg.resource;
-	this._sid = oArg.sid;
-	this._rid = oArg.rid;
-	this._min_polling = oArg.polling;
-	this._inactivity = oArg.inactivity;
-	this._setHold(oArg.requests-1);
-	this.setPollInterval(this._timerval);
-	if (oArg.wait)
-		this._wait = oArg.wait; // for whatever reason
-
-	this._connected = true;
-
-	this.handleEvent('onconnect');
-
-	oCon = this;
-
-	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
 function JSJaCHBCConnect(oArg) {
@@ -173,7 +72,7 @@ function JSJaCHBCConnect(oArg) {
 		this.secure = 'false';
 
 	this.jid = this.username + '@' + this.domain;
-	this.fulljid = this.jid + this.resource;
+	this.fulljid = this.jid + '/' + this.resource;
 
 	if (oArg.wait)
 		this._wait = oArg.wait;
@@ -256,7 +155,6 @@ function JSJaCHBCHandleInitialResponse(slot) {
 		return;
 	}
 
-
 	// get session ID
 	this._sid = body.getAttribute('sid');
 	this.oDbg.log("got sid: "+this._sid,2);
@@ -315,6 +213,31 @@ function JSJaCHBCGetStreamID(slot) {
 	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
+/* inherit an instantiated session */
+function JSJaCHBCInherit(oArg) {
+	this.domain = oArg.domain || 'localhost';
+	this.username = oArg.username;
+	this.resource = oArg.resource;
+	this._sid = oArg.sid;
+	this._rid = oArg.rid;
+	this._min_polling = oArg.polling;
+	this._inactivity = oArg.inactivity;
+	this._setHold(oArg.requests-1);
+	this.setPollInterval(this._timerval);
+	if (oArg.wait)
+		this._wait = oArg.wait; // for whatever reason
+
+	this._connected = true;
+
+	this.handleEvent('onconnect');
+
+	oCon = this;
+
+	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
+}
+
+
 function JSJaCHBCDisconnect() {
 	
 	if (!this.connected())
@@ -350,8 +273,93 @@ function JSJaCHBCDisconnect() {
 	this.oDbg.log("Disconnecting: " + reqstr,4);
 	this._req[slot].send(reqstr);	
 	clearTimeout(abortTimerID);
+        eraseCookie('s');
 
 	oCon.oDbg.log("Disconnected: "+oCon._req[slot].responseText,2);
 	oCon._connected = false;
 	oCon.handleEvent('ondisconnect');
 }
+
+function JSJaCHBCSetupRequest(async) {
+	var req = XmlHttp.create();
+	try {
+		req.open("POST",this._httpbase,async);
+		req.setRequestHeader('Content-Type','text/xml; charset=utf-8');
+	} catch(e) { this.oDbg.log(e,1); }
+	return req;
+}
+
+function JSJaCHBCGetRequestString(xml) {
+ 
+	this._rid++;
+		
+	var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
+	if (JSJaC_HAVEKEYS) {
+		reqstr += "key='"+this._keys.getKey()+"' ";
+		if (this._keys.lastKey()) {
+			this._keys = new JSJaCKeys(hex_sha1,this.oDbg);
+			reqstr += "newkey='"+this._keys.getKey()+"' ";
+		}
+	}
+	if (xml) {
+		reqstr += ">" + xml + "</body>";
+	} else {
+		reqstr += "/>"; 
+	}
+	 
+	return reqstr;
+}
+
+function JSJaCHBCPrepareResponse(req) {
+	if (!this.connected())
+		return null;
+
+	if (typeof(req) == 'undefined' || !req || typeof(req.status) == 'undefined')
+		return null;
+
+	/* handle error */
+	
+	if (req.status != 200 || !req.responseXML) {
+		this.oDbg.log("invalid response ("+req.status+"):\n" + req.getAllResponseHeaders()+"\n"+req.responseText,1);
+		clearTimeout(this._timeout); // remove timer
+		if (!this.isPolling())
+			clearInterval(this._interval);
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+
+		if (req.status < 500)
+			this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable')); // ???
+		else
+			this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+
+		return null;
+	} 
+
+	var body = req.responseXML.documentElement;
+	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+		this.oDbg.log("invalid response:\n" + req.responseText,1);
+		clearTimeout(this._timeout); // remove timer
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
+		return null;
+
+	}
+
+	// Check for errors from the server
+	if (body.getAttribute("type") == "terminate") {
+		this.oDbg.log("invalid response:\n" + req.responseText,1);
+		clearTimeout(this._timeout); // remove timer
+		this._connected = false;
+		this.oDbg.log("Disconnected.",1);
+		this.handleEvent('ondisconnect');
+		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		return null;
+	}
+
+	// no error
+	return req.responseXML.documentElement;
+}
+
