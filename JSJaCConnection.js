@@ -555,11 +555,10 @@ function JSJaCHandleResponse(req) {
 function JSJaCError(code,type,condition) {
 	var xmldoc = XmlDocument.create("error","jsjac");
 
-	xmldoc.firstChild.setAttribute('code',code);
-	xmldoc.firstChild.setAttribute('type',type);
-	xmldoc.firstChild.appendChild(xmldoc.createElement(condition));
-	xmldoc.firstChild.firstChild.setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
-	return xmldoc.firstChild.cloneNode(true);
+	xmldoc.documentElement.setAttribute('code',code);
+	xmldoc.documentElement.setAttribute('type',type);
+	xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
+	return xmldoc.documentElement.cloneNode(true);
 }
 
 /* ***
