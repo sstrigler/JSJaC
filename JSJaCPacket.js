@@ -1,7 +1,12 @@
+var JSJACPACKET_USE_XMLNS = true;
+
 function JSJaCPacket(name) {
 	this.name = name;
 
-	this.doc = XmlDocument.create(name,"jabber:client");
+ 	if (typeof(JSJACPACKET_USE_XMLNS) != 'undefined' && JSJACPACKET_USE_XMLNS)
+ 	  this.doc = XmlDocument.create(name,'jabber:client');
+ 	else
+ 	  this.doc = XmlDocument.create(name,'');
 
 	this.pType = function() { return this.name; };
 

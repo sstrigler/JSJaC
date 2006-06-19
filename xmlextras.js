@@ -106,15 +106,18 @@ XmlDocument.create = function (name,ns) {
 			doc = new ActiveXObject(getDomDocumentPrefix() + ".DomDocument");
 
 		try { 
-			doc.appendChild(doc.createElement(name)).setAttribute('xmlns',ns);
+			if (ns != '')
+				doc.appendChild(doc.createElement(name)).setAttribute('xmlns',ns);
+			else
+				doc.appendChild(doc.createElement(name));
 		} catch (dex) { 
-
 			doc = document.implementation.createDocument(ns,name,null);
 			
 			if (doc.documentElement == null)
 				doc.appendChild(doc.createElement(name));
 
-			if (doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
+			if (ns != '' && 
+			    doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
 				doc.documentElement.setAttribute('xmlns',ns);
 		}
 
