@@ -95,6 +95,13 @@ function JSJaCHBCConnect(oArg) {
 
 	this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 
+	var slot = this._getFreeSlot();
+	this._req[slot] = this._setupRequest(true); // must be done
+						    // after rid is
+						    // created but
+						    // before first
+						    // use in reqstr
+
 	var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.domain+"' wait='"+this._wait+"' rid='"+this._rid+"'";
 	if (oArg.host || oArg.port)
 		reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
@@ -109,9 +116,7 @@ function JSJaCHBCConnect(oArg) {
 		reqstr += " xml:lang='"+this._xmllang + "'";
 	reqstr += "/>";
 
-	var slot = this._getFreeSlot();
 
-	this._req[slot] = this._setupRequest(true);
 	this.oDbg.log(reqstr,4);
 
 	oCon = this;
