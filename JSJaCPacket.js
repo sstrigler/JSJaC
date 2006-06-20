@@ -11,9 +11,9 @@ function JSJaCPacket(name) {
 	this.pType = function() { return this.name; };
 
 	this.getDoc = function() { return this.doc; };
-	this.getNode = function() {	return this.getDoc().documentElement; };
+	this.getNode = function() { return this.getDoc().documentElement; };
 
-	this.setTo = function(to) { 
+	this.setTo = function(to) {
 		if (!to || to == '')
 			this.getNode().removeAttribute('to');
 		else
@@ -67,15 +67,18 @@ function JSJaCPacket(name) {
 	};
 
 	this._childElVal = function(nodeName) {
-		for (var i=0; i<this.getNode().childNodes.length; i++) {
-			if (this.getNode().childNodes.item(i).nodeName == nodeName) {
-				if (this.getNode().childNodes.item(i).firstChild)
-					return this.getNode().childNodes.item(i).firstChild.nodeValue;
-				else
-					return '';
-			}
-		}
-		return null;
+		var aNode = this._getChildNode(nodeName);
+		if (aNode && aNode.firstChild)
+		    return aNode.firstChild.nodeValue;
+		return '';
+	}
+
+	this._getChildNode = function(nodeName) {
+	  var children = this.getNode().childNodes;
+	  for (var i=0; i<children.length; i++)
+	    if (children.item(i).tagName == nodeName)
+	      return children.item(i);
+	  return null;
 	}
 
 	this._replaceNode = function(aNode) {
@@ -93,6 +96,20 @@ function JSJaCPacket(name) {
 				
 	};
 
+	this._setChildNode = function(nodeName, nodeValue) {
+	  var aNode = this._getChildNode(nodeName);
+	  var tNode = this.getDoc().createTextNode(nodeValue);
+	  if (aNode)
+	    try {
+	      aNode.replaceChild(tNode,aNode.firstChild);
+	    } catch (e) { }
+	  else {
+	    aNode = this.getNode().appendChild(this.getDoc().createElement(nodeName));
+	    aNode.appendChild(tNode);
+	  }
+	  return aNode;
+	}
+
 	this.clone = function() { return JSJaCPWrapNode(this.getNode()); }
 } 
 
@@ -101,15 +118,15 @@ function JSJaCPresence() {
 	this.base('presence');
 
 	this.setStatus = function(status) {
-		this.getNode().appendChild(this.getDoc().createElement('status')).appendChild(this.getDoc().createTextNode(status));
+		this._setChildNode("status", status);
 		return this; 
 	};
 	this.setShow = function(show) {
-		this.getNode().appendChild(this.getDoc().createElement('show')).appendChild(this.getDoc().createTextNode(show));
+		this._setChildNode("show",show);
 		return this; 
 	};
 	this.setPriority = function(prio) {
-		this.getNode().appendChild(this.getDoc().createElement('priority')).appendChild(this.getDoc().createTextNode(prio));
+		this._setChildNode("priority", prio);
 		return this; 
 	};
 	this.setPresence = function(show,status,prio) {
@@ -172,16 +189,18 @@ function JSJaCMessage() {
 	this.base('message');
 
 	this.setBody = function(body) {
-		var aNode = this.getNode().appendChild(this.getDoc().createElement('body'));
-		aNode.appendChild(this.getDoc().createTextNode(body));
+		this._setChildNode("body",body);
 		return this; 
 	};
 	this.setSubject = function(subject) {
-		var aNode = this.getNode().appendChild(this.getDoc().createElement('subject'));
-		aNode.appendChild(this.getDoc().createTextNode(subject));
+		this._setChildNode("subject",subject);
 		return this; 
 	};
-	
+	this.setThread = function(thread) {
+		this._setChildNode("thread", thread);
+		return this; 
+	};
+	this.getThread = function() { return this._childElVal('thread'); };
 	this.getBody = function() { return this._childElVal('body'); };
 	this.getSubject = function() { return this._childElVal('subject') };
 }
