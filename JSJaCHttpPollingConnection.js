@@ -18,9 +18,13 @@ function JSJaCHttpPollingConnection(oArg) {
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._getStreamID = JSJaCHPCGetStream;
 	this._getSuspendVars = function() {
-	  return ('domain,username,resource,jid,fulljid,_connected,_timerval,_httpbase,_sid,_is_polling,_keys').split(',');
+	  return ('domain,username,resource,jid,fulljid,_connected,_timerval,_httpbase,_sid,_is_polling,_keys,_errcnt').split(',');
 	}
 	this._prepareResponse = JSJaCHPCPrepareResponse;
+	this._resume = function() { 
+	  this._process(this._timerval);
+	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	}
 	this._setupRequest = JSJaCHPCSetupRequest;
 }
 

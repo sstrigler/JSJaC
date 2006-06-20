@@ -43,16 +43,18 @@ function JSJaCHttpBindingConnection(oArg) {
 	this._getHold = function() { return this._hold; }
 	this._getStreamID = JSJaCHBCGetStreamID;
 	this._getSuspendVars = function() {
-	  return ('domain,username,resource,jid,fulljid,host,port,secure,_connected,_timerval,_httpbase,_rid,_last_rid,_sid,_wait,_min_polling,_inactivity,_hold,_keys,_last_requests').split(',');
+	  return ('domain,username,resource,jid,fulljid,host,port,secure,_connected,_timerval,_httpbase,_rid,_last_rid,_sid,_wait,_min_polling,_inactivity,_hold,_keys,_last_requests,_errcnt').split(',');
 	}
 	this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
-	this._prepareResume = function() { 
+	this._resume = function() { 
 	  /* make sure to repeat last request as we can be sure that
 	   * it had failed 
 	   */
 	  this._rid--; 
 	  this._keys._indexAt++;
+	  this._process();
+	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 	}
 	this._setHold = function(hold)  {
 		if (!hold || isNaN(hold) || hold < 0)
@@ -62,8 +64,7 @@ function JSJaCHttpBindingConnection(oArg) {
 		this._hold = hold;
 		return this._hold;
 	};
-	this._setupRequest = JSJaCHBCSetupRequest;
-	
+	this._setupRequest = JSJaCHBCSetupRequest;	
 }
 
 function JSJaCHBCConnect(oArg) {

@@ -62,6 +62,8 @@ function JSJaCConnection(oArg) {
 		if (!s)
 			return false;
 
+		this.oDbg.log('read cookie: '+s,2);
+
 		s = s.parseJSON();
 
 		for (var i in s)
@@ -75,11 +77,9 @@ function JSJaCConnection(oArg) {
 				this._keys2[u[i]] = this._keys[u[i]];
 			this._keys = this._keys2;
 		}
-		this._prepareResume();
-		if (this._connected) {
-			this._interval = setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-			this._timeout = setTimeout("oCon._process()",this.getPollInterval());
-		}
+		oCon = this;
+		if (this._connected) 
+		  setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
 		return this._connected;
 	}
 	this.send = JSJaCSend;
@@ -147,7 +147,6 @@ function JSJaCConnection(oArg) {
 		return false;
 	};
 	this._handleResponse = JSJaCHandleResponse;
-	this._prepareResume = function() { return; } // noop
 	this._process = JSJaCProcess;
 	this._registerPID = function(pID,cb,arg) {
 		if (!pID || !cb)
@@ -483,9 +482,8 @@ function JSJaCProcess(timerval) {
 			  oCon._abort();
 			  return false;
 			}
-			oCon._prepareResume();
 			// schedule next tick
-			oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
+			setTimeout("oCon._resume()",oCon.getPollInterval());
 			return false;
 		};
 	}
