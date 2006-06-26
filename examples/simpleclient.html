@@ -140,7 +140,7 @@ function init() {
 		oDbg.start();
 	}
 
-	if (document.cookie) {
+	if (document.cookie) { // try to resume a session
 		if (readCookie('btype') == 'binding')
 			con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
 		else
@@ -185,6 +185,7 @@ onunload = function() {
 		</script>
 		<style type="text/css">
 /*<![CDATA[*/
+
 			body {
 			font-family: "Bitstream Vera Sans", sans;
 			font-size: 0.8em;
@@ -198,6 +199,7 @@ onunload = function() {
 			input {
 			border: 1px solid grey;
 			}
+
 			#iResp {
 			width: 420px;
 			height: 260px;
@@ -222,6 +224,7 @@ onunload = function() {
 			.spaced {
 			margin-bottom: 4px;
 			}
+
 /*]]>*/
 		</style>
   </head>
