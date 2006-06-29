@@ -43,7 +43,7 @@ function JSJaCHttpBindingConnection(oArg) {
 	this._getHold = function() { return this._hold; }
 	this._getStreamID = JSJaCHBCGetStreamID;
 	this._getSuspendVars = function() {
-	  return ('domain,username,resource,jid,fulljid,host,port,secure,_connected,_timerval,_httpbase,_rid,_last_rid,_sid,_wait,_min_polling,_inactivity,_hold,_keys,_last_requests,_errcnt').split(',');
+	  return ('host,port,secure,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests').split(',');
 	}
 	this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
 	this._prepareResponse = JSJaCHBCPrepareResponse;
@@ -55,6 +55,7 @@ function JSJaCHttpBindingConnection(oArg) {
 	  this._keys._indexAt++;
 	  this._process();
 	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 	}
 	this._setHold = function(hold)  {
 		if (!hold || isNaN(hold) || hold < 0)
@@ -198,6 +199,7 @@ function JSJaCHBCHandleInitialResponse(slot) {
 
 	oCon = this;
 	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
@@ -254,6 +256,7 @@ function JSJaCHBCInherit(oArg) {
 	oCon = this;
 
 	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
@@ -263,8 +266,8 @@ function JSJaCHBCDisconnect() {
 	if (!this.connected())
 		return;
 
-	if (!this.isPolling())
-		clearInterval(this._interval);
+	clearInterval(this._interval);
+	clearInterval(this._inQto);
 
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer
@@ -371,9 +374,8 @@ function JSJaCHBCPrepareResponse(req) {
 		}
 		this.oDbg.log("repeating ("+this._errcnt+")",1);
 
-		this._prepareResume();
 		// schedule next tick
-		this._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
+		setTimeout("oCon._resume()",oCon.getPollInterval());
 
 		return null;
 	} 
@@ -382,6 +384,8 @@ function JSJaCHBCPrepareResponse(req) {
 	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("invalid response:\n" + r.responseText,1);
 		clearTimeout(this._timeout); // remove timer
+		clearInterval(this._interval);
+		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -403,6 +407,8 @@ function JSJaCHBCPrepareResponse(req) {
 	if (body.getAttribute("type") == "terminate") {
 		this.oDbg.log("invalid response:\n" + r.responseText,1);
 		clearTimeout(this._timeout); // remove timer
+		clearInterval(this._interval);
+		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');

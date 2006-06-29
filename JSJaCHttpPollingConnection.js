@@ -18,12 +18,13 @@ function JSJaCHttpPollingConnection(oArg) {
 	this._getRequestString = JSJaCHPCGetRequestString;
 	this._getStreamID = JSJaCHPCGetStream;
 	this._getSuspendVars = function() {
-	  return ('domain,username,resource,jid,fulljid,_connected,_timerval,_httpbase,_sid,_is_polling,_keys,_errcnt').split(',');
+	  return new Array();
 	}
 	this._prepareResponse = JSJaCHPCPrepareResponse;
 	this._resume = function() { 
 	  this._process(this._timerval);
 	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 	}
 	this._setupRequest = JSJaCHPCSetupRequest;
 }
@@ -67,6 +68,8 @@ function JSJaCHPCPrepareResponse(r) {
 	if (req.status != 200) {
 		this.oDbg.log("invalid response ("+req.status+"):" + req.responseText+"\n"+req.getAllResponseHeaders(),1);
 		clearTimeout(this._timeout); // remove timer
+		clearInterval(this._interval);
+		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -101,6 +104,8 @@ function JSJaCHPCPrepareResponse(r) {
 			break;
 		}
 		clearTimeout(this._timeout); // remove timer
+		clearInterval(this._interval);
+		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this.handleEvent('ondisconnect');
@@ -169,6 +174,7 @@ function JSJaCHPCConnect(oArg) {
 
 	oCon = this;
 	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
+	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
@@ -228,6 +234,9 @@ function JSJaCHPCDisconnect() {
 		return;
 
 	this._checkQueue();
+
+	clearInterval(this._interval);
+	clearInterval(this._inQto);
 
 	if (this._timeout)
 		clearTimeout(this._timeout); // remove timer

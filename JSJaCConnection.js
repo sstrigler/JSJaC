@@ -5,6 +5,7 @@ JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
 
 
 JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
+JSJaC_CheckInQueueInterval = 1; // msecs to poll in queue
 /* ******************************
  * JabberConnection 
  * somewhat abstract base class
@@ -26,10 +27,12 @@ function JSJaCConnection(oArg) {
 	this._events = new Array();
 	this._keys = null;
 	this._ID = 0;
+	this._inQ = new Array();
 	this._pQueue = new Array();
 	this._regIDs = new Array();
 	this._req = new Array();
-        this._inactivity = JSJAC_INACTIVITY;
+	this._errcnt = 0;
+	this._inactivity = JSJAC_INACTIVITY;
 
 	this.connected = function() { return this._connected; };
 	this.getPollInterval = function() { return this._timerval; };
@@ -78,7 +81,7 @@ function JSJaCConnection(oArg) {
 			this._keys = this._keys2;
 		}
 		oCon = this;
-		if (this._connected) 
+		if (this._connected)
 		  setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
 		return this._connected;
 	}
@@ -94,7 +97,8 @@ function JSJaCConnection(oArg) {
 	if (oArg && oArg.timerval)
 		this.setPollInterval(oArg.timerval);
 	this.suspend = function() {
-		var u = this._getSuspendVars();
+		var u = ('_connected,_keys,_ID,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
+		u = u.concat(this._getSuspendVars());
 		var s = new Object();
 
 		for (var i=0; i<u.length; i++) {
@@ -114,13 +118,14 @@ function JSJaCConnection(oArg) {
 	}
 
 
-	this._abort		= JSJaCAbort;
-	this._checkQueue	= JSJaCHBCCheckQueue;
+	this._abort       = JSJaCAbort;
+	this._checkInQ    = JSJaCCheckInQ;
+	this._checkQueue  = JSJaCHBCCheckQueue;
 
-	this._doAuth		= JSJaCAuth;
-	this._doAuth2		= JSJaCAuth2;
-	this._doAuth3		= JSJaCAuth3;
-	this._doReg		= JSJaCReg;
+	this._doAuth      = JSJaCAuth;
+	this._doAuth2     = JSJaCAuth2;
+	this._doAuth3     = JSJaCAuth3;
+	this._doReg       = JSJaCReg;
 
 	this._doSASLAuth	= JSJaCSASLAuth;
 // 	this._doSASLAuthBind = JSJaCSASLAuthBind;
@@ -544,14 +549,22 @@ function JSJaCHandleResponse(req) {
 	this.oDbg.log("childNodes: "+rootEl.childNodes.length,3);
 	for (var i=0; i<rootEl.childNodes.length; i++) {
 		this.oDbg.log("rootEl.childNodes.item("+i+").nodeName: "+rootEl.childNodes.item(i).nodeName,3);
-		var aJSJaCPacket = JSJaCPWrapNode(rootEl.childNodes.item(i));
-		if (typeof(aJSJaCPacket.pType) == 'undefined') // didn't parse as proper XMPP packet
-			continue;
-		if (!this._handlePID(aJSJaCPacket))
-			this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
+		this._inQ = this._inQ.concat(rootEl.childNodes.item(i));
 	}
-
 	return null;
+}
+
+function JSJaCCheckInQ() {
+	for (var i=0; i<this._inQ.length && i<10; i++) {
+		var item = this._inQ[0];
+		this._inQ = this._inQ.slice(1,this._inQ.length);
+		var aJSJaCPacket = JSJaCPWrapNode(item);
+		if (typeof(aJSJaCPacket.pType) != 'undefined')
+			if (!this._handlePID(aJSJaCPacket))
+				this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
+	}
+// 	oCon = this;
+// 	this._inQto = setTimeout("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 }
 
 function JSJaCAbort() {
