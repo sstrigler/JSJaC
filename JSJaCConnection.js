@@ -97,6 +97,12 @@ function JSJaCConnection(oArg) {
 	if (oArg && oArg.timerval)
 		this.setPollInterval(oArg.timerval);
 	this.suspend = function() {
+		
+		// remove timers
+		clearTimeout(this._timeout);
+		clearInterval(this._interval);
+		clearInterval(this._inQto);
+
 		var u = ('_connected,_keys,_ID,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
 		u = u.concat(this._getSuspendVars());
 		var s = new Object();
@@ -115,6 +121,8 @@ function JSJaCConnection(oArg) {
 		}
 		
 		createCookie('s',s.toJSONString(),this._inactivity)
+
+		this._connected = false;
 	}
 
 
