@@ -143,7 +143,7 @@ function JSJaCConnection(oArg) {
 						this._events[event][i](arg);
 					else
 						this._events[event][i]();
-				} catch (e) { this.oDbg.log(e.toString()); }
+				} catch (e) { this.oDbg.log(e.name+": "+ e.message); }
 			}
 		}
 	};
@@ -156,7 +156,7 @@ function JSJaCConnection(oArg) {
 				this.oDbg.log("handling "+pID,3);
 				try {
 					this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg);
-				} catch (e) { this.oDbg.log(e.toString()); }
+				} catch (e) { this.oDbg.log(e.name+": "+ e.message); }
 				this._unregisterPID(pID);
 				return true;
 			}
