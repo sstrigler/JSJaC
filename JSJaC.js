@@ -9,11 +9,13 @@ var JSJaC = {
   load: function() {
     var includes = ['xmlextras','JSJaCPacket','sha1','json','qm_cookie','JSJaCConnection','JSJaCHttpPollingConnection','JSJaCHttpBindingConnection'];
     var scripts = document.getElementsByTagName("script");
-    var path = '.';
-    for (var i=0; i<scripts.length; i++) 
-      if (scripts.item(i).src && scripts.item(i).src.match(/JSJaC\.js$/))
-	path = scripts.item(i).src.replace(/JSJaC.js$/,'');
-
+    var path = './';
+    for (var i=0; i<scripts.length; i++) {
+      if (scripts.item(i).src && scripts.item(i).src.match(/JSJaC\.js$/)) {
+				path = scripts.item(i).src.replace(/JSJaC.js$/,'');
+				break;
+			}
+		}
     for (var i=0; i<includes.length; i++)
       this.require(path+includes[i]+'.js');
   }
