@@ -36,21 +36,6 @@ function JSJaCConnection(oArg) {
 
 	this.connected = function() { return this._connected; };
 	this.getPollInterval = function() { return this._timerval; };
-	this.handleEvent = function(event,arg) {
-		event = event.toLowerCase(); // don't be case-sensitive here
-		this.oDbg.log("incoming event '"+event+"'",3);
-		if (!this._events[event])
-			return;
-		this.oDbg.log("handling event '"+event+"'",2);
-		for (var i in this._events[event]) {
-			if (this._events[event][i]) {
-				if (arg)
-					this._events[event][i](arg);
-				else
-					this._events[event][i]();
-			}
-		}
-	};
 	this.registerHandler = function(event,handler) {
 		event = event.toLowerCase(); // don't be case-sensitive here
 		if (!this._events[event])
@@ -145,6 +130,23 @@ function JSJaCConnection(oArg) {
 	this._doSASLAnonAuthBind = JSJaCSASLAnonAuthBind;
 	this._doSASLAnonAuthSess = JSJaCSASLAnonAuthSess;
 	this._doSASLAnonAuthDone = JSJaCSASLAnonAuthDone;
+	this._handleEvent = function(event,arg) {
+		event = event.toLowerCase(); // don't be case-sensitive here
+		this.oDbg.log("incoming event '"+event+"'",3);
+		if (!this._events[event])
+			return;
+		this.oDbg.log("handling event '"+event+"'",2);
+		for (var i=0;i<this._events[event].length; i++) {
+			if (this._events[event][i]) {
+				try {
+					if (arg)
+						this._events[event][i](arg);
+					else
+						this._events[event][i]();
+				} catch (e) { this.oDbg.log(e.toString()); }
+			}
+		}
+	};
 	this._handlePID = function(aJSJaCPacket) {
 		if (!aJSJaCPacket.getID())
 			return false;
@@ -152,7 +154,9 @@ function JSJaCConnection(oArg) {
 			if (this._regIDs[i] && i == aJSJaCPacket.getID()) {
 				var pID = aJSJaCPacket.getID();
 				this.oDbg.log("handling "+pID,3);
-				this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg);
+				try {
+					this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg);
+				} catch (e) { this.oDbg.log(e.toString()); }
 				this._unregisterPID(pID);
 				return true;
 			}
@@ -202,7 +206,7 @@ function JSJaCAuth(iq) {
 	 * Non-SASL Authentication as described in JEP-0078
 	 */
 	if (iq && iq.getType() == 'error') { // we failed to register
-		oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+		oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
 		return;
 	}
 	var iq = new JSJaCIQ();
@@ -246,11 +250,11 @@ function JSJaCAuth2(iq) {
  */
 function JSJaCAuth3(iq) {
 	if (iq.getType() != 'result') { // auth' failed
-		oCon.disconnect();
 		if (iq.getType() == 'error')
-			oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+			oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+		oCon.disconnect();
 	} else
-		oCon.handleEvent('onconnect');
+		oCon._handleEvent('onconnect');
 }
 
 /* ***
@@ -386,7 +390,7 @@ function JSJaCSASLAnonAuthSess(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
 		if (iq.getType() == 'error')
-			oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+			oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
 		return;
 	}
 
@@ -405,10 +409,10 @@ function JSJaCSASLAnonAuthDone(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
 		if (iq.getType() == 'error')
-			oCon.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+			oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
 		return;
 	} else 
-		oCon.handleEvent('onconnect');
+		oCon._handleEvent('onconnect');
 }
 
 /* ***
@@ -569,7 +573,7 @@ function JSJaCCheckInQ() {
 		var aJSJaCPacket = JSJaCPWrapNode(item);
 		if (typeof(aJSJaCPacket.pType) != 'undefined')
 			if (!this._handlePID(aJSJaCPacket))
-				this.handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
+				this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
 	}
 // 	oCon = this;
 // 	this._inQto = setTimeout("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
@@ -579,8 +583,8 @@ function JSJaCAbort() {
   clearTimeout(this._timeout); // remove timer
   this._connected = false;
   this.oDbg.log("Disconnected.",1);
-  this.handleEvent('ondisconnect');
-  this.handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
+  this._handleEvent('ondisconnect');
+  this._handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
 }
 
 /* ***

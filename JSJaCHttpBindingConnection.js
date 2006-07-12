@@ -154,14 +154,14 @@ function JSJaCHBCHandleInitialResponse(slot) {
 
 	if (this._req[slot].r.status != 200 || !this._req[slot].r.responseXML) {
 		this.oDbg.log("initial response broken (status: "+this._req[slot].r.status+")",1);
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return;
 	}
 	var body = this._req[slot].r.responseXML.documentElement;
 
 	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("no body element or incorrect body in initial response",1);
-		this.handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
+		this._handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
 		return;
 	}
 
@@ -171,8 +171,8 @@ function JSJaCHBCHandleInitialResponse(slot) {
 		clearTimeout(this._timeout); // remove timer
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this._handleEvent('ondisconnect');
+		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return;
 	}
 
@@ -212,7 +212,7 @@ function JSJaCHBCGetStreamID(slot) {
 	this.oDbg.log(this._req[slot].r.responseText,4);
 
 	if (!this._req[slot].r.responseXML || !this._req[slot].r.responseXML.documentElement) {
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return;
 	}
 	var body = this._req[slot].r.responseXML.documentElement;
@@ -251,7 +251,7 @@ function JSJaCHBCInherit(oArg) {
 
 	this._connected = true;
 
-	this.handleEvent('onconnect');
+	this._handleEvent('onconnect');
 
 	oCon = this;
 
@@ -299,7 +299,7 @@ function JSJaCHBCDisconnect() {
 
 	oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
 	oCon._connected = false;
-	oCon.handleEvent('ondisconnect');
+	oCon._handleEvent('ondisconnect');
 }
 
 function JSJaCHBCSetupRequest(async) {
@@ -386,10 +386,10 @@ function JSJaCHBCPrepareResponse(req) {
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
+		this._handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
+		this._handleEvent('ondisconnect');
 		return null;
 
 	}
@@ -409,10 +409,10 @@ function JSJaCHBCPrepareResponse(req) {
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
+		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this._handleEvent('ondisconnect');
 		return null;
 	}
 

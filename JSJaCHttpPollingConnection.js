@@ -72,8 +72,8 @@ function JSJaCHPCPrepareResponse(r) {
 		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+		this._handleEvent('ondisconnect');
+		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
 		return null;
 	} 
 
@@ -108,8 +108,8 @@ function JSJaCHPCPrepareResponse(r) {
 		clearInterval(this._inQto);
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
-		this.handleEvent('ondisconnect');
-		this.handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
+		this._handleEvent('ondisconnect');
+		this._handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		return null;
 	}
 
@@ -249,5 +249,5 @@ function JSJaCHPCDisconnect() {
 		this._req[0].r.send(this._sid+",</stream:stream>");
 	this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
 	this._connected = false;
-	this.handleEvent('ondisconnect');
+	this._handleEvent('ondisconnect');
 }
