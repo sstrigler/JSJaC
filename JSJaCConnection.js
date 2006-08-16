@@ -31,6 +31,7 @@ function JSJaCConnection(oArg) {
 	this._pQueue = new Array();
 	this._regIDs = new Array();
 	this._req = new Array();
+	this._status = 'intialized';
 	this._errcnt = 0;
 	this._inactivity = JSJAC_INACTIVITY;
 
@@ -81,6 +82,7 @@ function JSJaCConnection(oArg) {
 	};
 	if (oArg && oArg.timerval)
 		this.setPollInterval(oArg.timerval);
+	this.status = function() { return this._status; }
 	this.suspend = function() {
 		
 		// remove timers
@@ -108,6 +110,8 @@ function JSJaCConnection(oArg) {
 		createCookie('s',s.toJSONString(),this._inactivity)
 
 		this._connected = false;
+
+		this._setStatus('suspending');
 	}
 
 
@@ -176,6 +180,14 @@ function JSJaCConnection(oArg) {
 		return true;
 	};
 	this._sendEmpty = JSJaCSendEmpty;
+	this._setStatus = function(status) {
+		if (!status || status == '')
+			return;
+		if (status != this._status) { // status changed!
+			this._status = status;
+			this._handleEvent('status_changed', status);
+		}
+	}
 	this._unregisterPID = function(pID) {
 		if (!this._regIDs[pID])
 			return false;
@@ -197,7 +209,7 @@ function JSJaCReg() {
 	var query = iq.setQuery('jabber:iq:register');
 	query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(this.username));
 	query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(this.pass));
-		
+
 	this.send(iq,this._doAuth);
 }
 
@@ -478,6 +490,7 @@ function JSJaCProcess(timerval) {
 		if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
 			return;
 		if (oCon._req[slot].r.readyState == 4) {
+			oCon._setStatus('processing');
 			oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
 			oCon._handleResponse(oCon._req[slot]);
  			if (oCon._pQueue.length)
@@ -495,10 +508,14 @@ function JSJaCProcess(timerval) {
 			oCon._errcnt++;
 			oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
 			if (oCon._errcnt > JSJAC_ERR_COUNT) {
+
 			  // abort
 			  oCon._abort();
 			  return false;
 			}
+
+			oCon._setStatus('onerror_fallback');
+				
 			// schedule next tick
 			setTimeout("oCon._resume()",oCon.getPollInterval());
 			return false;
@@ -582,6 +599,9 @@ function JSJaCCheckInQ() {
 function JSJaCAbort() {
   clearTimeout(this._timeout); // remove timer
   this._connected = false;
+
+	this._setStatus('aborted');
+
   this.oDbg.log("Disconnected.",1);
   this._handleEvent('ondisconnect');
   this._handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));

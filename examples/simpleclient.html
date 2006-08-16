@@ -4,7 +4,7 @@
   <head>
     <title>JSJaC Simple Client</title>
 
-    <script type="text/javascript" src="../JSJaC.js"></script>
+    <script type="text/javascript" src="http://gnurps/jsjac/JSJaC.js"></script>
 
     <!-- if you want to enable debugging uncomment line below
          debugger available at http://zeank.in-berlin.de/ -->
@@ -71,6 +71,10 @@ function handleError(e) {
 
 }
 
+function handleStatusChange(status) {
+	oDbg.log("status changed: "+status);
+}
+
 function doLogin(aForm) {
 	document.getElementById('err').innerHTML = ''; // reset
 
@@ -94,6 +98,7 @@ function doLogin(aForm) {
 		con.registerHandler('iq',handleEvent);
 		con.registerHandler('onconnect',handleConnected);
 		con.registerHandler('onerror',handleError);
+		con.registerHandler('status_changed',handleStatusChange);
 
 		// setup args for connect method
 		oArgs = new Object();
@@ -151,6 +156,7 @@ function init() {
 		con.registerHandler('iq',handleEvent);
 		con.registerHandler('onconnect',handleConnected);
 		con.registerHandler('onerror',handleError);
+		con.registerHandler('status_changed',handleStatusChange);
 
 		if (con.resume()) {
 
@@ -263,7 +269,7 @@ onunload = function() {
     <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
 <!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
 <!-- hhmts start -->
-Last modified: Tue Jun 27 13:20:20 CEST 2006
+Last modified: Wed Aug 16 18:25:38 CEST 2006
 <!-- hhmts end -->
   </body>
 </html>

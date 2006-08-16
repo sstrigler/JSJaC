@@ -71,6 +71,8 @@ function JSJaCHttpBindingConnection(oArg) {
 function JSJaCHBCConnect(oArg) {
 	// initial request to get sid and streamid
 
+	this._setStatus('connecting');
+
 	this.domain = oArg.domain || 'localhost';
 	this.username = oArg.username;
 	this.resource = oArg.resource;
@@ -263,6 +265,8 @@ function JSJaCHBCInherit(oArg) {
 
 function JSJaCHBCDisconnect() {
 	
+	this._setStatus('disconnecting');
+
 	if (!this.connected())
 		return;
 
@@ -373,6 +377,8 @@ function JSJaCHBCPrepareResponse(req) {
 		  return null;
 		}
 		this.oDbg.log("repeating ("+this._errcnt+")",1);
+
+		this._setStatus('proto_error_fallback');
 
 		// schedule next tick
 		setTimeout("oCon._resume()",oCon.getPollInterval());
