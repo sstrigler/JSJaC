@@ -389,6 +389,9 @@ function JSJaCHBCPrepareResponse(req) {
 	var body = r.responseXML.documentElement;
 	if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
 		this.oDbg.log("invalid response:\n" + r.responseText,1);
+
+		this._setStatus('internal_server_error');
+
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
@@ -412,6 +415,9 @@ function JSJaCHBCPrepareResponse(req) {
 	// Check for errors from the server
 	if (body.getAttribute("type") == "terminate") {
 		this.oDbg.log("invalid response:\n" + r.responseText,1);
+
+		this._setStatus('internal_server_error');
+
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
