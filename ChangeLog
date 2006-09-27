@@ -1,13 +1,28 @@
+JSJaC v0.6
+==========
+
+* Support for Opera, Konqueror and Safari.
+* Support for suspend/resume (makes it possible to save the state between
+  page transitions.
+* Single include by JSJaC.js
+* Many bugfixes and improvements concerning reliability.
+* API change! Params to constructors and connect methods are now passed as
+  JSON objects.
+* New event 'status_changed' to signal if sth going on with the status of
+  the connection (like errors, retries and so on)
+	
 JSJaC v0.5
 ==========
-	* lots of bug fixes and minor improvements
-	* make use of asynchronous request wherever possible
-	* fixed simpleclient
-	* fixed API docs
+
+* lots of bug fixes and minor improvements
+* make use of asynchronous request wherever possible
+* fixed simpleclient
+* fixed API docs
 
 JSJaC v0.4
 ==========
-	* must have missed that - sorry
+
+* ...
 
 JSJaC v0.3.x
 ============
