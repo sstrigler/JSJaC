@@ -67,6 +67,9 @@ function JSJaCHPCPrepareResponse(r) {
 	// proxy error (!)
 	if (req.status != 200) {
 		this.oDbg.log("invalid response ("+req.status+"):" + req.responseText+"\n"+req.getAllResponseHeaders(),1);
+
+                this._setStatus('internal_server_error');
+
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
@@ -103,27 +106,66 @@ function JSJaCHPCPrepareResponse(r) {
 			this.oDbg.log("Key Sequence Error",1);
 			break;
 		}
+
+                this._setStatus('internal_server_error');
+
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
+		this._handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this._handleEvent('ondisconnect');
-		this._handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
 		return null;
 	}
 
 	if (!req.responseText || req.responseText == '')
 		return null;
 
-	var response = XmlDocument.create("body","foobar");
+	try {
+		
+		var doc = _parseTree("<body>"+req.responseText+"</body>");
 
-	if (typeof(response.loadXML) != 'undefined') {
-		response.loadXML("<body>"+req.responseText+"</body>");
-		return response.documentElement;
-	} else if (window.DOMParser)
-		return (new DOMParser()).parseFromString("<body>"+req.responseText+"</body>", "text/xml").documentElement;
-	else return null;;
+		if (!doc || doc.tagName == 'parsererror') {
+			this.oDbg.log("parsererror",1);
+
+			doc = _parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
+			if (doc && doc.tagName != 'parsererror') {
+				this.oDbg.log("stream closed",1);
+
+				if (doc.getElementsByTagName('conflict').length > 0)
+					this._setStatus("session-terminate-conflict");
+				
+				clearTimeout(this._timeout); // remove timer
+				clearInterval(this._interval);
+				clearInterval(this._inQto);
+				this._handleEvent('onerror',JSJaCError('503','cancel','session-terminate'));
+				this._connected = false;
+				this.oDbg.log("Disconnected.",1);
+				this._handleEvent('ondisconnect');
+			} else
+				this.oDbg.log("parsererror:"+doc2,1);
+			
+			return doc;
+		}
+
+		return doc;
+	} catch (e) {
+		this.oDbg.log("parse error:"+e.message,1);
+	}
+	return null;;
+}
+
+function _parseTree(s) {
+  try {
+		var r = XmlDocument.create("body","foo");
+		if (typeof(r.loadXML) != 'undefined') {
+			r.loadXML(s);
+			return r.documentElement;
+		} else if (window.DOMParser)
+			return (new DOMParser()).parseFromString(s, "text/xml").documentElement;
+  } catch (e) { }
+  return null;
 }
 
 function JSJaCHPCConnect(oArg) {

@@ -414,14 +414,17 @@ function JSJaCHBCPrepareResponse(req) {
 
 	// Check for errors from the server
 	if (body.getAttribute("type") == "terminate") {
-		this.oDbg.log("invalid response:\n" + r.responseText,1);
-
-		this._setStatus('internal_server_error');
+		this.oDbg.log("session terminated:\n" + r.responseText,1);
 
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
 		clearInterval(this._inQto);
-		this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+
+                if (body.getAttribute("condition") == "remote-stream-error")
+                  if (body.getElementsByTagName("conflict").length > 0) {
+                    this._setStatus("session-terminate-conflict");
+		  }
+		this._handleEvent('onerror',JSJaCError('503','cancel',body.getAttribute('condition')));
 		this._connected = false;
 		this.oDbg.log("Disconnected.",1);
 		this._handleEvent('ondisconnect');
