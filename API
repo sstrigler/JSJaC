@@ -19,7 +19,7 @@ void: registerHandler(string: event, function: handler)
 	register a handler for event. if event happens handler is called.
 
 	PARAMS: event - known events so far: 'message','iq','presence',
-                        'ondisconnect', 'onconnect', 'onerror'
+                        'ondisconnect', 'onconnect', 'onerror', 'status_changed'
 
 	        handler - the function to be called. for events 'message', 'iq'
 	                  and 'presence' the handler gets passed an JSJaCPacket 
@@ -226,3 +226,24 @@ JSJaCMessage: setSubject(string: subject)
 string: getBody()
 string: getSubject()
 	return value of corresponding element
+
+
+
+'status_changed' Event
+======================
+
+Available states are
+'initializing' ... well
+'connecting' if connect() was called
+'processing' if it's about to operate as normal
+'onerror_fallback' if there was an error with the request object
+'protoerror_fallback' if there was an error at the http binding protocol
+flow (most likely that's where you interested in)
+'internal_server_error' in case of an internal server error
+'suspending' if suspend() is being called
+'aborted' if abort() was called
+'disconnecting' if disconnect() has been called
+
+Have a look at examples/simpleclient.html for a short example on how to
+use this.
+
