@@ -54,8 +54,8 @@ function JSJaCHttpBindingConnection(oArg) {
 	  this._rid--; 
 	  this._keys._indexAt++;
 	  this._process();
-	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 	  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+	  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 	}
 	this._setHold = function(hold)  {
 		if (!hold || isNaN(hold) || hold < 0)
@@ -200,8 +200,8 @@ function JSJaCHBCHandleInitialResponse(slot) {
 	this._connected = true;
 
 	oCon = this;
-	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 
 	/* wait for initial stream response to extract streamid needed
 	 * for digest auth
