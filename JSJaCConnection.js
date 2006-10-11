@@ -51,7 +51,7 @@ function JSJaCConnection(oArg) {
 		if (!s)
 			return false;
 
-		this.oDbg.log('read cookie: '+s,2);
+		this.oDbg.log('read cookie: '+s,4);
 
 		s = s.parseJSON();
 
@@ -68,7 +68,7 @@ function JSJaCConnection(oArg) {
 		}
 		oCon = this;
 		if (this._connected)
-		  setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
+			setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
 		return this._connected;
 	}
 	this.send = JSJaCSend;
@@ -489,6 +489,7 @@ function JSJaCProcess(timerval) {
 	this._req[slot].r.onreadystatechange = function() {
 		if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
 			return;
+		oCon.oDbg.log("ready state changed for slot "+slot+" ["+oCon._req[slot].r.readyState+"]",4);
 		if (oCon._req[slot].r.readyState == 4) {
 			oCon._setStatus('processing');
 			oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
