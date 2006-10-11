@@ -68,7 +68,7 @@ function JSJaCHPCPrepareResponse(r) {
 	if (req.status != 200) {
 		this.oDbg.log("invalid response ("+req.status+"):" + req.responseText+"\n"+req.getAllResponseHeaders(),1);
 
-                this._setStatus('internal_server_error');
+		this._setStatus('internal_server_error');
 
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
@@ -107,7 +107,7 @@ function JSJaCHPCPrepareResponse(r) {
 			break;
 		}
 
-                this._setStatus('internal_server_error');
+		this._setStatus('internal_server_error');
 
 		clearTimeout(this._timeout); // remove timer
 		clearInterval(this._interval);
