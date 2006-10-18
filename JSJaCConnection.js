@@ -392,7 +392,8 @@ function JSJaCSASLAnonAuthBind(req) {
 	iq = new JSJaCIQ();
 	iq.setIQ(this.domain,null,'set','bind_1');
 	var eBind = iq.getDoc().createElement("bind");
-	eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind")
+	eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind");
+	eBind.appendChild(iq.getDoc().createElement("resource")).appendChild(iq.getDoc().createTextNode(this.resource));
 	iq.getNode().appendChild(eBind);
 	this.oDbg.log(iq.xml());
 	this.send(iq,oCon._doSASLAnonAuthSess);
