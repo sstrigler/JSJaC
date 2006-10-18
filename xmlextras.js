@@ -84,8 +84,8 @@ XmlHttp.create = function () {
 function XmlDocument() {}
 
 XmlDocument.create = function (name,ns) {
-  name = name || "";
-  ns = ns || "";
+  name = name || "foo";
+  ns = ns || "bar";
   try {
     var doc;
     // DOM2
