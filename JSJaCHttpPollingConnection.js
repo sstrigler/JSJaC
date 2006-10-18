@@ -41,7 +41,7 @@ function JSJaCHPCSetupRequest(async) {
 	return req;
 }
 
-function JSJaCHPCGetRequestString() {
+function JSJaCHPCGetRequestString(raw) {
 	var reqstr = this._sid;
 	if (JSJaC_HAVEKEYS) {
 		reqstr += ";"+this._keys.getKey();
@@ -51,6 +51,8 @@ function JSJaCHPCGetRequestString() {
 		}
 	}
 	reqstr += ',';
+	if (raw)
+	  reqstr += raw;
 	while (this._pQueue.length) {
 	  reqstr += this._pQueue[0];
 	  this._pQueue = this._pQueue.slice(1,this._pQueue.length);
@@ -236,7 +238,7 @@ function JSJaCHPCGetStream() {
 
 	if (this.authtype == 'saslanon') {
 		try {
-			var doc = XmlDocument.create();
+			var doc = XmlDocument.create("doc","foo");
 			doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
 				
 			if (!this._doSASLAnonAuth(doc))
@@ -246,7 +248,7 @@ function JSJaCHPCGetStream() {
 		}
 	} else if (this.authtype == 'sasl') {
 		try {
-			var doc = XmlDocument.create();
+			var doc = XmlDocument.create("doc","foo");
 			doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
 				
 			if (!this._doSASLAuth(doc))
