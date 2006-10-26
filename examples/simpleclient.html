@@ -13,16 +13,18 @@
     <script language="JavaScript" type="text/javascript">
       <!--
 function htmlEnc(str) {
-	if (!str)
+	try {
+		str = str.replace(/&/g,"&amp;");
+		str = str.replace(/</g,"&lt;");
+		str = str.replace(/>/g,"&gt;");
+		str = str.replace(/\"/g,"&quot;");
+		str = str.replace(/\n/g,"<br />");
+
+		return str;
+	} catch (e) { 
+		oDbg.log(typeof(str) + ":" + e);
 		return null;
-
-	str = str.replace(/&/g,"&amp;");
-	str = str.replace(/</g,"&lt;");
-	str = str.replace(/>/g,"&gt;");
-	str = str.replace(/\"/g,"&quot;");
-	str = str.replace(/\n/g,"<br />");
-
-	return str;
+	}
 }
 
 function handleEvent(aJSJaCPacket) {
@@ -264,12 +266,5 @@ onunload = function() {
 				<div class="spaced"><input type="submit" value="Send" tabindex="3"> * <input type="button" value="Quit" tabindex="4" onclick="return quit();"></div>
 			</form>
 		</div>
-
-    <hr>
-    <address><a href="mailto:steve@zeank.in-berlin.de">Stefan Strigler</a></address>
-<!-- Created: Fri Oct  8 16:25:29 CEST 2004 -->
-<!-- hhmts start -->
-Last modified: Wed Oct 18 14:04:04 CEST 2006
-<!-- hhmts end -->
   </body>
 </html>
