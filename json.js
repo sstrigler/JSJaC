@@ -19,7 +19,8 @@
             This method parses a JSON text to produce an object or
             array. It will return false if there is an error.
 */
-(function () {
+function JSON() {}
+JSON.toString = function (obj) {
     var m = {
             '\b': '\\b',
             '\t': '\\t',
@@ -100,20 +101,20 @@
             }
         };
 
-    Object.prototype.toJSONString = function () {
-        return s.object(this);
-    };
+switch (typeof(obj)) {
+ case 'object':
+        return s.object(obj);
+ case 'array':
+	 return s.array(obj);
+    
+}
+};
 
-    Array.prototype.toJSONString = function () {
-        return s.array(this);
-    };
-})();
-
-String.prototype.parseJSON = function () {
+JSON.parse = function (str) {
     try {
         return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
-                this.replace(/"(\\.|[^"\\])*"/g, ''))) &&
-            eval('(' + this + ')');
+                str.replace(/"(\\.|[^"\\])*"/g, ''))) &&
+            eval('(' + str + ')');
     } catch (e) {
         return false;
     }
