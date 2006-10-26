@@ -27,6 +27,9 @@ function JSJaCHttpPollingConnection(oArg) {
 	  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 	}
 	this._setupRequest = JSJaCHPCSetupRequest;
+
+	this._doSASLAuthReInitStream = JSJaCHPCSASLAuthReInitStream;
+
 }
 
 function JSJaCHPCSetupRequest(async) {
@@ -146,7 +149,7 @@ function JSJaCHPCPrepareResponse(r) {
 				this.oDbg.log("Disconnected.",1);
 				this._handleEvent('ondisconnect');
 			} else
-				this.oDbg.log("parsererror:"+doc2,1);
+				this.oDbg.log("parsererror:"+doc,1);
 			
 			return doc;
 		}
@@ -196,10 +199,7 @@ function JSJaCHPCConnect(oArg) {
 	var streamto = this.domain;
 	if (this.anonhost)
 		streamto = this.anonhost;
-	reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'";
-	if (this.authtype != 'nonsasl')
-		reqstr += " version='1.0'";
-	reqstr += ">";
+	reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
 	this.oDbg.log(reqstr,4);
 
 	this._req[0] = this._setupRequest(false);	
@@ -236,37 +236,37 @@ function JSJaCHPCGetStream() {
 
 	this.oDbg.log(this._req[0].r.responseText,4);
 
+	// extract stream id used for non-SASL authentication
+	if (this._req[0].r.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
+		this.streamid = RegExp.$1;
+	this.oDbg.log("got streamid: "+this.streamid,2);
+
+
 	if (this.authtype == 'saslanon') {
 		try {
 			var doc = XmlDocument.create("doc","foo");
 			doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
 				
-			if (!this._doSASLAnonAuth(doc))
-				return;
-		} catch(e) {
-			this.oDbg.log("loadXML: "+e.toString(),1);
-		}
-	} else if (this.authtype == 'sasl') {
-		try {
-			var doc = XmlDocument.create("doc","foo");
-			doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
-				
-			if (!this._doSASLAuth(doc))
+			if (!this._doSASLAuthANONYMOUS(doc))
 				return;
 		} catch(e) {
 			this.oDbg.log("loadXML: "+e.toString(),1);
 		}
 	} else {
 
-		// extract stream id used for non-SASL authentication
-		if (this._req[0].r.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
-			this.streamid = RegExp.$1;
-		this.oDbg.log("got streamid: "+this.streamid,2);
-		
 		if (this.register)
 			this._doReg();
-		else
-			this._doAuth();
+		else {
+			try {
+				var doc = XmlDocument.create("doc","foo");
+				doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
+				
+				if (!this._doSASLAuth(doc))
+					this._doAuth();
+			} catch(e) {
+				this.oDbg.log("loadXML: "+e.toString(),1);
+			}
+		} 
 	}
 
 	this._connected = true;
@@ -294,4 +294,16 @@ function JSJaCHPCDisconnect() {
 	this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
 	this._connected = false;
 	this._handleEvent('ondisconnect');
+}
+
+function JSJaCHPCSASLAuthReInitStream(req) {
+	this.oDbg.log(req.r.responseText,2);
+	var doc = oCon._prepareResponse(req);
+	if (doc.getElementsByTagName("success").length == 0) {
+		this.oDgb.log("auth failed",1);
+		oCon.disconnect();
+		return;
+	}
+
+	oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+oCon.domain+"' version='1.0'>",oCon._doSASLAuthBind);
 }

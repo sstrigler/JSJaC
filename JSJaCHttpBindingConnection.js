@@ -65,7 +65,9 @@ function JSJaCHttpBindingConnection(oArg) {
 		this._hold = hold;
 		return this._hold;
 	};
-	this._setupRequest = JSJaCHBCSetupRequest;	
+	this._setupRequest = JSJaCHBCSetupRequest;
+
+	this._doSASLAuthReInitStream = JSJaCHBCSASLAuthReInitStream;
 }
 
 function JSJaCHBCConnect(oArg) {
@@ -123,7 +125,6 @@ function JSJaCHBCConnect(oArg) {
 
 	this.oDbg.log(reqstr,4);
 
-	oCon = this;
 	this._req[slot].r.onreadystatechange = function() {
 		if (typeof(oCon) == 'undefined' || !oCon)
 			return;
@@ -199,7 +200,6 @@ function JSJaCHBCHandleInitialResponse(slot) {
 	/* start sending from queue for not polling connections */
 	this._connected = true;
 
-	oCon = this;
 	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 
@@ -224,7 +224,6 @@ function JSJaCHBCGetStreamID(slot) {
 		this.streamid = body.getAttribute('authid');
 		this.oDbg.log("got streamid: "+this.streamid,2);
 	} else {
-		oCon = this;
 		this._timeout = setTimeout("oCon._sendEmpty()",this.getPollInterval());
 		return;
 	}
@@ -232,7 +231,8 @@ function JSJaCHBCGetStreamID(slot) {
 	if (this.register)
 		this._doReg();
 	else
-		this._doAuth();
+	  if (!this._doSASLAuth(body)) 
+			this._doAuth();
 
 	this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
@@ -254,8 +254,6 @@ function JSJaCHBCInherit(oArg) {
 	this._connected = true;
 
 	this._handleEvent('onconnect');
-
-	oCon = this;
 
 	this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
 	this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
@@ -319,7 +317,8 @@ function JSJaCHBCSetupRequest(async) {
 	return req;
 }
 
-function JSJaCHBCGetRequestString() {
+function JSJaCHBCGetRequestString(raw) {
+	raw = raw || '';
  	var xml = '';
 
 	// check if we're repeating a request
@@ -337,7 +336,7 @@ function JSJaCHBCGetRequestString() {
 		this._last_rid = this._rid;
 
 		for (var i in this._last_requests)
-		  if (i != 'toJSONString' && i < this._rid-this._hold)
+		  if (i < this._rid-this._hold)
 		    delete(this._last_requests[i]); // truncate
 	}
 	var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
@@ -348,8 +347,13 @@ function JSJaCHBCGetRequestString() {
 			reqstr += "newkey='"+this._keys.getKey()+"' ";
 		}
 	}
-	if (xml) {
-		reqstr += ">" + xml + "</body>";
+	if (this._reinit) {
+		reqstr += "xmpp:restart='true' ";
+		this._reinit = false;
+	}
+
+	if (xml != '' || raw != '') {
+		reqstr += ">" + raw + xml + "</body>";
 	} else {
 		reqstr += "/>"; 
 	}
@@ -436,3 +440,16 @@ function JSJaCHBCPrepareResponse(req) {
 	return r.responseXML.documentElement;
 }
 
+
+function JSJaCHBCSASLAuthReInitStream(req) {
+	this.oDbg.log(req.r.responseText,2);
+	var doc = oCon._prepareResponse(req);
+	if (doc.getElementsByTagName("success").length == 0) {
+		this.oDgb.log("auth failed",1);
+		oCon.disconnect();
+		return;
+	}
+
+	oCon._reinit = true;
+	oCon._doSASLAuthBind();
+}
