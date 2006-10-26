@@ -53,10 +53,10 @@ function JSJaCConnection(oArg) {
 
 		this.oDbg.log('read cookie: '+s,4);
 
-		s = s.parseJSON();
+		o = JSON.parse(s);
 
-		for (var i in s)
-			this[i] = s[i];
+		for (var i in o)
+			this[i] = o[i];
 
 		// copy keys - not being very generic here :-/
 		if (this._keys) {
@@ -66,7 +66,7 @@ function JSJaCConnection(oArg) {
 				this._keys2[u[i]] = this._keys[u[i]];
 			this._keys = this._keys2;
 		}
-		oCon = this;
+
 		if (this._connected)
 			setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
 		return this._connected;
@@ -107,7 +107,7 @@ function JSJaCConnection(oArg) {
 			s[u[i]] = o;
 		}
 		
-		createCookie('s',s.toJSONString(),this._inactivity)
+		createCookie('s',JSON.toString(s),this._inactivity)
 
 		this._connected = false;
 
@@ -124,16 +124,18 @@ function JSJaCConnection(oArg) {
 	this._doAuth3     = JSJaCAuth3;
 	this._doReg       = JSJaCReg;
 
-	this._doSASLAuth	= JSJaCSASLAuth;
-// 	this._doSASLAuthBind = JSJaCSASLAuthBind;
-// 	this._doSASLAuthSess = JSJaCSASLAuthSess;
-// 	this._doSASLAuthDone = JSJaCSASLAuthDone;
+	this._sendRaw         = JSJaCSendRaw;
 
-	this._doSASLAnonAuth = JSJaCSASLAnonAuth;
-	this._doSASLAnonAuthReinitStream = JSJaCSASLAnonAuthReinitStream;
-	this._doSASLAnonAuthBind = JSJaCSASLAnonAuthBind;
-	this._doSASLAnonAuthSess = JSJaCSASLAnonAuthSess;
-	this._doSASLAnonAuthDone = JSJaCSASLAnonAuthDone;
+	this._doSASLAuth      = JSJaCSASLAuth;
+
+	this._doSASLAuthBind  = JSJaCSASLAuthBind;
+	this._doSASLAuthSess  = JSJaCSASLAuthSess;
+	this._doSASLAuthDone  = JSJaCSASLAuthDone;
+
+	// SASL mechanisms
+	this._doSASLAuthPLAIN = JSJaCSASLAuthPLAIN;
+	this._doSASLAuthANONYMOUS = JSJaCSASLAuthANONYMOUS;
+
 	this._handleEvent = function(event,arg) {
 		event = event.toLowerCase(); // don't be case-sensitive here
 		this.oDbg.log("incoming event '"+event+"'",3);
@@ -272,6 +274,35 @@ function JSJaCAuth3(iq) {
 /* ***
  * SASL
  */
+function JSJaCSendRaw(xml, cb) 
+{
+  var slot = this._getFreeSlot();
+  this._req[slot] = this._setupRequest(true);
+  
+  this._req[slot].r.onreadystatechange = function() {
+    if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+      return;
+    if (oCon._req[slot].r.readyState == 4) {
+      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
+      cb(oCon._req[slot]);							
+    }
+  }
+  
+  if (typeof(this._req[slot].r.onerror) != 'undefined') {
+    this._req[slot].r.onerror = function(e) {
+      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+				return;
+      oCon.oDbg.log('XmlHttpRequest error',1);
+      return false;
+    }
+  }
+  
+  var reqstr = this._getRequestString(xml);
+  this.oDbg.log("sending: " + reqstr,4);
+  this._req[slot].r.send(reqstr);
+  return true; // stop here
+}
+
 function JSJaCSASLAuth(doc) {
 	if (!doc || typeof(doc) == 'undefined') {
 		this.oDbg.log("nothing to parse ... aborting",1);
@@ -279,26 +310,43 @@ function JSJaCSASLAuth(doc) {
 	}
 	this.oDbg.log(doc.xml,2);
 
-	// check if SASL Anonymous is supported
-	this._mechs = new Array(); // list of supported mechanisms
+	var mec = ''; 
 	var lMec1 = doc.getElementsByTagName("mechanisms");
 	for (var i=0; i<lMec1.length; i++)
 		if (lMec1.item(i).getAttribute("xmlns") == "urn:ietf:params:xml:ns:xmpp-sasl") {
 			this.oDbg.log("SASL support detected",2);
 			var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
 			for (var j=0; j<lMec2.length; j++)
-				this._mechs.push(lMec2.item(j).firstChild.nodeValue);
-			this.oDbg.log("supported sasl mechanisms: "+this._mechs,2);
-			break;
+			  if (lMec2.item(j).firstChild.nodeValue == 'PLAIN') {
+					this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ binb2b64(str2binb(this.username+'@'+this.domain+String.fromCharCode(0)+this.username+String.fromCharCode(0)+this.pass))+"</auth>", oCon._doSASLAuthReInitStream);
+					return true;
+				}
+			return false; // no need to proceed - sasl found but no mechanism applied
 		}
+
 	this.oDbg.log("No support for SASL detected ... aborting",1);
 	return false;
+}
+
+function JSJaCSASLAuthPLAIN(req) 
+{
+  oCon.oDbg.log(req.r.responseText,2);
+	var doc = oCon._prepareResponse(req);
+
+  oCon.oDbg.log(doc.xml,2);
+  
+  if (doc.getElementsByTagName("success").length == 0) {
+    oCon.oDgb.log("auth failed",1);
+    oCon.disconnect();
+    return;
+  }
+	oCon._doSASLAuthReInitStream();
 }
 
 /* ***
  * SASL Anonymous Login
  */
-function JSJaCSASLAnonAuth(doc) {
+function JSJaCSASLAuthANONYMOUS(doc) {
 	if (!doc || typeof(doc) == 'undefined') {
 		this.oDbg.log("nothing to parse ... aborting",1);
 		return false;
@@ -314,92 +362,29 @@ function JSJaCSASLAnonAuth(doc) {
 			for (var j=0; j<lMec2.length; j++)
 				if (lMec2.item(j).firstChild && 
 						lMec2.item(j).firstChild.nodeValue &&
-						lMec2.item(j).firstChild.nodeValue.toLowerCase() == 'anonymous') {// got it
-					// request anon auth
-					var slot = this._getFreeSlot();
-					this._req[slot] = this._setupRequest(true);
-
-					this._req[slot].r.onreadystatechange = function() {
-						if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-							return;
-						if (oCon._req[slot].r.readyState == 4) {
-							oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-							oCon._doSASLAnonAuthReinitStream(oCon._req[slot]);							
-						}
-					};
-					
-					if (typeof(this._req[slot].r.onerror) != 'undefined') {
-						this._req[slot].r.onerror = function(e) {
-							if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-								return;
-							oCon.oDbg.log('XmlHttpRequest error',1);
-							return false;
-						};
-					}
-
-					var reqstr = this._getRequestString("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>");
-					this.oDbg.log("sending: " + reqstr,4);
-					this._req[slot].r.send(reqstr);
-					return true; // stop here
+						lMec2.item(j).firstChild.nodeValue == 'ANONYMOUS') { // got it
+				  // request anon auth
+				  this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>",oCon._doSASLAuthReInitStream);
+					return true;
 				}
-			break;
+			break; // no need to dig deeper here
 		}
 	this.oDbg.log("No support for SASL Anonymous detected ... aborting",1);
 	return false;
 }
 
-function JSJaCSASLAnonAuthReinitStream(req) {
-	this.oDbg.log(req.r.responseText,2);
-	var doc = this._prepareResponse(req);
-	if (doc.getElementsByTagName("success").length == 0) {
-		this.oDgb.log("auth failed",1);
-		con.disconnect();
-		return;
-	}
-	
-	var slot = this._getFreeSlot();
-	this._req[slot] = this._setupRequest(true);
-
-	this._req[slot].r.onreadystatechange = function() {
-		if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-			return;
-		if (oCon._req[slot].r.readyState == 4) {
-			oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-			oCon._doSASLAnonAuthBind(oCon._req[slot].r);							
-		}
-	};
-					
-	if (typeof(this._req[slot].r.onerror) != 'undefined') {
-		this._req[slot].r.onerror = function(e) {
-			if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-				return;
-			oCon.oDbg.log('XmlHttpRequest error',1);
-			oCon.disconnect();
-			return false;
-		};
-	}
-
-	var reqstr = this._getRequestString("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+this.domain+"' version='1.0'>");
-
-	this.oDbg.log("sending: " + reqstr,2);
-	this._req[slot].r.send(reqstr);
-	return true;
-}
-
-function JSJaCSASLAnonAuthBind(req) {
-	this.oDbg.log(req.responseText,2);
-
+function JSJaCSASLAuthBind() {
 	iq = new JSJaCIQ();
 	iq.setIQ(this.domain,null,'set','bind_1');
 	var eBind = iq.getDoc().createElement("bind");
 	eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind");
-	eBind.appendChild(iq.getDoc().createElement("resource")).appendChild(iq.getDoc().createTextNode(this.resource));
+	eBind.appendChild(iq.getDoc().createElement("resource")).appendChild(iq.getDoc().createTextNode(oCon.resource));
 	iq.getNode().appendChild(eBind);
-	this.oDbg.log(iq.xml());
-	this.send(iq,oCon._doSASLAnonAuthSess);
+	oCon.oDbg.log(iq.xml());
+	oCon.send(iq,oCon._doSASLAuthSess);
 }
 
-function JSJaCSASLAnonAuthSess(iq) {
+function JSJaCSASLAuthSess(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
 		if (iq.getType() == 'error')
@@ -407,7 +392,8 @@ function JSJaCSASLAnonAuthSess(iq) {
 		return;
 	}
 
-	oCon.jid = iq.getDoc().firstChild.getElementsByTagName('jid').item(0).firstChild.nodeValue;
+	oCon.fulljid = iq.getDoc().firstChild.getElementsByTagName('jid').item(0).firstChild.nodeValue;
+	oCon.jid = oCon.fulljid.substring(0,oCon.fulljid.lastIndexOf('/'));
 
 	iq = new JSJaCIQ();
 	iq.setIQ(this.domain,null,'set','sess_1');
@@ -415,10 +401,10 @@ function JSJaCSASLAnonAuthSess(iq) {
 	eSess.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-session");
 	iq.getNode().appendChild(eSess);
 	oCon.oDbg.log(iq.xml());
-	oCon.send(iq,oCon._doSASLAnonAuthDone);
+	oCon.send(iq,oCon._doSASLAuthDone);
 }
 
-function JSJaCSASLAnonAuthDone(iq) {
+function JSJaCSASLAuthDone(iq) {
 	if (iq.getType() != 'result' || iq.getType() == 'error') { // auth' failed
 		oCon.disconnect();
 		if (iq.getType() == 'error')
@@ -547,7 +533,6 @@ function JSJaCSendEmpty() {
 	var slot = this._getFreeSlot();
 	this._req[slot] = this._setupRequest(true);
 
-	oCon = this;
 	this._req[slot].r.onreadystatechange = function() {
 		if (typeof(oCon) == 'undefined' || !oCon)
 			return;
@@ -594,7 +579,6 @@ function JSJaCCheckInQ() {
 			if (!this._handlePID(aJSJaCPacket))
 				this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
 	}
-// 	oCon = this;
 // 	this._inQto = setTimeout("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 }
 
