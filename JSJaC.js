@@ -7,7 +7,7 @@ var JSJaC = {
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
   },
   load: function() {
-    var includes = ['xmlextras','JSJaCPacket','sha1','json','qm_cookie','JSJaCConnection','JSJaCHttpPollingConnection','JSJaCHttpBindingConnection'];
+    var includes = ['xmlextras','JSJaCPacket','crypt','json','qm_cookie','JSJaCConnection','JSJaCHttpPollingConnection','JSJaCHttpBindingConnection'];
     var scripts = document.getElementsByTagName("script");
     var path = './';
     for (var i=0; i<scripts.length; i++) {
