@@ -1,4 +1,13 @@
 /*
+ * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ * in FIPS PUB 180-1
+ * Version 2.1a Copyright Paul Johnston 2000 - 2002.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for details.
+ */
+
+/*
  * Configurable variables. You may need to tweak these to be compatible with
  * the server-side, but the defaults work in most cases.
  */
@@ -20,28 +29,9 @@ function str_hmac_sha1(key, data){ return binb2str(core_hmac_sha1(key, data));}
 /*
  * Perform a simple self-test to see if the VM is working
  */
-function sha1_test()
+function sha1_vm_test()
 {
-  if(hex_sha1("abc") == "a9993e364706816aba3e25717850c26c9cd0d89d") document.getElementById("cipher").style.display="inline";
-}
-
-function sha1sumbit()
-{
-  platnost = new Date;
-  platnost.setTime(platnost.getTime()+(86400000*365));
-
-  if(document.login.xcipher.checked)
-  {
-    document.cookie="js_cipher=1;expires="+platnost.toGMTString();
-    if(document.login.password.value && document.login.uid.value.length>22)
-    {
-     document.login.mdpass.value = hex_sha1(document.login.uid.value+""+document.login.password.value);
-     document.login.password.value="";
-    }
-    else return false;
-  }
-  else document.cookie="js_cipher=0;expires="+platnost.toGMTString();
-  return true;
+  return hex_sha1("abc") == "a9993e364706816aba3e25717850c26c9cd0d89d";
 }
 
 /*
@@ -61,32 +51,32 @@ function core_sha1(x, len)
   var e = -1009589776;
 
   for(var i = 0; i < x.length; i += 16)
-  {
-    var olda = a;
-    var oldb = b;
-    var oldc = c;
-    var oldd = d;
-    var olde = e;
-
-    for(var j = 0; j < 80; j++)
     {
-      if(j < 16) w[j] = x[i + j];
-      else w[j] = rol(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
-      var t = safe_add(safe_add(rol(a, 5), sha1_ft(j, b, c, d)),
-                       safe_add(safe_add(e, w[j]), sha1_kt(j)));
-      e = d;
-      d = c;
-      c = rol(b, 30);
-      b = a;
-      a = t;
-    }
+      var olda = a;
+      var oldb = b;
+      var oldc = c;
+      var oldd = d;
+      var olde = e;
 
-    a = safe_add(a, olda);
-    b = safe_add(b, oldb);
-    c = safe_add(c, oldc);
-    d = safe_add(d, oldd);
-    e = safe_add(e, olde);
-  }
+      for(var j = 0; j < 80; j++)
+        {
+          if(j < 16) w[j] = x[i + j];
+          else w[j] = rol(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
+          var t = safe_add(safe_add(rol(a, 5), sha1_ft(j, b, c, d)),
+                           safe_add(safe_add(e, w[j]), sha1_kt(j)));
+          e = d;
+          d = c;
+          c = rol(b, 30);
+          b = a;
+          a = t;
+        }
+
+      a = safe_add(a, olda);
+      b = safe_add(b, oldb);
+      c = safe_add(c, oldc);
+      d = safe_add(d, oldd);
+      e = safe_add(e, olde);
+    }
   return Array(a, b, c, d, e);
 
 }
@@ -109,7 +99,7 @@ function sha1_ft(t, b, c, d)
 function sha1_kt(t)
 {
   return (t < 20) ?  1518500249 : (t < 40) ?  1859775393 :
-         (t < 60) ? -1894007588 : -899497514;
+    (t < 60) ? -1894007588 : -899497514;
 }
 
 /*
@@ -122,10 +112,10 @@ function core_hmac_sha1(key, data)
 
   var ipad = Array(16), opad = Array(16);
   for(var i = 0; i < 16; i++)
-  {
-    ipad[i] = bkey[i] ^ 0x36363636;
-    opad[i] = bkey[i] ^ 0x5C5C5C5C;
-  }
+    {
+      ipad[i] = bkey[i] ^ 0x36363636;
+      opad[i] = bkey[i] ^ 0x5C5C5C5C;
+    }
 
   var hash = core_sha1(ipad.concat(str2binb(data)), 512 + data.length * chrsz);
   return core_sha1(opad.concat(hash), 512 + 160);
@@ -159,7 +149,7 @@ function str2binb(str)
   var bin = Array();
   var mask = (1 << chrsz) - 1;
   for(var i = 0; i < str.length * chrsz; i += chrsz)
-    bin[i>>5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i%32);
+    bin[i>>5] |= (str.charCodeAt(i / chrsz) & mask) << (32 - chrsz - i%32);
   return bin;
 }
 
@@ -171,7 +161,7 @@ function binb2str(bin)
   var str = "";
   var mask = (1 << chrsz) - 1;
   for(var i = 0; i < bin.length * 32; i += chrsz)
-    str += String.fromCharCode((bin[i>>5] >>> (24 - i%32)) & mask);
+    str += String.fromCharCode((bin[i>>5] >>> (32 - chrsz - i%32)) & mask);
   return str;
 }
 
@@ -183,10 +173,10 @@ function binb2hex(binarray)
   var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
   var str = "";
   for(var i = 0; i < binarray.length * 4; i++)
-  {
-    str += hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8+4)) & 0xF) +
-           hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8  )) & 0xF);
-  }
+    {
+      str += hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8+4)) & 0xF) +
+        hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8  )) & 0xF);
+    }
   return str;
 }
 
@@ -198,15 +188,48 @@ function binb2b64(binarray)
   var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   var str = "";
   for(var i = 0; i < binarray.length * 4; i += 3)
-  {
-    var triplet = (((binarray[i   >> 2] >> 8 * (3 -  i   %4)) & 0xFF) << 16)
-                | (((binarray[i+1 >> 2] >> 8 * (3 - (i+1)%4)) & 0xFF) << 8 )
-                |  ((binarray[i+2 >> 2] >> 8 * (3 - (i+2)%4)) & 0xFF);
-    for(var j = 0; j < 4; j++)
     {
-      if(i * 8 + j * 6 > binarray.length * 32) str += b64pad;
-      else str += tab.charAt((triplet >> 6*(3-j)) & 0x3F);
+      var triplet = (((binarray[i   >> 2] >> 8 * (3 -  i   %4)) & 0xFF) << 16)
+        | (((binarray[i+1 >> 2] >> 8 * (3 - (i+1)%4)) & 0xFF) << 8 )
+        |  ((binarray[i+2 >> 2] >> 8 * (3 - (i+2)%4)) & 0xFF);
+      for(var j = 0; j < 4; j++)
+        {
+          if(i * 8 + j * 6 > binarray.length * 32) str += b64pad;
+          else str += tab.charAt((triplet >> 6*(3-j)) & 0x3F);
+        }
     }
-  }
   return str;
+}
+
+
+/*
+ * a base64 decoder - taken from
+ * http://aktuell.de.selfhtml.org/artikel/javascript/utf8b64/base64.htm
+ */
+function b64arrays() {
+  var b64s='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  b64 = [];f64 =[];
+  for (var i=0; i<b64s.length ;i++) {
+    b64[i] = b64s.charAt(i);
+    f64[b64s.charAt(i)] = i;
+  }
+}
+b64arrays();
+
+function b64t2d(t) {
+  var d=[]; var i=0;
+  // zur decodierung die Umbrueche killen
+  t=t.replace(/\n|\r/g,""); t=t.replace(/=/g,"");
+  while (i<t.length)
+    {
+      d[d.length] = (f64[t.charAt(i)]<<2) | (f64[t.charAt(i+1)]>>4);
+      d[d.length] = (((f64[t.charAt(i+1)]&15)<<4) | (f64[t.charAt(i+2)]>>2));
+      d[d.length] = (((f64[t.charAt(i+2)]&3)<<6) | (f64[t.charAt(i+3)]));
+      i+=4;
+    }
+  if (t.length%4 == 2)
+    d = d.slice(0, d.length-2);
+  if (t.length%4 == 3)
+    d = d.slice(0, d.length-1);
+  return d;
 }
