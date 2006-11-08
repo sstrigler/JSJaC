@@ -214,7 +214,6 @@ function b64arrays() {
     f64[b64s.charAt(i)] = i;
   }
 }
-b64arrays();
 
 function b64t2d(t) {
   var d=[]; var i=0;
@@ -232,4 +231,26 @@ function b64t2d(t) {
   if (t.length%4 == 3)
     d = d.slice(0, d.length-1);
   return d;
+}
+
+function decode_utf8d2t(d)
+{
+  var r=[]; var i=0;
+  while(i<d.length)
+    {
+      if (d[i]<128) {
+        r[r.length]= String.fromCharCode(d[i]); i++;}
+      else if((d[i]>191) && (d[i]<224)) {
+        r[r.length]= String.fromCharCode(((d[i]&31)<<6) | (d[i+1]&63)); i+=2;}
+      else {
+        r[r.length]= String.fromCharCode(((d[i]&15)<<12) | ((d[i+1]&63)<<6) | (d[i+2]&63)); i+=3;}
+    }
+  return r.join("");
+}
+
+if (typeof(atob) == 'undefined') {
+  b64arrays();
+  atob = function(s) {
+    return decode_utf8d2t(b64t2d(s)); 
+  }
 }
