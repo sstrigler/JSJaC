@@ -290,7 +290,8 @@ function JSJaCHBCDisconnect() {
     this._pQueue = this._pQueue.slice(1,this._pQueue.length);
   }
 
-  reqstr += "<presence type='unavailable' xmlns='jabber:client'/></body>";
+  //reqstr += "<presence type='unavailable' xmlns='jabber:client'/>";
+  reqstr += "</body>";
 
   // Wait for response (for a limited time, 5s)
   var abortTimerID = setTimeout("this._req[slot].abort();", 5000);
