@@ -346,11 +346,17 @@ function JSJaCSASLAuth(doc) {
   
   if (mechs['DIGEST-MD5']) {
     this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",0);
-    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",oCon._doSASLAuthDigestMd5S1);
+    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",
+                  oCon._doSASLAuthDigestMd5S1);
     return true;
   } else if (this.allow_plain && mechs['PLAIN']) {
     this.oDbg.log("SASL using mechanism 'PLAIN'",0);
-    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ binb2b64(str2binb(this.username+'@'+this.domain+String.fromCharCode(0)+this.username+String.fromCharCode(0)+this.pass))+"</auth>", oCon._doSASLAuthReInitStream);
+    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ 
+                  binb2b64(str2binb(this.username+'@'+
+                                    this.domain+String.fromCharCode(0)+
+                                    this.username+String.fromCharCode(0)+
+                                    this.pass))+"</auth>", 
+                  oCon._doSASLAuthReInitStream);
     return true;
   }
   
@@ -398,7 +404,8 @@ function JSJaCSASLAuthDigestMd5S1(req) {
 
     var A2 = 'AUTHENTICATE:'+oCon._digest_uri;
 
-    var response = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+oCon._cnonce+':auth:'+hex_md5(A2));
+    var response = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+
+                           oCon._cnonce+':auth:'+hex_md5(A2));
 
     var rPlain = 'username="'+oCon.username+'",realm="'+oCon.domain+
       '",nonce="'+oCon._nonce+'",cnonce="'+oCon._cnonce+'",nc="'+oCon._nc+
@@ -407,7 +414,9 @@ function JSJaCSASLAuthDigestMd5S1(req) {
     
     oCon.oDbg.log("response: "+rPlain,2);
 
-    oCon._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"+binb2b64(str2binb(rPlain))+"</response>",oCon._doSASLAuthDigestMd5S2);
+    oCon._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"+
+                  binb2b64(str2binb(rPlain))+"</response>",
+                  oCon._doSASLAuthDigestMd5S2);
   }
 }
 
@@ -432,15 +441,19 @@ function JSJaCSASLAuthDigestMd5S2(req) {
 
   var A2 = ':'+oCon._digest_uri;
 
-  var rsptest = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+oCon._cnonce+':auth:'+hex_md5(A2));
+  var rsptest = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+
+                        oCon._cnonce+':auth:'+hex_md5(A2));
   oCon.oDbg.log("rsptest: "+rsptest,2);
 
-  if (rsptest != rspauth)
-    oCon.oDbg.log("SASL Digest-MD5: server repsonse with wrong rspauth - we don't care?",1);
+  if (rsptest != rspauth) {
+    oCon.oDbg.log("SASL Digest-MD5: server repsonse with wrong rspauth",1);
+    oCon.disconnect();
+    return;
+  }
 
   if (doc.firstChild.nodeName == 'success')
     oCon._doSASLAuthReInitStream(req);
-  else// some extra turn
+  else // some extra turn
     oCon._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>",
                   oCon._doSASLAuthReInitStream);
 }
@@ -466,7 +479,8 @@ function JSJaCSASLAuthANONYMOUS(doc) {
             lMec2.item(j).firstChild.nodeValue &&
             lMec2.item(j).firstChild.nodeValue == 'ANONYMOUS') { // got it
           // request anon auth
-          this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>",oCon._doSASLAuthReInitStream);
+          this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>",
+                        oCon._doSASLAuthReInitStream);
           return true;
         }
       break; // no need to dig deeper here
