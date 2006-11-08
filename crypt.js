@@ -511,3 +511,12 @@ if (typeof(atob) == 'undefined') {
     return decode_utf8d2t(b64t2d(s)); 
   }
 }
+
+function cnonce(size) {
+  var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var cnonce = '';
+  for (var i=0; i<size; i++) {
+    cnonce += tab.charAt(Math.round(Math.random(new Date().getTime())*(size-1)));
+  }
+  return cnonce;
+}

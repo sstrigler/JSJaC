@@ -3,6 +3,7 @@ JSJaC_NKEYS    = 16;    // number of keys to generate
 JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
 JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
 
+JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
 
 JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
 JSJaC_CheckInQueueInterval = 1; // msecs to poll in queue
@@ -22,6 +23,11 @@ function JSJaCConnection(oArg) {
 
   if (oArg && oArg.httpbase)
     this._httpbase = oArg.httpbase;
+
+  if (oArg && typeof(oArg.allow_plain) != 'undefined')
+    this.allow_plain = oArg.allow_plain;
+  else 
+    this.allow_plain = JSJAC_ALLOW_PLAIN;
 
   this._connected = false;
   this._events = new Array();
@@ -114,7 +120,6 @@ function JSJaCConnection(oArg) {
     this._setStatus('suspending');
   }
 
-
   this._abort       = JSJaCAbort;
   this._checkInQ    = JSJaCCheckInQ;
   this._checkQueue  = JSJaCHBCCheckQueue;
@@ -133,7 +138,8 @@ function JSJaCConnection(oArg) {
   this._doSASLAuthDone  = JSJaCSASLAuthDone;
 
   // SASL mechanisms
-  this._doSASLAuthPLAIN = JSJaCSASLAuthPLAIN;
+  this._doSASLAuthDigestMd5S1 = JSJaCSASLAuthDigestMd5S1;
+  this._doSASLAuthDigestMd5S2 = JSJaCSASLAuthDigestMd5S2;
   this._doSASLAuthANONYMOUS = JSJaCSASLAuthANONYMOUS;
 
   this._handleEvent = function(event,arg) {
@@ -200,6 +206,9 @@ function JSJaCConnection(oArg) {
 
 }
 
+/*** *** *** START AUTH STUFF *** *** ***/
+
+/*** *** *** AUTH LEGACY *** *** ***/
 function JSJaCReg() {
   /* ***
    * In-Band Registration see JEP-0077
@@ -232,6 +241,13 @@ function JSJaCAuth(iq) {
 }
 
 function JSJaCAuth2(iq) {
+  if (!iq || iq.getType() != 'result') {
+    if (iq.getType() == 'error') 
+      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    oCon.disconnect();
+    return;
+  } 
+
   oCon.oDbg.log("got iq: " + iq.xml(),4);
   var use_digest = false;
   for (var aChild=iq.getNode().firstChild.firstChild; aChild!=null; aChild=aChild.nextSibling) {
@@ -252,8 +268,12 @@ function JSJaCAuth2(iq) {
 
   if (use_digest) { // digest login
     query.appendChild(iq.getDoc().createElement('digest')).appendChild(iq.getDoc().createTextNode(hex_sha1(oCon.streamid + oCon.pass)));
-  } else { // use plaintext auth
+  } else if (oCon.allow_plain) { // use plaintext auth
     query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(oCon.pass));
+  } else {
+    oCon.oDbg.log("no valid login mechanism found",1);
+    oCon.disconnect();
+    return false;
   }
 
   oCon.send(iq,oCon._doAuth3);
@@ -271,9 +291,10 @@ function JSJaCAuth3(iq) {
     oCon._handleEvent('onconnect');
 }
 
-/* ***
- * SASL
- */
+/*** *** *** END AUTH LEGACY *** *** ***/
+
+/*** *** *** SASL AUTH *** *** ***/
+
 function JSJaCSendRaw(xml, cb) 
 {
   var slot = this._getFreeSlot();
@@ -310,37 +331,118 @@ function JSJaCSASLAuth(doc) {
   }
   this.oDbg.log(doc.xml,2);
 
-  var mec = ''; 
+  var mechs = new Object(); 
   var lMec1 = doc.getElementsByTagName("mechanisms");
+  var has_sasl = false;
   for (var i=0; i<lMec1.length; i++)
     if (lMec1.item(i).getAttribute("xmlns") == "urn:ietf:params:xml:ns:xmpp-sasl") {
       this.oDbg.log("SASL support detected",2);
+      has_sasl=true;
       var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
       for (var j=0; j<lMec2.length; j++)
-        if (lMec2.item(j).firstChild.nodeValue == 'PLAIN') {
-          this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ binb2b64(str2binb(this.username+'@'+this.domain+String.fromCharCode(0)+this.username+String.fromCharCode(0)+this.pass))+"</auth>", oCon._doSASLAuthReInitStream);
-          return true;
-        }
-      return false; // no need to proceed - sasl found but no mechanism applied
+        mechs[lMec2.item(j).firstChild.nodeValue] = true;
+      break;
     }
   
-  this.oDbg.log("No support for SASL detected ... aborting",1);
+  if (mechs['DIGEST-MD5']) {
+    this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",0);
+    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",oCon._doSASLAuthDigestMd5S1);
+    return true;
+  } else if (this.allow_plain && mechs['PLAIN']) {
+    this.oDbg.log("SASL using mechanism 'PLAIN'",0);
+    this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ binb2b64(str2binb(this.username+'@'+this.domain+String.fromCharCode(0)+this.username+String.fromCharCode(0)+this.pass))+"</auth>", oCon._doSASLAuthReInitStream);
+    return true;
+  }
+  
+  if (has_sasl)
+    this.oDbg.log("SASL detected but noch mechanisms applied",1);
+  else
+    this.oDbg.log("No support for SASL detected",1);
   return false;
 }
 
-function JSJaCSASLAuthPLAIN(req) 
-{
+function JSJaCSASLAuthDigestMd5S1(req) {
   oCon.oDbg.log(req.r.responseText,2);
+
   var doc = oCon._prepareResponse(req);
-        
-  oCon.oDbg.log(doc.xml,2);
-  
-  if (doc.getElementsByTagName("success").length == 0) {
-    oCon.oDgb.log("auth failed",1);
+  if (doc.getElementsByTagName("challenge").length == 0) {
+    oCon.oDbg.log("challenge missing",1);
     oCon.disconnect();
-    return;
+  } else {
+    var challenge = atob(doc.getElementsByTagName("challenge").item(0).firstChild.nodeValue);
+    oCon.oDbg.log("got challenge: "+challenge,2);
+    oCon._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
+    oCon._nonce = oCon._nonce.substring(0,oCon._nonce.indexOf("\""));
+    oCon.oDbg.log("nonce: "+oCon._nonce,2);
+    if (oCon._nonce == '' || oCon._nonce.indexOf('\"') != -1) {
+      this.oDbg.log("nonce not valid, aborting",1);
+      oCon.disconnect();
+      return;
+    }
+
+    oCon._digest_uri = "xmpp/";
+//     if (typeof(oCon.host) != 'undefined' && oCon.host != '') {
+//       oCon._digest-uri += oCon.host;
+//       if (typeof(oCon.port) != 'undefined' && oCon.port)
+//         oCon._digest-uri += ":" + oCon.port;
+//       oCon._digest-uri += '/';
+//     }
+    oCon._digest_uri += oCon.domain;
+
+    oCon._cnonce = cnonce(14);
+
+    oCon._nc = '00000001';
+
+    var A1 = str_md5(oCon.username+':'+oCon.domain+':'+oCon.pass)+
+      ':'+oCon._nonce+':'+oCon._cnonce;
+
+    var A2 = 'AUTHENTICATE:'+oCon._digest_uri;
+
+    var response = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+oCon._cnonce+':auth:'+hex_md5(A2));
+
+    var rPlain = 'username="'+oCon.username+'",realm="'+oCon.domain+
+      '",nonce="'+oCon._nonce+'",cnonce="'+oCon._cnonce+'",nc="'+oCon._nc+
+      '",qop=auth,digest-uri="'+oCon._digest_uri+'",response="'+response+
+      '",charset=utf-8';
+    
+    oCon.oDbg.log("response: "+rPlain,2);
+
+    oCon._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"+binb2b64(str2binb(rPlain))+"</response>",oCon._doSASLAuthDigestMd5S2);
   }
-  oCon._doSASLAuthReInitStream();
+}
+
+function JSJaCSASLAuthDigestMd5S2(req) {
+  oCon.oDbg.log(req.r.responseText,2);
+
+  var doc = oCon._prepareResponse(req);
+
+  if (doc.firstChild.nodeName == 'failure') {
+    oCon.oDbg.log("auth error: "+doc.firstChild.xml,1);
+    oCon.disconnect();
+  }
+
+  var response = atob(doc.firstChild.firstChild.nodeValue)
+  oCon.oDbg.log("response: "+response,2);
+
+  var rspauth = response.substring(response.indexOf("rspauth=")+8);
+  oCon.oDbg.log("rspauth: "+rspauth,2);
+
+  var A1 = str_md5(oCon.username+':'+oCon.domain+':'+oCon.pass)+
+    ':'+oCon._nonce+':'+oCon._cnonce;
+
+  var A2 = ':'+oCon._digest_uri;
+
+  var rsptest = hex_md5(hex_md5(A1)+':'+oCon._nonce+':'+oCon._nc+':'+oCon._cnonce+':auth:'+hex_md5(A2));
+  oCon.oDbg.log("rsptest: "+rsptest,2);
+
+  if (rsptest != rspauth)
+    oCon.oDbg.log("SASL Digest-MD5: server repsonse with wrong rspauth - we don't care?",1);
+
+  if (doc.firstChild.nodeName == 'success')
+    oCon._doSASLAuthReInitStream(req);
+  else// some extra turn
+    oCon._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>",
+                  oCon._doSASLAuthReInitStream);
 }
 
 /* ***
@@ -411,8 +513,13 @@ function JSJaCSASLAuthDone(iq) {
       oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
     return;
   } else 
+
     oCon._handleEvent('onconnect');
 }
+
+/*** *** *** END SASL AUTH *** *** ***/
+
+/*** *** *** END AUTH STUFF *** *** ***/
 
 /* ***
  * send a jsjac packet
