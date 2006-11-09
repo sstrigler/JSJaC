@@ -28,7 +28,7 @@ function JSJaCHttpPollingConnection(oArg) {
   }
   this._setupRequest = JSJaCHPCSetupRequest;
 
-  this._doSASLAuthReInitStream = JSJaCHPCSASLAuthReInitStream;
+  this._reInitStream = JSJaCHPCReInitStream;
 
 }
 
@@ -181,14 +181,12 @@ function JSJaCHPCConnect(oArg) {
   this.resource = oArg.resource || 'jsjac';
   this.pass = oArg.pass;
   this.register = oArg.register;
-  this.authtype = oArg.authtype || 'nonsasl';
+  this.authtype = oArg.authtype || 'sasl';
 
   this.jid = this.username + '@' + this.domain;
   this.fulljid = this.jid + this.resource;
 
-  this.anonhost = oArg.anonhost;
-  if (this.anonhost)
-    this.authtype = 'saslanon';
+  this.authhost = oArg.authost || this.domain;
 
   var reqstr = "0";
   if (JSJaC_HAVEKEYS) {
@@ -241,36 +239,27 @@ function JSJaCHPCGetStream() {
     this.streamid = RegExp.$1;
   this.oDbg.log("got streamid: "+this.streamid,2);
 
+  var doc;
 
-  if (this.authtype == 'saslanon') {
-    try {
-      var doc = XmlDocument.create("doc","foo");
-      doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
-				
-      if (!this._doSASLAuthANONYMOUS(doc))
-        return;
-    } catch(e) {
-      this.oDbg.log("loadXML: "+e.toString(),1);
-    }
-  } else {
-
-    if (this.register)
-      this._doReg();
-    else {
-      try {
-        var doc = XmlDocument.create("doc","foo");
-        doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
-				
-        if (!this._doSASLAuth(doc))
-          this._doAuth();
-      } catch(e) {
-        this.oDbg.log("loadXML: "+e.toString(),1);
-      }
-    } 
+  try {
+    doc = XmlDocument.create("doc");
+    doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
+    this._parseStreamFeatures(doc);
+  } catch(e) {
+    this.oDbg.log("loadXML: "+e.toString(),1);
   }
+
+  if (this.register)
+    this._doReg();
+  else 
+    this._doAuth();
 
   this._connected = true;
   this._process(this._timerval); // start polling
+}
+
+function JSJaCHPCReInitStream(to,cb,arg) {
+  oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
 }
 
 function JSJaCHPCDisconnect() {
@@ -294,16 +283,4 @@ function JSJaCHPCDisconnect() {
   this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
   this._connected = false;
   this._handleEvent('ondisconnect');
-}
-
-function JSJaCHPCSASLAuthReInitStream(req) {
-  this.oDbg.log(req.r.responseText,2);
-  var doc = oCon._prepareResponse(req);
-  if (doc.getElementsByTagName("success").length == 0) {
-    this.oDgb.log("auth failed",1);
-    oCon.disconnect();
-    return;
-  }
-
-  oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+oCon.domain+"' version='1.0'>",oCon._doSASLAuthBind);
 }

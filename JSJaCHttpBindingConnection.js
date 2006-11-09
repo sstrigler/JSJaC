@@ -67,7 +67,7 @@ function JSJaCHttpBindingConnection(oArg) {
   };
   this._setupRequest = JSJaCHBCSetupRequest;
 
-  this._doSASLAuthReInitStream = JSJaCHBCSASLAuthReInitStream;
+  this._reInitStream = JSJaCHBCReInitStream;
 }
 
 function JSJaCHBCConnect(oArg) {
@@ -83,6 +83,8 @@ function JSJaCHBCConnect(oArg) {
   this.oDbg.log("httpbase: " + this._httpbase + "\domain:" + this.domain,2);
   this.host = oArg.host || this.domain;
   this.port = oArg.port || 5222;
+  this.authhost = oArg.authhost || this.domain;
+  this.authtype = oArg.authtype || 'sasl';
   if (oArg.secure) {
     this.secure = 'true';
     if (!oArg.port)
@@ -101,14 +103,11 @@ function JSJaCHBCConnect(oArg) {
 
   this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
 
+  // setupRequest must be done after rid is created but before first use in reqstr
   var slot = this._getFreeSlot();
-  this._req[slot] = this._setupRequest(true); // must be done
-  // after rid is
-  // created but
-  // before first
-  // use in reqstr
-
-  var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.domain+"' wait='"+this._wait+"' rid='"+this._rid+"'";
+  this._req[slot] = this._setupRequest(true); 
+  
+  var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.authhost+"' wait='"+this._wait+"' rid='"+this._rid+"'";
   if (oArg.host || oArg.port)
     reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
   if (oArg.secure)
@@ -227,14 +226,15 @@ function JSJaCHBCGetStreamID(slot) {
     this._timeout = setTimeout("oCon._sendEmpty()",this.getPollInterval());
     return;
   }
+
+  this._timeout = setTimeout("oCon._process()",this.getPollInterval());
+
+  this._parseStreamFeatures(body);
 	
   if (this.register)
     this._doReg();
   else
-    if (!this._doSASLAuth(body)) 
-      this._doAuth();
-
-  this._timeout = setTimeout("oCon._process()",this.getPollInterval());
+    this._doAuth();
 }
 
 /* inherit an instantiated session */
@@ -260,6 +260,19 @@ function JSJaCHBCInherit(oArg) {
   this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
+function JSJaCHBCReInitStream(to,cb,arg) {
+  /* [TODO] we can't handle 'to' here as this is not (yet) supported
+   * by the protocol
+   */
+
+  // tell http binding to reinit stream with/before next request
+  oCon._reinit = true;
+  eval("oCon."+cb+"("+arg+")"); // proceed with next callback
+
+  /* [TODO] make sure that we're checking for new stream features when
+   * 'cb' finishes
+   */
+}
 
 function JSJaCHBCDisconnect() {
 	
@@ -426,9 +439,8 @@ function JSJaCHBCPrepareResponse(req) {
     clearInterval(this._inQto);
 
     if (body.getAttribute("condition") == "remote-stream-error")
-      if (body.getElementsByTagName("conflict").length > 0) {
+      if (body.getElementsByTagName("conflict").length > 0)
         this._setStatus("session-terminate-conflict");
-      }
     this._handleEvent('onerror',JSJaCError('503','cancel',body.getAttribute('condition')));
     this._connected = false;
     this.oDbg.log("Disconnected.",1);
@@ -439,18 +451,4 @@ function JSJaCHBCPrepareResponse(req) {
   // no error
   this._errcnt = 0;
   return r.responseXML.documentElement;
-}
-
-
-function JSJaCHBCSASLAuthReInitStream(req) {
-  this.oDbg.log(req.r.responseText,2);
-  var doc = oCon._prepareResponse(req);
-  if (doc.getElementsByTagName("success").length == 0) {
-    this.oDgb.log("auth failed",1);
-    oCon.disconnect();
-    return;
-  }
-
-  oCon._reinit = true;
-  oCon._doSASLAuthBind();
 }
