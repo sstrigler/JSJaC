@@ -66,12 +66,12 @@ void: connect(oArgs[JSON notation!])
                                # (using in-band registration of available) 
                                # [optional]
 
-           string: authtype,   # one of 'sasl' (not implemented), 
-                               # 'saslanon' and 'nonsasl' 
-                               # [optional, default: nonasl]
+           string: authtype,   # one of 'sasl', 'saslanon' 
+                               # or 'nonsasl' 
+                               # [optional, default: sasl]
 
-           string: anonhost    # hostname of sasl anonymous service 
-                               # automagically sets authtype to saslanon
+           string: authtype    # hostname of auth service if different  
+                               # from xmpp domain
                                # [optional]
 
 void: disconnect()
@@ -111,6 +111,13 @@ void: connect(oArgs[JSON notation])
                                # is allowed to hold an idle request 
                                # [optional, default: 300]
 
+           string: authtype,   # one of 'sasl', 'saslanon' 
+                               # or 'nonsasl' 
+                               # [optional, default: sasl]
+
+           string: authtype    # hostname of auth service if different  
+                               # from xmpp domain
+                               # [optional]
 
 void: disconnect()
 	disconnects from server
