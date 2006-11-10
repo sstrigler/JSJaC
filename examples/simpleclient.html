@@ -11,260 +11,251 @@
     <script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
 
     <script language="JavaScript" type="text/javascript">
-      <!--
+<!--
 function htmlEnc(str) {
-	try {
-		str = str.replace(/&/g,"&amp;");
-		str = str.replace(/</g,"&lt;");
-		str = str.replace(/>/g,"&gt;");
-		str = str.replace(/\"/g,"&quot;");
-		str = str.replace(/\n/g,"<br />");
-
-		return str;
-	} catch (e) { 
-		oDbg.log(typeof(str) + ":" + e);
-		return null;
-	}
+  try {
+    str = str.replace(/&/g,"&amp;");
+    str = str.replace(/</g,"&lt;");
+    str = str.replace(/>/g,"&gt;");
+    str = str.replace(/\"/g,"&quot;");
+    str = str.replace(/\n/g,"<br />");
+    return str;
+  } catch (e) { 
+    oDbg.log(typeof(str) + ":" + e);
+    return null;
+  }
 }
 
 function handleEvent(aJSJaCPacket) {
-	document.getElementById('iResp').innerHTML += "IN (raw):<br/>" +htmlEnc(aJSJaCPacket.xml()) + '<hr noshade size="1"/>';
+  document.getElementById('iResp').innerHTML += 
+    "IN (raw):<br/>" +htmlEnc(aJSJaCPacket.xml()) + '<hr noshade size="1"/>';
 }
 
 function handleMessage(aJSJaCPacket) {
-	var html = '';
-	html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
-	html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
-	document.getElementById('iResp').innerHTML += html;
+  var html = '';
+  html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
+  html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
+  document.getElementById('iResp').innerHTML += html;
 }
 
 function handlePresence(aJSJaCPacket) {
-	var html = '';
-	if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
-		html += '<b>'+aJSJaCPacket.getFrom()+' has become available.</b>';
-	else {
-		html += '<b>'+aJSJaCPacket.getFrom()+' has set his presence to ';
-		if (aJSJaCPacket.getType())
-			html += aJSJaCPacket.getType() + '.</b>';
-		else
-			html += aJSJaCPacket.getShow() + '.</b>';
-		if (aJSJaCPacket.getStatus())
-			html += ' ('+htmlEnc(aJSJaCPacket.getStatus())+')';
-	}
-	html += '<hr noshade size=1>';
+  var html = '';
+  if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
+    html += '<b>'+aJSJaCPacket.getFrom()+' has become available.</b>';
+  else {
+    html += '<b>'+aJSJaCPacket.getFrom()+' has set his presence to ';
+    if (aJSJaCPacket.getType())
+      html += aJSJaCPacket.getType() + '.</b>';
+    else
+      html += aJSJaCPacket.getShow() + '.</b>';
+    if (aJSJaCPacket.getStatus())
+      html += ' ('+htmlEnc(aJSJaCPacket.getStatus())+')';
+  }
+  html += '<hr noshade size=1>';
 
-	document.getElementById('iResp').innerHTML += html;
+  document.getElementById('iResp').innerHTML += html;
 }
 
 function handleConnected() {
-	document.getElementById('login_pane').style.display = 'none';
-	document.getElementById('sendmsg_pane').style.display = '';
-	document.getElementById('err').innerHTML = '';
+  document.getElementById('login_pane').style.display = 'none';
+  document.getElementById('sendmsg_pane').style.display = '';
+  document.getElementById('err').innerHTML = '';
 
-	con.send(new JSJaCPresence());
+  con.send(new JSJaCPresence());
 }
 
 
 function handleError(e) {
-	document.getElementById('err').innerHTML = "An error occured:<br />"+ 
-		htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+"\nCondition: "+e.firstChild.nodeName); 
-	document.getElementById('login_pane').style.display = '';
-	document.getElementById('sendmsg_pane').style.display = 'none';
+  document.getElementById('err').innerHTML = "An error occured:<br />"+ 
+    htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
+            "\nCondition: "+e.firstChild.nodeName); 
+  document.getElementById('login_pane').style.display = '';
+  document.getElementById('sendmsg_pane').style.display = 'none';
 
 }
 
 function handleStatusChange(status) {
-	oDbg.log("status changed: "+status);
+  oDbg.log("status changed: "+status);
 }
 
 function doLogin(aForm) {
-	document.getElementById('err').innerHTML = ''; // reset
+  document.getElementById('err').innerHTML = ''; // reset
 
-	try {
+  try {
 
-		// setup args for contructor
-		oArgs = new Object();
-		oArgs.httpbase = aForm.http_base.value;
-		oArgs.timerval = 2000;
+    // setup args for contructor
+    oArgs = new Object();
+    oArgs.httpbase = aForm.http_base.value;
+    oArgs.timerval = 2000;
 
-		if (typeof(oDbg) != 'undefined')
-			oArgs.oDbg = oDbg;
+    if (typeof(oDbg) != 'undefined')
+      oArgs.oDbg = oDbg;
 
-		if (aForm.backend[0].checked)
-			con = new JSJaCHttpBindingConnection(oArgs);
-		else
-			con = new JSJaCHttpPollingConnection(oArgs);
+    if (aForm.backend[0].checked)
+      con = new JSJaCHttpBindingConnection(oArgs);
+    else
+      con = new JSJaCHttpPollingConnection(oArgs);
 
-		con.registerHandler('message',handleMessage);
-		con.registerHandler('presence',handlePresence);
-		con.registerHandler('iq',handleEvent);
-		con.registerHandler('onconnect',handleConnected);
-		con.registerHandler('onerror',handleError);
-		con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('message',handleMessage);
+    con.registerHandler('presence',handlePresence);
+    con.registerHandler('iq',handleEvent);
+    con.registerHandler('onconnect',handleConnected);
+    con.registerHandler('onerror',handleError);
+    con.registerHandler('status_changed',handleStatusChange);
 
-		// setup args for connect method
-		oArgs = new Object();
-		oArgs.domain = aForm.server.value;
-		oArgs.username = aForm.username.value;
-		oArgs.resource = 'jsjac_simpleclient';
-		oArgs.pass = aForm.password.value;
-		con.connect(oArgs);
-	} catch (e) {
-		document.getElementById('err').innerHTML = e.toString();
-	} finally {
-		return false;
-	}
+    // setup args for connect method
+    oArgs = new Object();
+    oArgs.domain = aForm.server.value;
+    oArgs.username = aForm.username.value;
+    oArgs.resource = 'jsjac_simpleclient';
+    oArgs.pass = aForm.password.value;
+    oArgs.register = aForm.register.checked;
+    con.connect(oArgs);
+  } catch (e) {
+    document.getElementById('err').innerHTML = e.toString();
+  } finally {
+    return false;
+  }
 }
 
 function sendMsg(aForm) {
-	if (aForm.msg.value == '' || aForm.sendTo.value == '')
-		return false;
+  if (aForm.msg.value == '' || aForm.sendTo.value == '')
+    return false;
 
-	if (aForm.sendTo.value.indexOf('@') == -1)
-		aForm.sendTo.value += '@' + con.domain;
+  if (aForm.sendTo.value.indexOf('@') == -1)
+    aForm.sendTo.value += '@' + con.domain;
 
-	var aMsg = new JSJaCMessage();
-	aMsg.setTo(aForm.sendTo.value);
-	aMsg.setBody(aForm.msg.value);
-	con.send(aMsg);
+  var aMsg = new JSJaCMessage();
+  aMsg.setTo(aForm.sendTo.value);
+  aMsg.setBody(aForm.msg.value);
+  con.send(aMsg);
 
-	aForm.msg.value = '';
+  aForm.msg.value = '';
 
-	return false;
+  return false;
 }
 
 function quit() {
-	if (con && con.connected())
-		con.disconnect();
+  if (con && con.connected())
+    con.disconnect();
 
-	document.getElementById('login_pane').style.display = '';
-	document.getElementById('sendmsg_pane').style.display = 'none';
+  document.getElementById('login_pane').style.display = '';
+  document.getElementById('sendmsg_pane').style.display = 'none';
 }
 
 function init() {
-	if (typeof(Debugger) == 'function') {
-		oDbg = new Debugger(4,'simpleclient');
-		oDbg.start();
-	}
+  if (typeof(Debugger) == 'function') {
+    oDbg = new Debugger(2,'simpleclient');
+    oDbg.start();
+  }
 
-	if (document.cookie) { // try to resume a session
-		if (readCookie('btype') == 'binding')
-			con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
-		else
-			con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
+  if (document.cookie) { // try to resume a session
+    if (readCookie('btype') == 'binding')
+      con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
+    else
+      con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
 
-		con.registerHandler('message',handleMessage);
-		con.registerHandler('presence',handlePresence);
-		con.registerHandler('iq',handleEvent);
-		con.registerHandler('onconnect',handleConnected);
-		con.registerHandler('onerror',handleError);
-		con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('message',handleMessage);
+    con.registerHandler('presence',handlePresence);
+    con.registerHandler('iq',handleEvent);
+    con.registerHandler('onconnect',handleConnected);
+    con.registerHandler('onerror',handleError);
+    con.registerHandler('status_changed',handleStatusChange);
 
-		if (con.resume()) {
+    if (con.resume()) {
 
-			document.getElementById('login_pane').style.display = 'none';
-			document.getElementById('sendmsg_pane').style.display = '';
-			document.getElementById('err').innerHTML = '';
+      document.getElementById('login_pane').style.display = 'none';
+      document.getElementById('sendmsg_pane').style.display = '';
+      document.getElementById('err').innerHTML = '';
 
-		}
-	}
+    }
+  }
 
 }
 onload = init;
 
 onerror = function(e) { 
-	document.getElementById('err').innerHTML = e; 
+  document.getElementById('err').innerHTML = e; 
 
-	document.getElementById('login_pane').style.display = '';
-	document.getElementById('sendmsg_pane').style.display = 'none';
+  document.getElementById('login_pane').style.display = '';
+  document.getElementById('sendmsg_pane').style.display = 'none';
 
-	return false; 
+  return false; 
 };
 onunload = function() { 
-	// save backend type
-	if (typeof(con._hold) != 'undefined') // must be binding
-		createCookie('btype','binding');
-	else
-		createCookie('btype','polling');
-	if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
+  // save backend type
+  if (typeof(con._hold) != 'undefined') // must be binding
+    createCookie('btype','binding');
+  else
+    createCookie('btype','polling');
+  if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
 };
 
-			//-->
-		</script>
-		<style type="text/css">
+//-->
+    </script>
+    <style type="text/css">
 /*<![CDATA[*/
-
-			body {
-			font-family: "Bitstream Vera Sans", sans;
-			font-size: 0.8em;
-			margin: 12px;
-			}
-
-			h2 {
-			border-bottom: 1px solid grey;
-			}
-
-			input {
-			border: 1px solid grey;
-			}
-
-			#iResp {
-			width: 420px;
-			height: 260px;
-
-			overflow: auto;
-
-			border: 2px dashed grey;
-			
-			padding: 4px;
-			}
-
-			#msgArea {
-			width: 420px;
-			height: 45px;
-
-			padding: 4px;
-			margin: 0;
-
-			border: 2px dashed grey;
-			}
-
-			.spaced {
-			margin-bottom: 4px;
-			}
-
+body {
+font-family: "Bitstream Vera Sans", sans;
+font-size: 0.8em;
+margin: 12px;
+}
+h2 {
+border-bottom: 1px solid grey;
+}
+input {
+border: 1px solid grey;
+}
+#iResp {
+width: 420px;
+height: 260px;
+overflow: auto;
+border: 2px dashed grey;
+padding: 4px;
+}
+#msgArea {
+width: 420px;
+height: 45px;
+padding: 4px;
+margin: 0;
+border: 2px dashed grey;
+}
+.spaced {
+margin-bottom: 4px;
+}
 /*]]>*/
-		</style>
+    </style>
   </head>
-
   <body>
-    <h1>JSJaC Simple Client</h1>
+  <h1>JSJaC Simple Client</h1>
 
-		<div id="err"></div>
+  <div id="err"></div>
 
-		<div id="login_pane">
-			<h2>Login</h2>
-			<form name="loginForm" onSubmit="return doLogin(this);" action="#">
-				<table>
-						<tr><th>Backend Type</th><td><input type="radio" name="backend" value="binding" id="backend1" tabindex="1"/> <label for="backend1">HTTP Binding</label><br /> <input type="radio" name="backend" value="polling" id="backend2" tabindex="2"/> <label for="backend2">HTTP Polling</label></td></tr>
-						<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3"></td></tr>
-						<tr><th><label for="server">Jabber Server</label></th><td><input type="text" name="server" id="server" tabindex="4"></td></tr>
-						<tr><th><label for="username">Username</label></th><td><input type="text" name="username" id="username" tabindex="5"></td></tr>
-						<tr><th><label for="password">Password</label></th><td><input type="password" name="password" id="password" tabindex="6"></td></tr>
-						<tr><td>&nbsp;</td><td><input type="submit" value="Login" tabindex="7"></td></tr>
-				</table>
-			</form>
-		</div>
+  <div id="login_pane">
+    <h2>Login</h2>
+    <form name="loginForm" onSubmit="return doLogin(this);" action="#">
+      <table>
+	<tr><th>Backend Type</th><td><input type="radio" name="backend" value="binding" id="backend1" tabindex="1"/> <label for="backend1">HTTP Binding</label><br /> <input type="radio" name="backend" value="polling" id="backend2" tabindex="2"/> <label for="backend2">HTTP Polling</label></td></tr>
+	<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3"/></td></tr>
+        <tr><th colspan="2"><hr noshade size="1"/></th></tr>
+	<tr><th><label for="server">Jabber Server</label></th><td><input type="text" name="server" id="server" tabindex="4"/></td></tr>
+	<tr><th><label for="username">Username</label></th><td><input type="text" name="username" id="username" tabindex="5"/></td></tr>
+	<tr><th><label for="password">Password</label></th><td><input type="password" name="password" id="password" tabindex="6" /></td></tr>
+	<tr><th></th><td><input type="checkbox" name="register" id="register_checkbox" /> <label for="register_checkbox">Register new account</label></td></tr>
+	<tr><td>&nbsp;</td><td><input type="submit" value="Login" tabindex="7"></td></tr>
+     </table>
+    </form>
+  </div>
 
-		<div id="sendmsg_pane" style="display:none;">
-			<h2>Incoming:</h2>
-			<div name="iResp" id="iResp"></div>
-			<h2>Send Message</h2>
-			<form name="sendForm" onSubmit="return sendMsg(this);" action="#">
-				<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>
-				<div class="spaced"><textarea name="msg" id='msgArea' rows="3" cols="80" tabindex="2"></textarea></div>
-				<div class="spaced"><input type="submit" value="Send" tabindex="3"> * <input type="button" value="Quit" tabindex="4" onclick="return quit();"></div>
-			</form>
-		</div>
+  <div id="sendmsg_pane" style="display:none;">
+    <h2>Incoming:</h2>
+    <div name="iResp" id="iResp"></div>
+    <h2>Send Message</h2>
+      <form name="sendForm" onSubmit="return sendMsg(this);" action="#">
+	<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>
+	<div class="spaced"><textarea name="msg" id='msgArea' rows="3" cols="80" tabindex="2"></textarea></div>
+	<div class="spaced"><input type="submit" value="Send" tabindex="3"> * <input type="button" value="Quit" tabindex="4" onclick="return quit();"></div>
+      </form>
+    </div>
   </body>
 </html>
