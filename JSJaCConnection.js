@@ -264,23 +264,14 @@ function JSJaCInBandReg() {
 
 function JSJaCInBandRegDone(iq) {
   if (iq && iq.getType() == 'error') { // we failed to register
-    this.handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    oCon.oDbg.log("registration failed for "+oCon.username,0);
+    oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
     return;
   }
 
-  /**
-   * [TODO]
-   *
-   * check if stream-features with sasl support are present
-   * for this we need to remember stream:features
-   * if so, reinit stream and start with sasl authentication
-   * otherwise proceed with legacy auth
-   */
+  oCon.oDbg.log(oCon.username + " registered succesfully",0);
 
-  if (this.has_sasl)
-    this._reInitStream(this.domain,'_doAuth()');
-  else 
-    this._doAuth();
+  oCon._doAuth();
 }
 
 function JSJaCAuth() {
@@ -404,7 +395,7 @@ function JSJaCSASLAuthDigestMd5S1(req) {
   this.oDbg.log(req.r.responseText,2);
 
   var doc = oCon._prepareResponse(req);
-  if (doc.getElementsByTagName("challenge").length == 0) {
+  if (!doc || doc.getElementsByTagName("challenge").length == 0) {
     this.oDbg.log("challenge missing",1);
     this.disconnect();
   } else {
@@ -557,7 +548,8 @@ function JSJaCSendRaw(xml,cb,arg)
       return;
     if (oCon._req[slot].r.readyState == 4) {
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      eval("oCon."+cb+"(oCon._req[slot],"+arg+")");
+      if (typeof(cb) != 'undefined')
+        eval("oCon."+cb+"(oCon._req[slot],"+arg+")");
     }
   }
   

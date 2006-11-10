@@ -232,7 +232,7 @@ function JSJaCHBCGetStreamID(slot) {
   this._parseStreamFeatures(body);
 	
   if (this.register)
-    this._doReg();
+    this._doInBandReg();
   else
     this._doAuth();
 }

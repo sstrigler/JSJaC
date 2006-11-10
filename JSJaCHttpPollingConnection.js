@@ -29,7 +29,6 @@ function JSJaCHttpPollingConnection(oArg) {
   this._setupRequest = JSJaCHPCSetupRequest;
 
   this._reInitStream = JSJaCHPCReInitStream;
-
 }
 
 function JSJaCHPCSetupRequest(async) {
@@ -250,7 +249,7 @@ function JSJaCHPCGetStream() {
   }
 
   if (this.register)
-    this._doReg();
+    this._doInBandReg();
   else 
     this._doAuth();
 
