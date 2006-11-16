@@ -388,7 +388,10 @@ function JSJaCHBCPrepareResponse(req) {
 	
   if (r.status != 200 || !r.responseXML) {
     this._errcnt++;
-    this.oDbg.log("invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText,1);
+    var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
+    if (!r.responseXML)
+      errmsg += "\nResponse failed to parse!";
+    this.oDbg.log(errmsg,1);
     if (this._errcnt > JSJAC_ERR_COUNT) {
       // abort
       oCon._abort();
