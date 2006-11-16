@@ -378,11 +378,13 @@ function JSJaCSASLAuth() {
                            '_doSASLAuthDigestMd5S1');
     } else if (this.allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
-      return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+ 
-                           binb2b64(str2binb(this.username+'@'+
-                                             this.domain+String.fromCharCode(0)+
-                                             this.username+String.fromCharCode(0)+
-                                             this.pass))+"</auth>", 
+      var authStr = this.username+'@'+
+        this.domain+String.fromCharCode(0)+
+        this.username+String.fromCharCode(0)+
+        this.pass;
+      this.oDbg.log("authenticating with '"+authStr+"'",2);
+      authStr = btoa(authStr);
+      return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>", 
                            '_doSASLAuthDone');
     }
     this.oDbg.log("No SASL mechanism applied",1);
