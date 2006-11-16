@@ -87,8 +87,8 @@ function JSJaCHBCConnect(oArg) {
   this.authtype = oArg.authtype || 'sasl';
   if (oArg.secure) {
     this.secure = 'true';
-    if (!oArg.port)
-      this.port = 5223;
+//     if (!oArg.port)
+//       this.port = 5223;
   } else 
     this.secure = 'false';
 
