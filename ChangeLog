@@ -10,6 +10,7 @@ JSJaC v0.6
   JSON objects.
 * New event 'status_changed' to signal if sth going on with the status of
   the connection (like errors, retries and so on)
+* SASL Authentication (PLAIN, DIGEST-MD5, ANONYMOUS) 
 	
 JSJaC v0.5
 ==========
