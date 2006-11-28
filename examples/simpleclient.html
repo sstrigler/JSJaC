@@ -35,7 +35,17 @@ function handleMessage(aJSJaCPacket) {
   var html = '';
   html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
   html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
-  document.getElementById('iResp').innerHTML += html;
+
+  var iResp = document.getElementById('iResp')
+
+  var auto_scroll = false;
+  if (iResp.scrollTop+iResp.clientHeight >= iResp.scrollHeight)
+    auto_scroll = true;
+
+  iResp.innerHTML += html;
+
+  if (auto_scroll)
+    iResp.lastChild.scrollIntoView();
 }
 
 function handlePresence(aJSJaCPacket) {
@@ -132,6 +142,7 @@ function sendMsg(aForm) {
 
   aForm.msg.value = '';
 
+  aForm.msg.focus(); 
   return false;
 }
 
@@ -147,6 +158,9 @@ function init() {
   if (typeof(Debugger) == 'function') {
     oDbg = new Debugger(2,'simpleclient');
     oDbg.start();
+  } else {
+    oDbg = function() {};
+    oDbg.log = function() {};
   }
 
   if (document.cookie) { // try to resume a session
