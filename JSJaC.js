@@ -1,7 +1,7 @@
 // taken from script.aculo.us and modified to break it
 
 var JSJaC = {
-  Version: '0.6',
+  Version: '0.6.1',
   require: function(libraryName) {
     // inserting via DOM fails in Safari 2.0, so brute force approach
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
