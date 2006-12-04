@@ -52,7 +52,8 @@ function JSJaCHttpBindingConnection(oArg) {
      * it had failed 
      */
     this._rid--; 
-    this._keys._indexAt++;
+    if (JSJaC_HAVEKEYS)
+      this._keys._indexAt++;
     this._process();
     this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
     this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
