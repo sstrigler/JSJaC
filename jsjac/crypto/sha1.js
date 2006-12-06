@@ -1,4 +1,5 @@
 dojo.provide("jsjac.crypto.sha1");
+dojo.require("jsjac.crypto.common");
 
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
