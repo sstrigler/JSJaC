@@ -1,7 +1,9 @@
+dojo.provide("jsjac.cookie");
+
 // taken from http://www.quirksmode.org/js/cookies.html
 // modified slightly
 
-function createCookie(name,value,secs)
+jsjac.cookie.create = function(/* string */name,/* string */ value,/* integer? */secs)
 {
   if (secs)
     {
@@ -11,9 +13,9 @@ function createCookie(name,value,secs)
     }
   else var expires = "";
   document.cookie = name+"="+value+expires+"; path=/";
-}
+};
 
-function readCookie(name)
+jsjac.cookie.read = function(/* string */name)
 {
   var nameEQ = name + "=";
   var ca = document.cookie.split(';');
@@ -24,9 +26,9 @@ function readCookie(name)
       if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
   return null;
-}
+};
 
-function eraseCookie(name)
+jsjac.cookie.erase = function(/* string */name)
 {
   createCookie(name,"",-1);
-}
+};

@@ -1,47 +1,50 @@
-var JSJACPACKET_USE_XMLNS = true;
+dojo.provide("jsjac.packet.Packet");
+dojo.require("jsjac.xmlextras");
 
-function JSJaCPacket(name) {
+jsjac.packet.USE_XMLNS = true;
+
+jsjac.packet.Packet = function(/* string */name) {
   this.name = name;
 
-  if (typeof(JSJACPACKET_USE_XMLNS) != 'undefined' && JSJACPACKET_USE_XMLNS)
-    this.doc = XmlDocument.create(name,'jabber:client');
+  if (typeof(jsjac.packet.USE_XMLNS) != 'undefined' && jsjac.packet.USE_XMLNS)
+    this.doc = jsjac.xmlextras.XmlDocument.create(name,'jabber:client');
   else
-    this.doc = XmlDocument.create(name,'');
+    this.doc =  jsjac.xmlextrasXmlDocument.create(name,'');
 
   this.pType = function() { return this.name; };
 
   this.getDoc = function() { return this.doc; };
   this.getNode = function() { return this.getDoc().documentElement; };
 
-  this.setTo = function(to) {
+  this.setTo = function(/* string */to) {
     if (!to || to == '')
       this.getNode().removeAttribute('to');
     else
       this.getNode().setAttribute('to',to); 
     return this; 
   };
-  this.setFrom = function(from) {
+  this.setFrom = function(/* string */from) {
     if (!from || from == '')
       this.getNode().removeAttribute('from');
     else
       this.getNode().setAttribute('from',from);
     return this;
   };
-  this.setID = function(id) { 
+  this.setID = function(/* string */id) { 
     if (!id || id == '')
       this.getNode().removeAttribute('id');
     else
       this.getNode().setAttribute('id',id); 
     return this; 
   };
-  this.setType = function(type) { 
+  this.setType = function(/* string */type) { 
     if (!type || type == '')
       this.getNode().removeAttribute('type');
     else
       this.getNode().setAttribute('type',type);
     return this; 
   };
-  this.setXMLLang = function(xmllang) {
+  this.setXMLLang = function(/* string */xmllang) {
     if (!xmllang || xmllang == '')
       this.getNode().removeAttribute('xml:lang');
     else
@@ -66,14 +69,14 @@ function JSJaCPacket(name) {
 
   };
 
-  this._childElVal = function(nodeName) {
+  this._childElVal = function(/* string */nodeName) {
     var aNode = this._getChildNode(nodeName);
     if (aNode && aNode.firstChild)
       return aNode.firstChild.nodeValue;
     return '';
   }
 
-  this._getChildNode = function(nodeName) {
+  this._getChildNode = function(/* string */nodeName) {
     var children = this.getNode().childNodes;
     for (var i=0; i<children.length; i++)
       if (children.item(i).tagName == nodeName)
@@ -81,7 +84,7 @@ function JSJaCPacket(name) {
     return null;
   }
 
-  this._replaceNode = function(aNode) {
+  this._replaceNode = function(/* object */aNode) {
     // copy attribs
     for (var i=0; i<aNode.attributes.length; i++)
       if (aNode.attributes.item(i).nodeName != 'xmlns')
@@ -96,7 +99,7 @@ function JSJaCPacket(name) {
 				
   };
 
-  this._setChildNode = function(nodeName, nodeValue) {
+  this._setChildNode = function(/* object */nodeName, /* object */nodeValue) {
     var aNode = this._getChildNode(nodeName);
     var tNode = this.getDoc().createTextNode(nodeValue);
     if (aNode)
@@ -110,106 +113,14 @@ function JSJaCPacket(name) {
     return aNode;
   }
 
-  this.clone = function() { return JSJaCPWrapNode(this.getNode()); }
-} 
-
-function JSJaCPresence() {
-  this.base = JSJaCPacket;
-  this.base('presence');
-
-  this.setStatus = function(status) {
-    this._setChildNode("status", status);
-    return this; 
-  };
-  this.setShow = function(show) {
-    this._setChildNode("show",show);
-    return this; 
-  };
-  this.setPriority = function(prio) {
-    this._setChildNode("priority", prio);
-    return this; 
-  };
-  this.setPresence = function(show,status,prio) {
-    if (show)
-      this.setShow(show);
-    if (status)
-      this.setStatus(status);
-    if (prio)
-      this.setPriority(prio);
-    return this; 
-  };
-
-  this.getStatus = function() {	return this._childElVal('status');	};
-  this.getShow = function() { return this._childElVal('show'); };
-  this.getPriority = function() { return this._childElVal('priority'); };
-}
-
-function JSJaCIQ() {
-  this.base = JSJaCPacket;
-  this.base('iq');
-
-  this.setIQ = function(to,from,type,id) {
-    if (to)
-      this.setTo(to);
-    if (type)
-      this.setType(type);
-    if (from)
-      this.setFrom(from);
-    if (id)
-      this.setID(id);
-    return this; 
-  };
-  this.setQuery = function(xmlns) {
-    var query;
-    try {
-      query = this.getDoc().createElementNS(xmlns,'query');
-    } catch (e) {
-      // fallback
-      query = this.getDoc().createElement('query');
-    }
-    if (query && query.getAttribute('xmlns') != xmlns) // fix opera 8.5x
-      query.setAttribute('xmlns',xmlns);
-    this.getNode().appendChild(query);
-    return query;
-  };
-
-  this.getQuery = function() {
-    return this.getNode().getElementsByTagName('query').item(0);
-  };
-  this.getQueryXMLNS = function() {
-    if (this.getQuery())
-      return this.getQuery().namespaceURI;
-    else
-      return null;
-  };
-}
-
-function JSJaCMessage() {
-  this.base = JSJaCPacket;
-  this.base('message');
-
-  this.setBody = function(body) {
-    this._setChildNode("body",body);
-    return this; 
-  };
-  this.setSubject = function(subject) {
-    this._setChildNode("subject",subject);
-    return this; 
-  };
-  this.setThread = function(thread) {
-    this._setChildNode("thread", thread);
-    return this; 
-  };
-  this.getThread = function() { return this._childElVal('thread'); };
-  this.getBody = function() { return this._childElVal('body'); };
-  this.getSubject = function() { return this._childElVal('subject') };
-}
+  this.clone = function() { return jsjac.packet.wrapNode(this.getNode()); }
+};
 
 /* ***
  * (static) JSJaCPWrapNode
  * transforms node to JSJaC internal representation (JSJaCPacket type)
  */
-function JSJaCPWrapNode(node) {
+jsjac.packet.wrapNode = function(/* object */node) {
   var aNode;
   switch (node.nodeName.toLowerCase()) {
   case 'presence':

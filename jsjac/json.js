@@ -1,3 +1,5 @@
+dojo.provide("jsjac.json");
+
 /*
   json.js
   2006-04-28
@@ -19,8 +21,7 @@
   This method parses a JSON text to produce an object or
   array. It will return false if there is an error.
 */
-function JSON() {}
-JSON.toString = function (obj) {
+jsjac.json.toString = function(/* object */obj) {
   var m = {
     '\b': '\\b',
     '\t': '\\t',
@@ -110,7 +111,7 @@ switch (typeof(obj)) {
  }
 };
 
-JSON.parse = function (str) {
+jsjac.json.parse = function(/* string */str) {
   try {
     return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
                                                        str.replace(/"(\\.|[^"\\])*"/g, ''))) &&

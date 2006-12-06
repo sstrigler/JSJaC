@@ -1,17 +1,15 @@
+dojo.provide("jsjac.xmlextras");
+
 /* *** *** *** *** *** *** *** *** ***
  * this code is taken from http://webfx.eae.net/dhtml/xmlextras/xmlextras.html 
  * *** *** *** *** *** *** *** *** ***
  */
 
-//<script>
-//////////////////
-// Helper Stuff //
-//////////////////
+// used to find the Automation server name 
 
-// used to find the Automation server name
-function getDomDocumentPrefix() {
-  if (getDomDocumentPrefix.prefix)
-    return getDomDocumentPrefix.prefix;
+jsjac.xmlextras.getDomDocumentPrefix = function() {
+  if (jsjac.xmlextras.getDomDocumentPrefix.prefix)
+    return jsjac.xmlextras.getDomDocumentPrefix.prefix;
 	
   var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
   var o;
@@ -19,7 +17,7 @@ function getDomDocumentPrefix() {
     try {
       // try to create the objects
       o = new ActiveXObject(prefixes[i] + ".DomDocument");
-      return getDomDocumentPrefix.prefix = prefixes[i];
+      return jsjac.xmlextras.getDomDocumentPrefix.prefix = prefixes[i];
     }
     catch (ex) {};
   }
@@ -27,9 +25,9 @@ function getDomDocumentPrefix() {
   throw new Error("Could not find an installed XML parser");
 }
 
-function getXmlHttpPrefix() {
-  if (getXmlHttpPrefix.prefix)
-    return getXmlHttpPrefix.prefix;
+jsjac.xmlextras.getXmlHttpPrefix = function() {
+  if (jsjac.xmlextras.getXmlHttpPrefix.prefix)
+    return jsjac.xmlextras.getXmlHttpPrefix.prefix;
   
   var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
   var o;
@@ -37,7 +35,7 @@ function getXmlHttpPrefix() {
     try {
       // try to create the objects
       o = new ActiveXObject(prefixes[i] + ".XmlHttp");
-      return getXmlHttpPrefix.prefix = prefixes[i];
+      return jsjac.xmlextras.getXmlHttpPrefix.prefix = prefixes[i];
     }
     catch (ex) {};
   }
@@ -51,9 +49,9 @@ function getXmlHttpPrefix() {
 
 
 // XmlHttp factory
-function XmlHttp() {}
+jsjac.xmlextras.XmlHttp = function() {}
 
-XmlHttp.create = function () {
+jsjac.xmlextras.XmlHttp.create = function () {
   try {
     if (window.XMLHttpRequest) {
       var req = new XMLHttpRequest();
@@ -81,9 +79,9 @@ XmlHttp.create = function () {
 };
 
 // XmlDocument factory
-function XmlDocument() {}
+jsjac.xmlextras.XmlDocument = function() {}
 
-XmlDocument.create = function (name,ns) {
+jsjac.xmlextras.XmlDocument.create = function (name,ns) {
   name = name || 'foo';
   ns = ns || '';
   try {

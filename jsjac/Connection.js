@@ -1,19 +1,35 @@
-JSJaC_HAVEKEYS = true;  // whether to use keys
-JSJaC_NKEYS    = 16;    // number of keys to generate
-JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
-JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
+dojo.provide("jsjac.Connection");
+dojo.require("jsjac.KeySet");
+dojo.require("jsjac.ErrorPacket");
+dojo.require("jsjac.xmlextras");
+dojo.require("jsjac.json");
+dojo.require("jsjac.crypto.*");
+dojo.require("jsjac.cookie");
+dojo.require("jsjac.packet.*");
 
-JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
-
-JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
-JSJaC_CheckInQueueInterval = 1; // msecs to poll in queue
 /* ******************************
- * JabberConnection 
+ * "class" constants
+ */
+
+jsjac.Connection.HAVEKEYS             = true; // whether to use keys
+jsjac.Connection.NKEYS                = 16;   // number of keys to generate
+jsjac.Connection.INACTIVITY           = 300;  // qnd hack to make suspend/resume 
+                                              // work more smoothly with polling
+jsjac.Connection.ERR_COUNT            = 10;   // number of retries in case of connection errors
+
+jsjac.Connection.ALLOW_PLAIN          = true; // whether to allow plaintext logins
+
+jsjac.Connection.CheckQueueInterval   = 100;  // msecs to poll send queue
+jsjac.Connection.CheckInQueueInterval = 1;    // msecs to poll in queue
+
+
+/* ******************************
+ * Connection(oArg) 
  * somewhat abstract base class
  */
 
-function JSJaCConnection(oArg) {
-  oCon = this; // remember reference to ourself
+jsjac.Connection = function (oArg) {
+  jsjac.Connection.oCon = this; // remember reference to ourself
   if (oArg && oArg.oDbg && oArg.oDbg.log)
     this.oDbg = oArg.oDbg; 
   else {
@@ -27,7 +43,7 @@ function JSJaCConnection(oArg) {
   if (oArg && typeof(oArg.allow_plain) != 'undefined')
     this.allow_plain = oArg.allow_plain;
   else 
-    this.allow_plain = JSJAC_ALLOW_PLAIN;
+    this.allow_plain = jsjac.Connection.ALLOW_PLAIN;
 
   this._connected = false;
   this._events = new Array();
@@ -39,7 +55,7 @@ function JSJaCConnection(oArg) {
   this._req = new Array();
   this._status = 'intialized';
   this._errcnt = 0;
-  this._inactivity = JSJAC_INACTIVITY;
+  this._inactivity = jsjac.Connection.INACTIVITY;
 
   this.connected = function() { return this._connected; };
   this.getPollInterval = function() { return this._timerval; };
@@ -52,21 +68,21 @@ function JSJaCConnection(oArg) {
     this.oDbg.log("registered handler for event '"+event+"'",2);
   };
   this.resume = function() {
-    var s = readCookie('s');
+    var s = jsjac.cookie.read('s');
 
     if (!s)
       return false;
 
     this.oDbg.log('read cookie: '+s,4);
 
-    o = JSON.parse(s);
+    o = jsjac.json.parse(s);
 
     for (var i in o)
       this[i] = o[i];
 
     // copy keys - not being very generic here :-/
     if (this._keys) {
-      this._keys2 = new JSJaCKeys();
+      this._keys2 = new jsjac.KeySet();
       var u = this._keys2._getSuspendVars();
       for (var i=0; i<u.length; i++) 
         this._keys2[u[i]] = this._keys[u[i]];
@@ -74,7 +90,7 @@ function JSJaCConnection(oArg) {
     }
 
     if (this._connected)
-      setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
+      setTimeout("jsjac.Connection.oCon._resume()",this.getPollInterval()); // don't poll too fast!
     return this._connected;
   }
   this.send = JSJaCSend;
@@ -113,7 +129,7 @@ function JSJaCConnection(oArg) {
       s[u[i]] = o;
     }
 		
-    createCookie('s',JSON.toString(s),this._inactivity)
+    jsjac.cookie.create('s',jsjac.json.toString(s),this._inactivity)
 
     this._connected = false;
 
@@ -264,14 +280,14 @@ function JSJaCInBandReg() {
 
 function JSJaCInBandRegDone(iq) {
   if (iq && iq.getType() == 'error') { // we failed to register
-    oCon.oDbg.log("registration failed for "+oCon.username,0);
-    oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    jsjac.Connection.oCon.oDbg.log("registration failed for "+jsjac.Connection.oCon.username,0);
+    jsjac.Connection.oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
     return;
   }
 
-  oCon.oDbg.log(oCon.username + " registered succesfully",0);
+  jsjac.Connection.oCon.oDbg.log(jsjac.Connection.oCon.username + " registered succesfully",0);
 
-  oCon._doAuth();
+  jsjac.Connection.oCon._doAuth();
 }
 
 function JSJaCAuth() {
@@ -297,9 +313,9 @@ function JSJaCLegacyAuth() {
    * Non-SASL Authentication as described in JEP-0078
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,null,'get','auth1');
+  iq.setIQ(jsjac.Connection.oCon.server,null,'get','auth1');
   var query = iq.setQuery('jabber:iq:auth');
-  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
+  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(jsjac.Connection.oCon.username));
 
   this.send(iq,this._doLegacyAuth2);
   return true;
@@ -308,12 +324,12 @@ function JSJaCLegacyAuth() {
 function JSJaCLegacyAuth2(iq) {
   if (!iq || iq.getType() != 'result') {
     if (iq.getType() == 'error') 
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
-    oCon.disconnect();
+      jsjac.Connection.oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    jsjac.Connection.oCon.disconnect();
     return;
   } 
 
-  oCon.oDbg.log("got iq: " + iq.xml(),4);
+  jsjac.Connection.oCon.oDbg.log("got iq: " + iq.xml(),4);
   var use_digest = false;
   for (var aChild=iq.getNode().firstChild.firstChild; aChild!=null; aChild=aChild.nextSibling) {
     if (aChild.nodeName == 'digest') {
@@ -326,22 +342,22 @@ function JSJaCLegacyAuth2(iq) {
    * Send authentication
    */
   iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,null,'set','auth2');
+  iq.setIQ(jsjac.Connection.oCon.server,null,'set','auth2');
   query = iq.setQuery('jabber:iq:auth');
-  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
-  query.appendChild(iq.getDoc().createElement('resource')).appendChild(iq.getDoc().createTextNode(oCon.resource));
+  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(jsjac.Connection.oCon.username));
+  query.appendChild(iq.getDoc().createElement('resource')).appendChild(iq.getDoc().createTextNode(jsjac.Connection.oCon.resource));
 
   if (use_digest) { // digest login
-    query.appendChild(iq.getDoc().createElement('digest')).appendChild(iq.getDoc().createTextNode(hex_sha1(oCon.streamid + oCon.pass)));
-  } else if (oCon.allow_plain) { // use plaintext auth
-    query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(oCon.pass));
+    query.appendChild(iq.getDoc().createElement('digest')).appendChild(iq.getDoc().createTextNode(hex_sha1(jsjac.Connection.oCon.streamid + jsjac.Connection.oCon.pass)));
+  } else if (jsjac.Connection.oCon.allow_plain) { // use plaintext auth
+    query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(jsjac.Connection.oCon.pass));
   } else {
-    oCon.oDbg.log("no valid login mechanism found",1);
-    oCon.disconnect();
+    jsjac.Connection.oCon.oDbg.log("no valid login mechanism found",1);
+    jsjac.Connection.oCon.disconnect();
     return false;
   }
 
-  oCon.send(iq,oCon._doLegacyAuthDone);
+  jsjac.Connection.oCon.send(iq,jsjac.Connection.oCon._doLegacyAuthDone);
 }
 
 /* ***
@@ -350,10 +366,10 @@ function JSJaCLegacyAuth2(iq) {
 function JSJaCLegacyAuthDone(iq) {
   if (iq.getType() != 'result') { // auth' failed
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
-    oCon.disconnect();
+      jsjac.Connection.oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    jsjac.Connection.oCon.disconnect();
   } else
-    oCon._handleEvent('onconnect');
+    jsjac.Connection.oCon._handleEvent('onconnect');
 }
 
 /*** *** *** END LEGACY AUTH *** *** ***/
@@ -396,7 +412,7 @@ function JSJaCSASLAuth() {
 function JSJaCSASLAuthDigestMd5S1(req) {
   this.oDbg.log(req.r.responseText,2);
 
-  var doc = oCon._prepareResponse(req);
+  var doc = jsjac.Connection.oCon._prepareResponse(req);
   if (!doc || doc.getElementsByTagName("challenge").length == 0) {
     this.oDbg.log("challenge missing",1);
     this.disconnect();
@@ -508,32 +524,32 @@ function JSJaCStreamBind() {
 
 function JSJaCXMPPSess(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
-    oCon.disconnect();
+    jsjac.Connection.oCon.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+      jsjac.Connection.oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
     return;
   }
   
-  oCon.fulljid = iq.getDoc().firstChild.getElementsByTagName('jid').item(0).firstChild.nodeValue;
-  oCon.jid = oCon.fulljid.substring(0,oCon.fulljid.lastIndexOf('/'));
+  jsjac.Connection.oCon.fulljid = iq.getDoc().firstChild.getElementsByTagName('jid').item(0).firstChild.nodeValue;
+  jsjac.Connection.oCon.jid = jsjac.Connection.oCon.fulljid.substring(0,jsjac.Connection.oCon.fulljid.lastIndexOf('/'));
   
   iq = new JSJaCIQ();
   iq.setIQ(this.domain,null,'set','sess_1');
   var eSess = iq.getDoc().createElement("session");
   eSess.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-session");
   iq.getNode().appendChild(eSess);
-  oCon.oDbg.log(iq.xml());
-  oCon.send(iq,oCon._doXMPPSessDone);
+  jsjac.Connection.oCon.oDbg.log(iq.xml());
+  jsjac.Connection.oCon.send(iq,jsjac.Connection.oCon._doXMPPSessDone);
 }
 
 function JSJaCXMPPSessDone(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
-    oCon.disconnect();
+    jsjac.Connection.oCon.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+      jsjac.Connection.oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
     return;
   } else
-    oCon._handleEvent('onconnect');
+    jsjac.Connection.oCon._handleEvent('onconnect');
 }
 
 /*** *** *** END SASL AUTH *** *** ***/
@@ -546,20 +562,20 @@ function JSJaCSendRaw(xml,cb,arg)
   this._req[slot] = this._setupRequest(true);
   
   this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+    if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon || !jsjac.Connection.oCon.connected())
       return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
+    if (jsjac.Connection.oCon._req[slot].r.readyState == 4) {
+      jsjac.Connection.oCon.oDbg.log("async recv: "+jsjac.Connection.oCon._req[slot].r.responseText,4);
       if (typeof(cb) != 'undefined')
-        eval("oCon."+cb+"(oCon._req[slot],"+arg+")");
+        eval("jsjac.Connection.oCon."+cb+"(jsjac.Connection.oCon._req[slot],"+arg+")");
     }
   }
   
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+      if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon || !jsjac.Connection.oCon.connected())
         return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
+      jsjac.Connection.oCon.oDbg.log('XmlHttpRequest error',1);
       return false;
     }
   }
@@ -630,38 +646,38 @@ function JSJaCProcess(timerval) {
 
   /* setup onload handler for async send */
   this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+    if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon || !jsjac.Connection.oCon.connected())
       return;
-    oCon.oDbg.log("ready state changed for slot "+slot+" ["+oCon._req[slot].r.readyState+"]",4);
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon._setStatus('processing');
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._handleResponse(oCon._req[slot]);
-      if (oCon._pQueue.length)
-        oCon._process();
+    jsjac.Connection.oCon.oDbg.log("ready state changed for slot "+slot+" ["+jsjac.Connection.oCon._req[slot].r.readyState+"]",4);
+    if (jsjac.Connection.oCon._req[slot].r.readyState == 4) {
+      jsjac.Connection.oCon._setStatus('processing');
+      jsjac.Connection.oCon.oDbg.log("async recv: "+jsjac.Connection.oCon._req[slot].r.responseText,4);
+      jsjac.Connection.oCon._handleResponse(jsjac.Connection.oCon._req[slot]);
+      if (jsjac.Connection.oCon._pQueue.length)
+        jsjac.Connection.oCon._process();
       else // schedule next tick
-        oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
+        jsjac.Connection.oCon._timeout = setTimeout("jsjac.Connection.oCon._process()",jsjac.Connection.oCon.getPollInterval());
 
     }
   };
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+      if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon || !jsjac.Connection.oCon.connected())
         return;
-      oCon._errcnt++;
-      oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
-      if (oCon._errcnt > JSJAC_ERR_COUNT) {
+      jsjac.Connection.oCon._errcnt++;
+      jsjac.Connection.oCon.oDbg.log('XmlHttpRequest error ('+jsjac.Connection.oCon._errcnt+')',1);
+      if (jsjac.Connection.oCon._errcnt > jsjac.Connection.ERR_COUNT) {
 
         // abort
-        oCon._abort();
+        jsjac.Connection.oCon._abort();
         return false;
       }
 
-      oCon._setStatus('onerror_fallback');
+      jsjac.Connection.oCon._setStatus('onerror_fallback');
 				
       // schedule next tick
-      setTimeout("oCon._resume()",oCon.getPollInterval());
+      setTimeout("jsjac.Connection.oCon._resume()",jsjac.Connection.oCon.getPollInterval());
       return false;
     };
   }
@@ -690,19 +706,19 @@ function JSJaCSendEmpty() {
   this._req[slot] = this._setupRequest(true);
 
   this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon)
+    if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon)
       return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._getStreamID(slot); // handle response
+    if (jsjac.Connection.oCon._req[slot].r.readyState == 4) {
+      jsjac.Connection.oCon.oDbg.log("async recv: "+jsjac.Connection.oCon._req[slot].r.responseText,4);
+      jsjac.Connection.oCon._getStreamID(slot); // handle response
     }
   }
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+      if (typeof(jsjac.Connection.oCon) == 'undefined' || !jsjac.Connection.oCon || !jsjac.Connection.oCon.connected())
         return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
+      jsjac.Connection.oCon.oDbg.log('XmlHttpRequest error',1);
       return false;
     };
   }
@@ -735,7 +751,7 @@ function JSJaCCheckInQ() {
       if (!this._handlePID(aJSJaCPacket))
         this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
   }
-  // 	this._inQto = setTimeout("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+  // 	this._inQto = setTimeout("jsjac.Connection.oCon._checkInQ();",jsjac.Connection.CheckInQueueInterval);
 }
 
 function JSJaCAbort() {
@@ -747,45 +763,4 @@ function JSJaCAbort() {
   this.oDbg.log("Disconnected.",1);
   this._handleEvent('ondisconnect');
   this._handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
-}
-
-/* ***
- * an error packet for internal use
- */
-function JSJaCError(code,type,condition) {
-  var xmldoc = XmlDocument.create("error","jsjac");
-
-  xmldoc.documentElement.setAttribute('code',code);
-  xmldoc.documentElement.setAttribute('type',type);
-  xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
-  return xmldoc.documentElement.cloneNode(true);
-}
-
-/* ***
- * set of sha1 hash keys for securing sessions
- */											
-function JSJaCKeys(func,oDbg) {
-  var seed = Math.random();
-
-  this._k = new Array();
-  this._k[0] = seed.toString();
-  this.oDbg = oDbg;
-
-  if (func) {
-    for (var i=1; i<JSJaC_NKEYS; i++) {
-      this._k[i] = func(this._k[i-1]);
-      oDbg.log(i+": "+this._k[i],4);
-    }
-  }
-
-  this._indexAt = JSJaC_NKEYS-1;
-  this.getKey = function() { 
-    return this._k[this._indexAt--]; 
-  };
-  this.lastKey = function() { return (this._indexAt == 0); };
-  this.size = function() { return this._k.length; };
-
-  this._getSuspendVars = function() {
-    return ('_k,_indexAt').split(',');
-  }
 }
