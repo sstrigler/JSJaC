@@ -172,12 +172,12 @@ function JSJaCIQ() {
     this.getNode().appendChild(query);
     return query;
   };
-	this.setPubsubQuery = function(inner) {
-		query = this.getNode().appendChild(this.getDoc().createElement('pubsub'));
-		query.setAttribute('xmlns', 'http://jabber.org/protocol/pubsub');
-		query.appendChild(inner);
-		return query;
-	}
+  this.setPubsubQuery = function(inner) {
+    query = this.getNode().appendChild(this.getDoc().createElement('pubsub'));
+    query.setAttribute('xmlns', 'http://jabber.org/protocol/pubsub');
+    query.appendChild(inner);
+    return query;
+  }
 
   this.getQuery = function() {
     return this.getNode().getElementsByTagName('query').item(0);
@@ -206,50 +206,66 @@ function JSJaCMessage() {
     this._setChildNode("thread", thread);
     return this; 
   };
+  this.setNickname = function(nick) {
+    this._setChildNode("nick",nick).setAttribute("xmlns","'http://jabber.org/protocol/nick");
+    return this;
+  }
+
   this.getThread = function() { return this._childElVal('thread'); };
   this.getBody = function() { return this._childElVal('body'); };
   this.getSubject = function() { return this._childElVal('subject') };
-	this.isPubsub = function () { 
-		if(this.getNode().getElementsByTagName('event').length > 0) {
-			var eventXMLNS =  this.getNode().getElementsByTagName('event').item(0).getAttribute('xmlns');
-			return (eventXMLNS == 'http://jabber.org/protocol/pubsub#event');
-		}
-		return false;
-	}
+  this.getNickname = function() {
+    var nick = this._getChildNode('nick');
+    if (nick && 
+        nick.getAttribute('xmlns') == 'http://jabber.org/protocol/nick' &&
+        nick.firstChild) {
+      return nick.fistChild.nodeValue;
+    } else {
+      return null;
+    }
+  }
+
+  this.isPubsub = function () { 
+    if(this.getNode().getElementsByTagName('event').length > 0) {
+      var eventXMLNS =  this.getNode().getElementsByTagName('event').item(0).getAttribute('xmlns');
+      return (eventXMLNS == 'http://jabber.org/protocol/pubsub#event');
+    }
+    return false;
+  }
 }
 
 function JSJaCPubsubItem() {
-	this.base = JSJaCPacket;
-	this.base('item');
-	this.getSourceTitle = function() { 
-                this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-                this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-		return this.feed.getElementsByTagName('title').item(0).firstChild.nodeValue; 
-	}
-	this.getEntryTitle = function() { 
-                this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-                this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-                this.entry = this.feed.getElementsByTagName('entry').item(0);
-		return this.entry.getElementsByTagName('title').item(0).firstChild.nodeValue; 
-	}
-	this.getEntryContent = function() {
-                this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-                this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-                this.entry = this.feed.getElementsByTagName('entry').item(0);
-		return this.entry.getElementsByTagName('content').item(0).firstChild.nodeValue; 
-	}
-	this.getEntryModified = function() {
-                this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-                this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-                this.entry = this.feed.getElementsByTagName('entry').item(0);
-		return this.entry.getElementsByTagName('modified').item(0).firstChild.nodeValue; 
-	}
-	this.getEntryCreated = function() {
-                this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-                this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-                this.entry = this.feed.getElementsByTagName('entry').item(0);
-		return this.entry.getElementsByTagName('issued').item(0).firstChild.nodeValue; 
-	}
+  this.base = JSJaCPacket;
+  this.base('item');
+  this.getSourceTitle = function() { 
+    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
+    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
+    return this.feed.getElementsByTagName('title').item(0).firstChild.nodeValue; 
+  }
+  this.getEntryTitle = function() { 
+    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
+    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
+    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    return this.entry.getElementsByTagName('title').item(0).firstChild.nodeValue; 
+  }
+  this.getEntryContent = function() {
+    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
+    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
+    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    return this.entry.getElementsByTagName('content').item(0).firstChild.nodeValue; 
+  }
+  this.getEntryModified = function() {
+    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
+    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
+    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    return this.entry.getElementsByTagName('modified').item(0).firstChild.nodeValue; 
+  }
+  this.getEntryCreated = function() {
+    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
+    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
+    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    return this.entry.getElementsByTagName('issued').item(0).firstChild.nodeValue; 
+  }
 }
 
 /* ***
