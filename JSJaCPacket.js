@@ -219,7 +219,7 @@ function JSJaCMessage() {
     if (nick && 
         nick.getAttribute('xmlns') == 'http://jabber.org/protocol/nick' &&
         nick.firstChild) {
-      return nick.fistChild.nodeValue;
+      return nick.firstChild.nodeValue;
     } else {
       return null;
     }
