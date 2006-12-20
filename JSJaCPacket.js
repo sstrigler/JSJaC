@@ -207,7 +207,7 @@ function JSJaCMessage() {
     return this; 
   };
   this.setNickname = function(nick) {
-    this._setChildNode("nick",nick).setAttribute("xmlns","'http://jabber.org/protocol/nick");
+    this._setChildNode("nick",nick).setAttribute("xmlns","http://jabber.org/protocol/nick");
     return this;
   }
 
