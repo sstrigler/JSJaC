@@ -238,33 +238,30 @@ function JSJaCPubsubItem() {
   this.base = JSJaCPacket;
   this.base('item');
   this.getSourceTitle = function() { 
-    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-    return this.feed.getElementsByTagName('title').item(0).firstChild.nodeValue; 
+    this.entry = this.getNode().getElementsByTagName('entry').item(0);
+    this.source = this.entry.getElementsByTagName('source').item(0);
+      return this.source.getElementsByTagName('title').item(0).firstChild.nodeValue; 
   }
   this.getEntryTitle = function() { 
-    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    this.entry = this.getNode().getElementsByTagName('entry').item(0);
     return this.entry.getElementsByTagName('title').item(0).firstChild.nodeValue; 
   }
   this.getEntryContent = function() {
-    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-    this.entry = this.feed.getElementsByTagName('entry').item(0);
+    this.entry = this.getNode().getElementsByTagName('entry').item(0);
     return this.entry.getElementsByTagName('content').item(0).firstChild.nodeValue; 
   }
-  this.getEntryModified = function() {
-    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-    this.entry = this.feed.getElementsByTagName('entry').item(0);
-    return this.entry.getElementsByTagName('modified').item(0).firstChild.nodeValue; 
-  }
-  this.getEntryCreated = function() {
-    this.pubsubmessage = this.getNode().getElementsByTagName('pubsub-message').item(0);
-    this.feed = this.pubsubmessage.getElementsByTagName('feed').item(0);
-    this.entry = this.feed.getElementsByTagName('entry').item(0);
-    return this.entry.getElementsByTagName('issued').item(0).firstChild.nodeValue; 
+  this.getEntryTimestamp = function() {
+    this.entry = this.getNode().getElementsByTagName('entry').item(0);
+    if (this.entry.getElementsByTagName('modified').length > 0) {
+      return this.entry.getElementsByTagName('modified').item(0).firstChild.nodeValue; 
+      } else if (this.entry.getElementsByTagName('updated').length > 0) {
+              return this.entry.getElementsByTagName('updated').item(0).firstChild.nodeValue;
+      } else if (this.entry.getElementsByTagName('issued').length > 0) {
+              return this.entry.getElementsByTagName('issued').item(0).firstChild.nodeValue;
+      } else if (this.entry.getElementsByTagName('created').length > 0) {
+              return this.entry.getElementsByTagName('created').item(0).firstChild.nodeValue;
+      }
+      return false; //ringringring
   }
 }
 
