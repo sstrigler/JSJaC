@@ -214,11 +214,10 @@ function JSJaCConnection(oArg) {
 /*** *** *** START AUTH STUFF *** *** ***/
 
 function JSJaCParseStreamFeatures(doc) {
-  if (!doc || !doc.xml) {
+  if (!doc) {
     this.oDbg.log("nothing to parse ... aborting",1);
     return false;
   }
-  this.oDbg.log(doc.xml,2);
 
   this.mechs = new Object(); 
   var lMec1 = doc.getElementsByTagName("mechanisms");
