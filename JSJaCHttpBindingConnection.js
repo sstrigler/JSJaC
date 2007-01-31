@@ -386,7 +386,13 @@ function JSJaCHBCPrepareResponse(req) {
     return null;
 
   /* handle error */
-	
+
+  if (r.status == 404 || r.status == 403) {
+    // connection manager killed session
+    oCon._abort();
+    return null;
+  }
+
   if (r.status != 200 || !r.responseXML) {
     this._errcnt++;
     var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
