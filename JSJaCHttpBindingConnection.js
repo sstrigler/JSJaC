@@ -380,39 +380,43 @@ function JSJaCHBCPrepareResponse(req) {
   if (!this.connected())
     return null;
 
+  if (!req)
+    return null;
+
   var r = req.r; // the XmlHttpRequest
 
-  if (typeof(r) == 'undefined' || !r || typeof(r.status) == 'undefined')
-    return null;
 
-  /* handle error */
-
-  if (r.status == 404 || r.status == 403) {
-    // connection manager killed session
-    oCon._abort();
-    return null;
-  }
-
-  if (r.status != 200 || !r.responseXML) {
-    this._errcnt++;
-    var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
-    if (!r.responseXML)
-      errmsg += "\nResponse failed to parse!";
-    this.oDbg.log(errmsg,1);
-    if (this._errcnt > JSJAC_ERR_COUNT) {
-      // abort
+  try {
+    if (r.status == 404 || r.status == 403) {
+      // connection manager killed session
       oCon._abort();
       return null;
     }
-    this.oDbg.log("repeating ("+this._errcnt+")",1);
 
-    this._setStatus('proto_error_fallback');
-
-    // schedule next tick
-    setTimeout("oCon._resume()",oCon.getPollInterval());
-
+    if (r.status != 200 || !r.responseXML) {
+      this._errcnt++;
+      var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
+      if (!r.responseXML)
+        errmsg += "\nResponse failed to parse!";
+      this.oDbg.log(errmsg,1);
+      if (this._errcnt > JSJAC_ERR_COUNT) {
+        // abort
+        oCon._abort();
+        return null;
+      }
+      this.oDbg.log("repeating ("+this._errcnt+")",1);
+      
+      this._setStatus('proto_error_fallback');
+      
+      // schedule next tick
+      setTimeout("oCon._resume()",oCon.getPollInterval());
+      
+      return null;
+    } 
+  } catch (e) {
+    this.oDbg.log("XMLHttpRequest error: status not available", 1);
     return null;
-  } 
+  }
 
   var body = r.responseXML.documentElement;
   if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
