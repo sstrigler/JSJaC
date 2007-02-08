@@ -6,7 +6,7 @@ JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
 JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
 
 JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
-JSJaC_CheckInQueueInterval = 1; // msecs to poll in queue
+JSJaC_CheckInQueueInterval = 100; // msecs to poll incoming queue
 /* ******************************
  * JabberConnection 
  * somewhat abstract base class
@@ -52,14 +52,17 @@ function JSJaCConnection(oArg) {
     this.oDbg.log("registered handler for event '"+event+"'",2);
   };
   this.resume = function() {
-    var s = readCookie('s');
+    var s = unescape(readCookie('JSJaC_State'));
 
     if (!s)
       return false;
 
-    this.oDbg.log('read cookie: '+s,4);
+    this.oDbg.log('read cookie: '+s,2);
 
     o = JSON.parse(s);
+
+    if (!o) // failed to parse
+      return false;
 
     for (var i in o)
       this[i] = o[i];
@@ -68,7 +71,7 @@ function JSJaCConnection(oArg) {
     if (this._keys) {
       this._keys2 = new JSJaCKeys();
       var u = this._keys2._getSuspendVars();
-      for (var i=0; i<u.length; i++) 
+      for (var i=0; i<u.length; i++)
         this._keys2[u[i]] = this._keys[u[i]];
       this._keys = this._keys2;
     }
@@ -112,9 +115,14 @@ function JSJaCConnection(oArg) {
 
       s[u[i]] = o;
     }
-		
-    createCookie('s',JSON.toString(s),this._inactivity)
+    cookie = JSON.toString(s);
+    this.oDbg.log("writing cookie: "+cookie+"\n(length:"+cookie.length+")",2);
+    createCookie('JSJaC_State',escape(cookie),this._inactivity)
 
+    if (readCookie('JSJaC_State') != escape(cookie)) {
+      this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(readCookie('JSJaC_State')), 1);
+      eraseCookie('JSJaC_State');
+    }
     this._connected = false;
 
     this._setStatus('suspending');
@@ -638,9 +646,9 @@ function JSJaCProcess(timerval) {
       oCon._handleResponse(oCon._req[slot]);
       if (oCon._pQueue.length)
         oCon._process();
-      else // schedule next tick
+      else { // schedule next tick
         oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
-
+      }
     }
   };
 
