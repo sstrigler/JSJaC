@@ -148,13 +148,11 @@ function JSJaCIQ() {
   this.base = JSJaCPacket;
   this.base('iq');
 
-  this.setIQ = function(to,from,type,id) {
+  this.setIQ = function(to,type,id) {
     if (to)
       this.setTo(to);
     if (type)
       this.setType(type);
-    if (from)
-      this.setFrom(from);
     if (id)
       this.setID(id);
     return this; 

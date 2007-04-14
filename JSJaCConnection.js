@@ -304,7 +304,7 @@ function JSJaCLegacyAuth() {
    * Non-SASL Authentication as described in JEP-0078
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,null,'get','auth1');
+  iq.setIQ(oCon.server,'get','auth1');
   var query = iq.setQuery('jabber:iq:auth');
   query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
 
@@ -333,7 +333,7 @@ function JSJaCLegacyAuth2(iq) {
    * Send authentication
    */
   iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,null,'set','auth2');
+  iq.setIQ(oCon.server,'set','auth2');
   query = iq.setQuery('jabber:iq:auth');
   query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
   query.appendChild(iq.getDoc().createElement('resource')).appendChild(iq.getDoc().createTextNode(oCon.resource));
@@ -503,7 +503,7 @@ function JSJaCSASLAuthDone(req) {
 
 function JSJaCStreamBind() {
   iq = new JSJaCIQ();
-  iq.setIQ(this.domain,null,'set','bind_1');
+  iq.setIQ(this.domain,'set','bind_1');
   var eBind = iq.getDoc().createElement("bind");
   eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind");
   eBind.appendChild(iq.getDoc().createElement("resource"))
@@ -525,7 +525,7 @@ function JSJaCXMPPSess(iq) {
   oCon.jid = oCon.fulljid.substring(0,oCon.fulljid.lastIndexOf('/'));
   
   iq = new JSJaCIQ();
-  iq.setIQ(this.domain,null,'set','sess_1');
+  iq.setIQ(this.domain,'set','sess_1');
   var eSess = iq.getDoc().createElement("session");
   eSess.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-session");
   iq.getNode().appendChild(eSess);
