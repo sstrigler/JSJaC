@@ -185,7 +185,7 @@ function JSJaCHPCConnect(oArg) {
   this.jid = this.username + '@' + this.domain;
   this.fulljid = this.jid + this.resource;
 
-  this.authhost = oArg.authost || this.domain;
+  this.authhost = oArg.authhost || this.domain;
 
   var reqstr = "0";
   if (JSJaC_HAVEKEYS) {
@@ -194,8 +194,8 @@ function JSJaCHPCConnect(oArg) {
     reqstr += ";"+key;
   }
   var streamto = this.domain;
-  if (this.anonhost)
-    streamto = this.anonhost;
+  if (this.authhost)
+    streamto = this.authhost;
   reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
   this.oDbg.log(reqstr,4);
 
