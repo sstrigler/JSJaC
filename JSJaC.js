@@ -7,15 +7,24 @@ var JSJaC = {
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
   },
   load: function() {
-    var includes = ['xmlextras','JSJaCPacket','crypt','json','qm_cookie','JSJaCConnection','JSJaCHttpPollingConnection','JSJaCHttpBindingConnection'];
+    var includes = 
+    ['xmlextras',
+     'JSJaCPacket',
+     'crypt',
+     'json',
+     'qm_cookie',
+     'JSJaCConnection',
+     'JSJaCHttpPollingConnection',
+     'JSJaCHttpBindingConnection',
+     'JSJaCJID'];
     var scripts = document.getElementsByTagName("script");
     var path = './';
     for (var i=0; i<scripts.length; i++) {
       if (scripts.item(i).src && scripts.item(i).src.match(/JSJaC\.js$/)) {
-				path = scripts.item(i).src.replace(/JSJaC.js$/,'');
-				break;
-			}
-		}
+        path = scripts.item(i).src.replace(/JSJaC.js$/,'');
+        break;
+      }
+    }
     for (var i=0; i<includes.length; i++)
       this.require(path+includes[i]+'.js');
   }
