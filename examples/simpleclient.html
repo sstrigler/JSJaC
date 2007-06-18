@@ -15,22 +15,24 @@
 
 function handleIQ(aJSJaCPacket) {
   document.getElementById('iResp').innerHTML += 
-    "IN (raw):<br/>" +aJSJaCPacket.xml().htmlEnc() + '<hr noshade size="1"/>';
+    "<div class='msg'>IN (raw): " +aJSJaCPacket.xml().htmlEnc() + '</div>';
+  document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
 function handleMessage(aJSJaCPacket) {
   var html = '';
-  html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
-  html += aJSJaCPacket.getBody().htmlEnc() + '<hr noshade size="1"/>';
+  html += '<div class="msg"><b>Received Message from '+aJSJaCPacket.getFromJID()+':</b><br/>';
+  html += aJSJaCPacket.getBody().htmlEnc() + '</div>';
   document.getElementById('iResp').innerHTML += html;
+  document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
 function handlePresence(aJSJaCPacket) {
-  var html = '';
+  var html = '<div class="msg">';
   if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
-    html += '<b>'+aJSJaCPacket.getFrom()+' has become available.</b>';
+    html += '<b>'+aJSJaCPacket.getFromJID()+' has become available.</b>';
   else {
-    html += '<b>'+aJSJaCPacket.getFrom()+' has set his presence to ';
+    html += '<b>'+aJSJaCPacket.getFromJID()+' has set his presence to ';
     if (aJSJaCPacket.getType())
       html += aJSJaCPacket.getType() + '.</b>';
     else
@@ -38,9 +40,10 @@ function handlePresence(aJSJaCPacket) {
     if (aJSJaCPacket.getStatus())
       html += ' ('+aJSJaCPacket.getStatus().htmlEnc()+')';
   }
-  html += '<hr noshade size=1>';
+  html += '</div>';
 
   document.getElementById('iResp').innerHTML += html;
+  document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
 function handleConnected() {
@@ -50,7 +53,6 @@ function handleConnected() {
 
   con.send(new JSJaCPresence());
 }
-
 
 function handleError(e) {
   document.getElementById('err').innerHTML = "An error occured:<br />"+ 
@@ -111,14 +113,21 @@ function sendMsg(aForm) {
   if (aForm.sendTo.value.indexOf('@') == -1)
     aForm.sendTo.value += '@' + con.domain;
 
-  var aMsg = new JSJaCMessage();
-  aMsg.setTo(aForm.sendTo.value);
-  aMsg.setBody(aForm.msg.value);
-  con.send(aMsg);
+  try {
+    var aMsg = new JSJaCMessage();
+    aMsg.setTo(new JSJaCJID(aForm.sendTo.value));
+    aMsg.setBody(aForm.msg.value);
+    con.send(aMsg);
 
-  aForm.msg.value = '';
+    aForm.msg.value = '';
 
-  return false;
+    return false;
+  } catch (e) {
+    html = "<div class='msg error''>Error: "+e.message+"</div>"; 
+    document.getElementById('iResp').innerHTML += html;
+    document.getElementById('iResp').lastChild.scrollIntoView();
+    return false;
+  }
 }
 
 function quit() {
@@ -171,6 +180,7 @@ onerror = function(e) {
 
   return false; 
 };
+
 onunload = function() { 
   // save backend type
   if (typeof(con._hold) != 'undefined') // must be binding
@@ -212,6 +222,13 @@ border: 2px dashed grey;
 .spaced {
 margin-bottom: 4px;
 }
+.msg {
+border-bottom: 1px solid black;
+}
+.error {
+font-weight: bold;
+color: red;
+}
 /*]]>*/
     </style>
   </head>
@@ -238,7 +255,7 @@ margin-bottom: 4px;
 
   <div id="sendmsg_pane" style="display:none;">
     <h2>Incoming:</h2>
-    <div name="iResp" id="iResp"></div>
+    <div id="iResp"></div>
     <h2>Send Message</h2>
       <form name="sendForm" onSubmit="return sendMsg(this);" action="#">
 	<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>
