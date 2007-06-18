@@ -2,6 +2,9 @@
 var JSJACJID_FORBIDDEN = ['"',' ','&','\'','/',':','<','>','@']; 
 
 function JSJaCJID(jid) {
+  this._node = '';
+  this._domain = '';
+  this._resource = '';
 
   // getters
 
@@ -9,13 +12,13 @@ function JSJaCJID(jid) {
   this.getDomain = function() { return this._domain; };
   this.getResource = function() { return this._resource; };
 
+  // setters
+
   this.setNode = function(node) {
     this._checkNodeName(node);
-    this._node = node;
+    this._node = node || '';
     return this;
   };
-
-  // setters
 
   this.setDomain = function(domain) {
     if (!domain || domain == '')
@@ -28,7 +31,7 @@ function JSJaCJID(jid) {
   };
 
   this.setResource = function(resource) {
-    this._resource = resource;
+    this._resource = resource || '';
     return this;
   };
 
@@ -53,6 +56,8 @@ function JSJaCJID(jid) {
 
   // throws exception on error
   this._checkNodeName = function(nodeprep) {
+    if (!nodeprep || nodeprep == '')
+      return;
     for (var i=0; i< JSJACJID_FORBIDDEN.length; i++) {
       if (nodeprep.indexOf(JSJACJID_FORBIDDEN[i]) != -1) {
         throw new JSJaCJIDInvalidException("forbidden char in nodename: "+JSJACJID_FORBIDDEN[i]);
@@ -71,7 +76,7 @@ function JSJaCJID(jid) {
     if (jid.indexOf('/') != -1) {
       this.setResource(jid.substring(jid.indexOf('/')+1));
       jid = jid.substring(0,jid.indexOf('/'));
-    } 
+    }
     this.setDomain(jid);
   } else {
     this.setNode(jid.node);
