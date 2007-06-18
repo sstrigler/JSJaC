@@ -147,6 +147,9 @@ function init() {
   if (typeof(Debugger) == 'function') {
     oDbg = new Debugger(2,'simpleclient');
     oDbg.start();
+  } else {
+    oDbg = function() {};
+    oDbg.log = function() {};
   }
 
   if (document.cookie) { // try to resume a session
