@@ -65,7 +65,8 @@ function JSJaCConnection(oArg) {
       return false;
 
     for (var i in o)
-      this[i] = o[i];
+      if (o.hasOwnProperty(i))
+          this[i] = o[i];
 
     // copy keys - not being very generic here :-/
     if (this._keys) {
@@ -175,7 +176,8 @@ function JSJaCConnection(oArg) {
     if (!aJSJaCPacket.getID())
       return false;
     for (var i in this._regIDs) {
-      if (this._regIDs[i] && i == aJSJaCPacket.getID()) {
+      if (this._regIDs.hasOwnProperty(i) &&
+          this._regIDs[i] && i == aJSJaCPacket.getID()) {
         var pID = aJSJaCPacket.getID();
         this.oDbg.log("handling "+pID,3);
         try {

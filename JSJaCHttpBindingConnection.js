@@ -351,7 +351,8 @@ function JSJaCHBCGetRequestString(raw) {
     this._last_rid = this._rid;
 
     for (var i in this._last_requests)
-      if (i < this._rid-this._hold)
+      if (this._last_request.hasOwnProperty(i) &&
+          i < this._rid-this._hold)
         delete(this._last_requests[i]); // truncate
   }
   var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
