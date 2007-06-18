@@ -74,7 +74,7 @@ function handleError(e) {
 
 }
 
-function handleStatusChange(status) {
+function handleStatusChanged(status) {
   oDbg.log("status changed: "+status);
 }
 
@@ -101,7 +101,7 @@ function doLogin(aForm) {
     con.registerHandler('iq',handleEvent);
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('status_changed',handleStatusChanged);
 
     // setup args for connect method
     oArgs = new Object();
