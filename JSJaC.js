@@ -9,14 +9,16 @@ var JSJaC = {
   load: function() {
     var includes = 
     ['xmlextras',
-     'JSJaCPacket',
+     'jsextras',
      'crypt',
      'json',
      'qm_cookie',
+     'JSJaCJID',
+     'JSJaCPacket',
      'JSJaCConnection',
      'JSJaCHttpPollingConnection',
-     'JSJaCHttpBindingConnection',
-     'JSJaCJID'];
+     'JSJaCHttpBindingConnection'
+     ];
     var scripts = document.getElementsByTagName("script");
     var path = './';
     for (var i=0; i<scripts.length; i++) {
