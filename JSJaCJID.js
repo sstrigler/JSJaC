@@ -48,7 +48,7 @@ function JSJaCJID(jid) {
   }
 
   this.removeResource = function() {
-    this.setResource();
+    return this.setResource();
   };
 
 
