@@ -13,7 +13,7 @@
     <script language="JavaScript" type="text/javascript">
 <!--
 
-function handleEvent(aJSJaCPacket) {
+function handleIQ(aJSJaCPacket) {
   document.getElementById('iResp').innerHTML += 
     "IN (raw):<br/>" +aJSJaCPacket.xml().htmlEnc() + '<hr noshade size="1"/>';
 }
@@ -84,7 +84,7 @@ function doLogin(aForm) {
 
     con.registerHandler('message',handleMessage);
     con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleEvent);
+    con.registerHandler('iq',handleIQ);
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
     con.registerHandler('status_changed',handleStatusChanged);
@@ -146,7 +146,7 @@ function init() {
 
     con.registerHandler('message',handleMessage);
     con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleEvent);
+    con.registerHandler('iq',handleIQ);
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
     con.registerHandler('status_changed',handleStatusChanged);
