@@ -23,8 +23,8 @@ function JSJaCHttpPollingConnection(oArg) {
   this._prepareResponse = JSJaCHPCPrepareResponse;
   this._resume = function() { 
     this._process(this._timerval);
-    this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-    this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+    this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+    this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
   }
   this._setupRequest = JSJaCHPCSetupRequest;
 
@@ -45,7 +45,7 @@ function JSJaCHPCSetupRequest(async) {
 
 function JSJaCHPCGetRequestString(raw) {
   var reqstr = this._sid;
-  if (JSJaC_HAVEKEYS) {
+  if (JSJAC_HAVEKEYS) {
     reqstr += ";"+this._keys.getKey();
     if (this._keys.lastKey()) {
       this._keys = new JSJaCKeys(b64_sha1,this.oDbg);
@@ -188,7 +188,7 @@ function JSJaCHPCConnect(oArg) {
   this.authhost = oArg.authhost || this.domain;
 
   var reqstr = "0";
-  if (JSJaC_HAVEKEYS) {
+  if (JSJAC_HAVEKEYS) {
     this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
     key = this._keys.getKey();
     reqstr += ";"+key;
@@ -214,8 +214,8 @@ function JSJaCHPCConnect(oArg) {
   this.oDbg.log("got sid: "+this._sid,2);
 
   oCon = this;
-  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
 
   /* wait for initial stream response to extract streamid needed
    * for digest auth
@@ -275,7 +275,7 @@ function JSJaCHPCDisconnect() {
 
   this._req[0] = this._setupRequest(false);
 	
-  if (JSJaC_HAVEKEYS)
+  if (JSJAC_HAVEKEYS)
     this._req[0].r.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
   else
     this._req[0].r.send(this._sid+",</stream:stream>");

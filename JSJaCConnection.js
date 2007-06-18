@@ -1,12 +1,12 @@
-JSJaC_HAVEKEYS = true;  // whether to use keys
-JSJaC_NKEYS    = 16;    // number of keys to generate
+JSJAC_HAVEKEYS = true;  // whether to use keys
+JSJAC_NKEYS    = 16;    // number of keys to generate
 JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
 JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
 
 JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
 
-JSJaC_CheckQueueInterval = 100; // msecs to poll send queue
-JSJaC_CheckInQueueInterval = 100; // msecs to poll incoming queue
+JSJAC_CHECKQUEUEINTERVAL = 100; // msecs to poll send queue
+JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue
 /* ******************************
  * JabberConnection 
  * somewhat abstract base class
@@ -744,7 +744,6 @@ function JSJaCCheckInQ() {
       if (!this._handlePID(aJSJaCPacket))
         this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
   }
-  // 	this._inQto = setTimeout("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
 }
 
 function JSJaCAbort() {
@@ -781,13 +780,13 @@ function JSJaCKeys(func,oDbg) {
   this.oDbg = oDbg;
 
   if (func) {
-    for (var i=1; i<JSJaC_NKEYS; i++) {
+    for (var i=1; i<JSJAC_NKEYS; i++) {
       this._k[i] = func(this._k[i-1]);
       oDbg.log(i+": "+this._k[i],4);
     }
   }
 
-  this._indexAt = JSJaC_NKEYS-1;
+  this._indexAt = JSJAC_NKEYS-1;
   this.getKey = function() { 
     return this._k[this._indexAt--]; 
   };
