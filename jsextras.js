@@ -2,12 +2,12 @@
 
 // extends strings with htmlEnc
 String.prototype.htmlEnc = function() {
-  this.replace(/&/g,"&amp;");
-  this.replace(/</g,"&lt;");
-  this.replace(/>/g,"&gt;");
-  this.replace(/\"/g,"&quot;");
-  this.replace(/\n/g,"<br />");
-  return this;
+  var str = this.replace(/&/g,"&amp;");
+  str = str.replace(/</g,"&lt;");
+  str = str.replace(/>/g,"&gt;");
+  str = str.replace(/\"/g,"&quot;");
+  str = str.replace(/\n/g,"<br />");
+  return str;
 };
 
 /* Date.jab2date
