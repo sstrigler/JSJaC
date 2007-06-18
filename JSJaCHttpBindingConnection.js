@@ -351,7 +351,7 @@ function JSJaCHBCGetRequestString(raw) {
     this._last_rid = this._rid;
 
     for (var i in this._last_requests)
-      if (this._last_request.hasOwnProperty(i) &&
+      if (this._last_requests.hasOwnProperty(i) &&
           i < this._rid-this._hold)
         delete(this._last_requests[i]); // truncate
   }
