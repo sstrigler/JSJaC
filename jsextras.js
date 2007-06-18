@@ -42,7 +42,7 @@ Date.hrTime = function(ts) {
  * date string conforming to JEP-0082
  */
 Date.prototype.jabberDate = function() {
-  padZero = function(i) {
+  var padZero = function(i) {
     if (i < 10) return "0" + i;
     return i;
   };
