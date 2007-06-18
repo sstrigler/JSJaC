@@ -12,29 +12,16 @@
 
     <script language="JavaScript" type="text/javascript">
 <!--
-function htmlEnc(str) {
-  try {
-    str = str.replace(/&/g,"&amp;");
-    str = str.replace(/</g,"&lt;");
-    str = str.replace(/>/g,"&gt;");
-    str = str.replace(/\"/g,"&quot;");
-    str = str.replace(/\n/g,"<br />");
-    return str;
-  } catch (e) { 
-    oDbg.log(typeof(str) + ":" + e);
-    return null;
-  }
-}
 
 function handleEvent(aJSJaCPacket) {
   document.getElementById('iResp').innerHTML += 
-    "IN (raw):<br/>" +htmlEnc(aJSJaCPacket.xml()) + '<hr noshade size="1"/>';
+    "IN (raw):<br/>" +aJSJaCPacket.xml().htmlEnc() + '<hr noshade size="1"/>';
 }
 
 function handleMessage(aJSJaCPacket) {
   var html = '';
   html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
-  html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
+  html += aJSJaCPacket.getBody().htmlEnc() + '<hr noshade size="1"/>';
   document.getElementById('iResp').innerHTML += html;
 }
 
@@ -49,7 +36,7 @@ function handlePresence(aJSJaCPacket) {
     else
       html += aJSJaCPacket.getShow() + '.</b>';
     if (aJSJaCPacket.getStatus())
-      html += ' ('+htmlEnc(aJSJaCPacket.getStatus())+')';
+      html += ' ('+aJSJaCPacket.getStatus().htmlEnc()+')';
   }
   html += '<hr noshade size=1>';
 
@@ -67,11 +54,10 @@ function handleConnected() {
 
 function handleError(e) {
   document.getElementById('err').innerHTML = "An error occured:<br />"+ 
-    htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
-            "\nCondition: "+e.firstChild.nodeName); 
+    ("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
+    "\nCondition: "+e.firstChild.nodeName).htmlEnc(); 
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
-
 }
 
 function handleStatusChanged(status) {
@@ -163,7 +149,7 @@ function init() {
     con.registerHandler('iq',handleEvent);
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('status_changed',handleStatusChanged);
 
     if (con.resume()) {
 
