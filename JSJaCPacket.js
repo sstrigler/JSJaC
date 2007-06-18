@@ -16,15 +16,19 @@ function JSJaCPacket(name) {
   this.setTo = function(to) {
     if (!to || to == '')
       this.getNode().removeAttribute('to');
-    else
+    else if (typeof(to) == 'string')
       this.getNode().setAttribute('to',to); 
+    else 
+      this.getNode().setAttribute('to',to.toString());
     return this; 
   };
   this.setFrom = function(from) {
     if (!from || from == '')
       this.getNode().removeAttribute('from');
-    else
-      this.getNode().setAttribute('from',from);
+    else if (typeof(from) == 'string')
+      this.getNode().setAttribute('from',from); 
+    else 
+      this.getNode().setAttribute('from',from.toString());
     return this;
   };
   this.setID = function(id) { 
@@ -49,11 +53,23 @@ function JSJaCPacket(name) {
     return this;
   };
 
-  this.getTo = function() { return this.getNode().getAttribute('to'); }
-  this.getFrom = function() { return this.getNode().getAttribute('from'); }
-  this.getID = function() { return this.getNode().getAttribute('id'); }
-  this.getType = function() { return this.getNode().getAttribute('type'); }
-  this.getXMLLang = function() { return this.getNode().getAttribute('xml:lang'); };
+  this.getTo = function() { 
+    return this.getNode().getAttribute('to'); 
+  };
+  this.getFrom = function() { 
+    return this.getNode().getAttribute('from'); 
+  };
+  this.getToJID = function() { 
+    return new JSJaCJID(this.getTo()); 
+  };
+  this.getFromJID = function() { 
+    return new JSJaCJID(this.getFrom()); 
+  };
+  this.getID = function() { return this.getNode().getAttribute('id'); };
+  this.getType = function() { return this.getNode().getAttribute('type'); };
+  this.getXMLLang = function() { 
+    return this.getNode().getAttribute('xml:lang'); 
+  };
   this.getXMLNS = function() { return this.getNode().namespaceURI; };
 
   this.xml = function() { 
