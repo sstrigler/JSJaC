@@ -6,7 +6,7 @@
 
 /**
  * Convert special chars to HTML entities
- * @return A string with chars encoded for HTML
+ * @return The string with chars encoded for HTML
  * @type String
  */
 String.prototype.htmlEnc = function() {
@@ -19,11 +19,11 @@ String.prototype.htmlEnc = function() {
 };
 
 /**
- * converts from jabber timestamps to javascript date objects
+ * Converts from jabber timestamps to JavaScript Date objects
  * @addon
  * @param {String} ts A string representing a jabber datetime timestamp as 
  * defined by {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
- * @return A javascript Date object representing the jabber DateTime given
+ * @return A javascript Date object corresponding to the jabber DateTime given
  * @type Date
  */
 Date.jab2date = function(ts) {
@@ -42,7 +42,7 @@ Date.jab2date = function(ts) {
 };
 
 /**
- * takes a timestamp in the form of 2004-08-13T12:07:04+02:00 as argument
+ * Takes a timestamp in the form of 2004-08-13T12:07:04+02:00 as argument
  * and converts it to some sort of humane readable format
  * @addon
  */
@@ -56,7 +56,7 @@ Date.hrTime = function(ts) {
  * date string conforming to 
  * {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
  * @see #hrTime
- * @return A jabber DateTime string
+ * @return The corresponding jabber DateTime string
  * @type String
  */
 Date.prototype.jabberDate = function() {
