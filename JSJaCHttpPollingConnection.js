@@ -1,6 +1,11 @@
+/**
+ * A jabber connection using HTTP Polling for connecting to a jabber server
+ * @extends JSJaCConnections
+ * @constructor
+ */
 function JSJaCHttpPollingConnection(oArg) {
-  this.base = JSJaCConnection;
-  this.base(oArg);
+//   this.base = JSJaCConnection;
+//   this.base(oArg);
 
   // give hint to JSJaCPacket that we're using HTTP Polling ...
   JSJACPACKET_USE_XMLNS = false;
@@ -30,6 +35,7 @@ function JSJaCHttpPollingConnection(oArg) {
 
   this._reInitStream = JSJaCHPCReInitStream;
 }
+JSJaCHttpPollingConnection.prototype = JSJaCConnection(oArg);
 
 function JSJaCHPCSetupRequest(async) {
   var r = XmlHttp.create();
@@ -128,12 +134,12 @@ function JSJaCHPCPrepareResponse(r) {
 
   try {
 		
-    var doc = _parseTree("<body>"+req.responseText+"</body>");
+    var doc = JSJaCHPC.parseTree("<body>"+req.responseText+"</body>");
 
     if (!doc || doc.tagName == 'parsererror') {
       this.oDbg.log("parsererror",1);
 
-      doc = _parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
+      doc = JSJaCHPC.parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
       if (doc && doc.tagName != 'parsererror') {
         this.oDbg.log("stream closed",1);
 
@@ -160,7 +166,7 @@ function JSJaCHPCPrepareResponse(r) {
   return null;;
 }
 
-function _parseTree(s) {
+JSJaCHPC.parseTree = function(s) {
   try {
     var r = XmlDocument.create("body","foo");
     if (typeof(r.loadXML) != 'undefined') {
@@ -172,6 +178,10 @@ function _parseTree(s) {
   return null;
 }
 
+/**
+ * Actually triggers a connect for this connection
+ * @params {JSON} oArg arguments in JSON as follows:
+ */
 function JSJaCHPCConnect(oArg) {
   // initial request to get sid and streamid
 
