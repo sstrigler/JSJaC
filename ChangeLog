@@ -1,3 +1,14 @@
+JSJaC v1.0beta1
+===============
+
+* JSJacJID.js: dedicated class for handling with JIDs
+* JSJaCPacket.js: getToJID(), getFromJID() return a JID object
+* JSJaCPacket.js: setTo and setFrom accept JID object too
+* jsextras.js: extends string with 'htmlEnc', extends Date with 'jabberDate',
+  'hrTime' (static)  and 'jab2date' (static)
+* fixed all occurrences of 'for .. in' to be compliant with having prototypes 
+  of objects (arrays) extended (like prototype.js does e.g.).
+
 JSJaC v0.6
 ==========
 
