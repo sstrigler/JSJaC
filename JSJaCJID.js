@@ -53,21 +53,21 @@ function JSJaCJID(jid) {
 
 
 /**
- * Get the node part of the jid
+ * Gets the node part of the jid
  * @return A string representing the node name
  * @type String
  */
 JSJaCJID.prototype.getNode = function() { return this._node; };
 
 /**
- * Get the domain part of the jid
+ * Gets the domain part of the jid
  * @return A string representing the domain name
  * @type String
  */
 JSJaCJID.prototype.getDomain = function() { return this._domain; };
 
 /**
- * Get the resource part of the jid
+ * Gets the resource part of the jid
  * @return A string representing the resource
  * @type String
  */
@@ -75,10 +75,10 @@ JSJaCJID.prototype.getResource = function() { return this._resource; };
 
 
 /**
- * Set the node part of the jid
+ * Sets the node part of the jid
  * @param {String} node Name of the node
  * @throws JSJaCJIDInvalidException Thrown if node name contains invalid chars
- * @return A reference to the object itself
+ * @return This object
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setNode = function(node) {
@@ -88,11 +88,11 @@ JSJaCJID.prototype.setNode = function(node) {
 };
 
 /**
- * Set the domain part of the jid
+ * Sets the domain part of the jid
  * @param {String} domain Name of the domain
  * @throws JSJaCJIDInvalidException Thrown if domain name contains invalid 
  * chars or is empty
- * @return A reference to the object itself
+ * @return This object
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setDomain = function(domain) {
@@ -106,9 +106,9 @@ JSJaCJID.prototype.setDomain = function(domain) {
 };
 
 /**
- * Set the resource part of the jid
+ * Sets the resource part of the jid
  * @param {String} resource Name of the resource
- * @return A reference to the object itself
+ * @return This object
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setResource = function(resource) {
@@ -132,8 +132,8 @@ JSJaCJID.prototype.toString = function() {
 };
 
 /**
- * Remove the resource part of the jid
- * @return A reference to the object itself
+ * Removes the resource part of the jid
+ * @return This object
  * @type JSJaCJID
  */
 JSJaCJID.prototype.removeResource = function() {
