@@ -1,5 +1,10 @@
 var JSJACPACKET_USE_XMLNS = true;
-
+/**
+ * Creates a new packet
+ * @class Somewhat abstract base class for all kinds of specialised packets
+ * @param {String} name The root tag name of the packet 
+ * (i.e. one of 'message', 'iq' or 'presence')
+ */
 function JSJaCPacket(name) {
   this.name = name;
 
