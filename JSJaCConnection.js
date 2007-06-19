@@ -1,20 +1,39 @@
-JSJAC_HAVEKEYS = true;  // whether to use keys
-JSJAC_NKEYS    = 16;    // number of keys to generate
-JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
-JSJAC_ERR_COUNT = 10;	// number of retries in case of connection errors
-
-JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
-
-JSJAC_CHECKQUEUEINTERVAL = 100; // msecs to poll send queue
-JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue
-/* ******************************
- * JabberConnection 
- * somewhat abstract base class
+/**
+ * @fileoverview Contains all things in common for all subtypes of connections
+ * supported.
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
  */
 
+
+var JSJAC_HAVEKEYS = true;  // whether to use keys
+var JSJAC_NKEYS    = 16;    // number of keys to generate
+var JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
+var JSJAC_ERR_COUNT = 10;   // number of retries in case of connection errors
+
+var JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
+
+var JSJAC_CHECKQUEUEINTERVAL = 100; // msecs to poll send queue
+var JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue
+
+/**
+ * Creates a new Jabber connection (a connection to a jabber server)
+ * @class Somewhat abstract base class for jabber connections. Contains all
+ * of the code in common for all jabber connections
+ * @constructor
+ * @param {JSON http://www.json.org/index} oArg JSON with properties: <br>
+ * * <code>httpbase</code> the http base address of the service to be used for
+ * connecting to jabber<br>
+ * * <code>oDbg</code> (optional) a reference to a debugger interface
+ */
 function JSJaCConnection(oArg) {
   oCon = this; // remember reference to ourself
   if (oArg && oArg.oDbg && oArg.oDbg.log)
+    /**
+     * Reference to debugger interface 
+     *(needs to implement method <code>log</code>)
+     * @type Debugger
+     */
     this.oDbg = oArg.oDbg; 
   else {
     this.oDbg = new Object(); // always initialise a debugger
@@ -22,27 +41,83 @@ function JSJaCConnection(oArg) {
   }
 
   if (oArg && oArg.httpbase)
+    /** 
+     * @private
+     */
     this._httpbase = oArg.httpbase;
+  else throw "'httpbase' missing";
 
-  if (oArg && typeof(oArg.allow_plain) != 'undefined')
+  if (oArg && oArg.allow_plain)
+    /** 
+     * @private
+     */
     this.allow_plain = oArg.allow_plain;
   else 
     this.allow_plain = JSJAC_ALLOW_PLAIN;
 
+  /** 
+   * @private
+   */
   this._connected = false;
+  /** 
+   * @private
+   */
   this._events = new Array();
+  /** 
+   * @private
+   */
   this._keys = null;
+  /** 
+   * @private
+   */
   this._ID = 0;
+  /** 
+   * @private
+   */
   this._inQ = new Array();
+  /** 
+   * @private
+   */
   this._pQueue = new Array();
+  /** 
+   * @private
+   */
   this._regIDs = new Array();
+  /** 
+   * @private
+   */
   this._req = new Array();
+  /** 
+   * @private
+   */
   this._status = 'intialized';
+  /** 
+   * @private
+   */
   this._errcnt = 0;
+  /** 
+   * @private
+   */
   this._inactivity = JSJAC_INACTIVITY;
 
+  /**
+   * Tells whether this connection is connected
+   * @return <code>true</code> if this connections is connected, 
+   * <code>false</code> otherwise 
+   * @type boolean
+   */
   this.connected = function() { return this._connected; };
+  /**
+   * Gets current value of polling interval
+   * @return Polling interval in milliseconds
+   * @type int
+   */
   this.getPollInterval = function() { return this._timerval; };
+  /**
+   * Registers an event handler (callback) for this connection
+   * @param {String}   event   One of ... [TODO]
+   * @param {Function} handler The handler to be called when event occurs
+   */
   this.registerHandler = function(event,handler) {
     event = event.toLowerCase(); // don't be case-sensitive here
     if (!this._events[event])
@@ -51,48 +126,68 @@ function JSJaCConnection(oArg) {
       this._events[event] = this._events[event].concat(handler);
     this.oDbg.log("registered handler for event '"+event+"'",2);
   };
+  /** 
+   * Resumes this connection from saved state (cookie)
+   * @return Whether resume was successful
+   * @type boolean
+   */
   this.resume = function() {
-    var s = unescape(readCookie('JSJaC_State'));
+    try {
+      var s = unescape(Cookie.read('JSJaC_State').value);
+      
+      this.oDbg.log('read cookie: '+s,2);
 
-    if (!s)
-      return false;
-
-    this.oDbg.log('read cookie: '+s,2);
-
-    o = JSON.parse(s);
-
-    if (!o) // failed to parse
-      return false;
-
-    for (var i in o)
-      if (o.hasOwnProperty(i))
+      var o = s.parseJSON();
+      
+      for (var i in o)
+        if (o.hasOwnProperty(i))
           this[i] = o[i];
+      
+      // copy keys - not being very generic here :-/
+      if (this._keys) {
+        this._keys2 = new JSJaCKeys();
+        var u = this._keys2._getSuspendVars();
+        for (var i=0; i<u.length; i++)
+          this._keys2[u[i]] = this._keys[u[i]];
+        this._keys = this._keys2;
+      }
 
-    // copy keys - not being very generic here :-/
-    if (this._keys) {
-      this._keys2 = new JSJaCKeys();
-      var u = this._keys2._getSuspendVars();
-      for (var i=0; i<u.length; i++)
-        this._keys2[u[i]] = this._keys[u[i]];
-      this._keys = this._keys2;
+      if (this._connected)
+        // don't poll too fast!
+        setTimeout("oCon._resume()",this.getPollInterval());
+
+      return this._connected;
+    } catch (e) {
+      this.oDbg.log("Resumed failed: "+e.message, 1);
+      return false;
     }
-
-    if (this._connected)
-      setTimeout("oCon._resume()",this.getPollInterval()); // don't poll too fast!
-    return this._connected;
   }
   this.send = JSJaCSend;
+  /**
+   * Sets polling interval for this connection
+   * @param {int} millisecs Milliseconds to set timer to
+   * @return effective interval this connection has been set to
+   * @type int
+   */
   this.setPollInterval = function(timerval) {
     if (!timerval || isNaN(timerval)) {
       this.oDbg.log("Invalid timerval: " + timerval,1);
-      return -1;
+      throw "Invalid interval";
     }
     this._timerval = timerval;
     return this._timerval;
   };
   if (oArg && oArg.timerval)
     this.setPollInterval(oArg.timerval);
+  /**
+   * Returns current status of this connection
+   * @return String to denote current state
+   * @type String
+   */
   this.status = function() { return this._status; }
+  /**
+   * Suspsends this connection (saving state for later resume)
+   */
   this.suspend = function() {
 		
     // remove timers
@@ -116,46 +211,52 @@ function JSJaCConnection(oArg) {
 
       s[u[i]] = o;
     }
-    cookie = JSON.toString(s);
-    this.oDbg.log("writing cookie: "+cookie+"\n(length:"+cookie.length+")",2);
-    createCookie('JSJaC_State',escape(cookie),this._inactivity)
+    var c = new Cookie('JSJaC_State', escape(s.toJSONString()), this._inactivity);
+    this.oDbg.log("writing cookie: "+unescape(c.value)+"\n(length:"+unescape(c.value).length+")",2);
+    c.write();
 
-    if (readCookie('JSJaC_State') != escape(cookie)) {
-      this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(readCookie('JSJaC_State')), 1);
-      eraseCookie('JSJaC_State');
+    try {
+      var c2 = Cookie.read('JSJaC_State');
+      if (c.value != c2.value) {
+        this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(readCookie('JSJaC_State')), 1);
+        c.erase();
+        this._connected = false;
+
+        this._setStatus('suspending');
+      }
+    } catch (e) {
+      this.oDbg.log("Failed reading cookie 'JSJaC_State': "+e.message);
     }
-    this._connected = false;
 
-    this._setStatus('suspending');
-  }
+  };
 
-  this._abort       = JSJaCAbort;
-  this._checkInQ    = JSJaCCheckInQ;
-  this._checkQueue  = JSJaCHBCCheckQueue;
+  function _abort                 = JSJaCAbort;
+  function _checkInQ              = JSJaCCheckInQ;
+  function _checkQueue            = JSJaCHBCCheckQueue;
 
-  this._doAuth          = JSJaCAuth;
+  function _doAuth                = JSJaCAuth;
 
-  this._doInBandReg     = JSJaCInBandReg;
-  this._doInBandRegDone = JSJaCInBandRegDone;
+  function _doInBandReg           = JSJaCInBandReg;
+  function _doInBandRegDone       = JSJaCInBandRegDone;
 
-  this._doLegacyAuth    = JSJaCLegacyAuth;
-  this._doLegacyAuth2   = JSJaCLegacyAuth2;
-  this._doLegacyAuthDone= JSJaCLegacyAuthDone;
+  function _doLegacyAuth          = JSJaCLegacyAuth;
+  function _doLegacyAuth2         = JSJaCLegacyAuth2;
+  function _doLegacyAuthDone      = JSJaCLegacyAuthDone;
 
-  this._sendRaw         = JSJaCSendRaw;
+  function _sendRaw               = JSJaCSendRaw;
 
-  this._doSASLAuth      = JSJaCSASLAuth;
+  function _doSASLAuth            = JSJaCSASLAuth;
 
-  this._doSASLAuthDigestMd5S1 = JSJaCSASLAuthDigestMd5S1;
-  this._doSASLAuthDigestMd5S2 = JSJaCSASLAuthDigestMd5S2;
+  function _doSASLAuthDigestMd5S1 = JSJaCSASLAuthDigestMd5S1;
+  function _doSASLAuthDigestMd5S2 = JSJaCSASLAuthDigestMd5S2;
 
-  this._doSASLAuthDone  = JSJaCSASLAuthDone;
+  function _doSASLAuthDone        = JSJaCSASLAuthDone;
 
-  this._doStreamBind    = JSJaCStreamBind;
-  this._doXMPPSess      = JSJaCXMPPSess;
-  this._doXMPPSessDone  = JSJaCXMPPSessDone;
+  function _doStreamBind          = JSJaCStreamBind;
+  function _doXMPPSess            = JSJaCXMPPSess;
+  function _doXMPPSessDone        = JSJaCXMPPSessDone;
 
-  this._handleEvent = function(event,arg) {
+  function _handleEvent = function(event,arg) {
     event = event.toLowerCase(); // don't be case-sensitive here
     this.oDbg.log("incoming event '"+event+"'",3);
     if (!this._events[event])
@@ -172,7 +273,7 @@ function JSJaCConnection(oArg) {
       }
     }
   };
-  this._handlePID = function(aJSJaCPacket) {
+  function _handlePID = function(aJSJaCPacket) {
     if (!aJSJaCPacket.getID())
       return false;
     for (var i in this._regIDs) {
@@ -189,10 +290,10 @@ function JSJaCConnection(oArg) {
     }
     return false;
   };
-  this._handleResponse = JSJaCHandleResponse;
-  this._parseStreamFeatures = JSJaCParseStreamFeatures;
-  this._process = JSJaCProcess;
-  this._registerPID = function(pID,cb,arg) {
+  function _handleResponse = JSJaCHandleResponse;
+  function _parseStreamFeatures = JSJaCParseStreamFeatures;
+  function _process = JSJaCProcess;
+  function _registerPID = function(pID,cb,arg) {
     if (!pID || !cb)
       return false;
     this._regIDs[pID] = new Object();
@@ -202,8 +303,8 @@ function JSJaCConnection(oArg) {
     this.oDbg.log("registered "+pID,3);
     return true;
   };
-  this._sendEmpty = JSJaCSendEmpty;
-  this._setStatus = function(status) {
+  function _sendEmpty = JSJaCSendEmpty;
+  function _setStatus = function(status) {
     if (!status || status == '')
       return;
     if (status != this._status) { // status changed!
@@ -211,7 +312,7 @@ function JSJaCConnection(oArg) {
       this._handleEvent('status_changed', status);
     }
   }
-  this._unregisterPID = function(pID) {
+  function _unregisterPID = function(pID) {
     if (!this._regIDs[pID])
       return false;
     this._regIDs[pID] = null;
@@ -579,24 +680,27 @@ function JSJaCSendRaw(xml,cb,arg)
   return true;
 }
 
-/* ***
- * send a jsjac packet
- * optional args: cb  - callback to be called when result is received)
- *                arg - additional argument to be passed to callback
+/**
+ * Sends a JSJaCPacket
+ * @param {JSJaCPacket} packet  The packet to send
+ * @param {Function}    cb      The callback to be called if there's a reply 
+ * to this packet (identified by id) [optional]
+ * @param {Object}      arg     Arguments passed to the callback 
+ * (additionally to the packet received) [optional]
  */
-function JSJaCSend(aJSJaCPacket,cb,arg) {
+function JSJaCSend(packet,cb,arg) {
   // remember id for response if callback present
-  if (aJSJaCPacket && cb) {
-    if (!aJSJaCPacket.getID())
-      aJSJaCPacket.setID('JSJaCID_'+this._ID++); // generate an ID
+  if (packet && cb) {
+    if (!packet.getID())
+      packet.setID('JSJaCID_'+this._ID++); // generate an ID
 
     // register callback with id
-    this._registerPID(aJSJaCPacket.getID(),cb,arg);
+    this._registerPID(packet.getID(),cb,arg);
   }
 
-  if (aJSJaCPacket) {
+  if (packet) {
     try {
-      this._pQueue = this._pQueue.concat(aJSJaCPacket.xml());
+      this._pQueue = this._pQueue.concat(packet.xml());
     } catch (e) {
       this.oDbg.log(e.toString(),1);
     }
@@ -769,31 +873,66 @@ function JSJaCError(code,type,condition) {
   return xmldoc.documentElement.cloneNode(true);
 }
 
-/* ***
- * set of sha1 hash keys for securing sessions
- */											
+/**
+ * Creates a new set of hash keys
+ * @class Reflects a set of sha1/md5 hash keys for securing sessions
+ * @constructor
+ * @param {Function} func The hash function to be used for creating the keys
+ * @param {Debugger} oDbg Reference to debugger implementation [optional]
+ */									  
 function JSJaCKeys(func,oDbg) {
   var seed = Math.random();
 
+  /**
+   * @private
+   */
   this._k = new Array();
   this._k[0] = seed.toString();
-  this.oDbg = oDbg;
+  if (oDbg) 
+    /**
+     * Reference to Debugger
+     * @type Debugger
+     */
+    this.oDbg = oDbg;
+  else {
+    this.oDbg = {};
+    this.oDbg.log = function() {};
+  }
 
   if (func) {
     for (var i=1; i<JSJAC_NKEYS; i++) {
       this._k[i] = func(this._k[i-1]);
       oDbg.log(i+": "+this._k[i],4);
     }
-  }
+  } else 
+    throw "Hash function missing";
 
+  /**
+   * @private
+   */
   this._indexAt = JSJAC_NKEYS-1;
+  /**
+   * Gets next key from stack
+   * @return New hash key
+   * @type String
+   */
   this.getKey = function() { 
     return this._k[this._indexAt--]; 
   };
+  /**
+   * Indicates whether there's only one key left
+   * @return <code>true</code> if there's only one key left, false otherwise
+   * @type boolean
+   */
   this.lastKey = function() { return (this._indexAt == 0); };
+  /**
+   * Returns number of overall/initial stack size
+   * @return Number of keys created
+   * @type int
+   */
   this.size = function() { return this._k.length; };
 
-  this._getSuspendVars = function() {
+  function _getSuspendVars = function() {
     return ('_k,_indexAt').split(',');
   }
 }
