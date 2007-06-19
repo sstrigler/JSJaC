@@ -1,6 +1,14 @@
-// functions to make live easier
+/**
+ * @fileoverview Collection of functions to make live easier
+ * @author Stefan Strigler
+ * @version $Revision$
+ */
 
-// extends strings with htmlEnc
+/**
+ * Convert special chars to HTML entities
+ * @return A string with chars encoded for HTML
+ * @type String
+ */
 String.prototype.htmlEnc = function() {
   var str = this.replace(/&/g,"&amp;");
   str = str.replace(/</g,"&lt;");
@@ -10,8 +18,13 @@ String.prototype.htmlEnc = function() {
   return str;
 };
 
-/* Date.jab2date
+/**
  * converts from jabber timestamps to javascript date objects
+ * @addon
+ * @param {String} ts A string representing a jabber datetime timestamp as 
+ * defined by {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
+ * @return A javascript Date object representing the jabber DateTime given
+ * @type Date
  */
 Date.jab2date = function(ts) {
   var date = new Date(Date.UTC(ts.substr(0,4),ts.substr(5,2)-1,ts.substr(8,2),ts.substr(11,2),ts.substr(14,2),ts.substr(17,2)));
@@ -28,18 +41,23 @@ Date.jab2date = function(ts) {
   return date;
 };
 
-/* hrTime - human readable Time
- * takes a timestamp in the form of 2004-08-13T12:07:04±02:00 as argument
+/**
+ * takes a timestamp in the form of 2004-08-13T12:07:04+02:00 as argument
  * and converts it to some sort of humane readable format
+ * @addon
  */
 Date.hrTime = function(ts) {
   return Date.jab2date(ts).toLocaleString();
 };
 
-/* jabberDate
- * somewhat opposit to hrTime (see above)
+/**
+ * somewhat opposit to {@link #hrTime}
  * expects a javascript Date object as parameter and returns a jabber 
- * date string conforming to JEP-0082
+ * date string conforming to 
+ * {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
+ * @see #hrTime
+ * @return A jabber DateTime string
+ * @type String
  */
 Date.prototype.jabberDate = function() {
   var padZero = function(i) {
@@ -55,4 +73,4 @@ Date.prototype.jabberDate = function() {
   jDate += padZero(this.getUTCSeconds()) + "Z";
 
   return jDate;
-}
+};
