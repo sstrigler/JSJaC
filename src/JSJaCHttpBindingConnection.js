@@ -312,8 +312,9 @@ function JSJaCHBCDisconnect() {
   this.oDbg.log("Disconnecting: " + reqstr,4);
   this._req[slot].r.send(reqstr);	
   clearTimeout(abortTimerID);
-  eraseCookie('s');
-
+  try {
+    Cookie.read('s').erase();
+  } catch (e) {}
   oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
   oCon._connected = false;
   oCon._handleEvent('ondisconnect');
