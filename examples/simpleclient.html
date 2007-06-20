@@ -4,7 +4,7 @@
   <head>
     <title>JSJaC Simple Client</title>
 
-    <script type="text/javascript" src="../JSJaC.js"></script>
+    <script type="text/javascript" src="../src/JSJaC.js"></script>
 
     <!-- if you want to enable debugging uncomment line below
          debugger available at http://zeank.in-berlin.de/ -->
@@ -70,7 +70,6 @@ function doLogin(aForm) {
   document.getElementById('err').innerHTML = ''; // reset
 
   try {
-
     // setup args for contructor
     oArgs = new Object();
     oArgs.httpbase = aForm.http_base.value;
@@ -148,7 +147,7 @@ function init() {
   }
 
   if (document.cookie) { // try to resume a session
-    if (readCookie('btype') == 'binding')
+    if (Cookie.read('btype').getValue() == 'binding')
       con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
     else
       con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
@@ -184,9 +183,9 @@ onerror = function(e) {
 onunload = function() { 
   // save backend type
   if (typeof(con._hold) != 'undefined') // must be binding
-    createCookie('btype','binding');
+    (new Cookie('btype','binding')).write();
   else
-    createCookie('btype','polling');
+    (new Cookie('btype','polling')).write();
   if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
 };
 
