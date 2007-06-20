@@ -45,8 +45,7 @@ function JSJaCConnection(oArg) {
      * @private
      */
     this._httpbase = oArg.httpbase;
-  else throw "'httpbase' missing";
-
+  
   if (oArg && oArg.allow_plain)
     /** 
      * @private
@@ -133,7 +132,7 @@ function JSJaCConnection(oArg) {
    */
   this.resume = function() {
     try {
-      var s = unescape(Cookie.read('JSJaC_State').value);
+      var s = unescape(Cookie.read('JSJaC_State').getValue());
       
       this.oDbg.log('read cookie: '+s,2);
 
@@ -158,7 +157,10 @@ function JSJaCConnection(oArg) {
 
       return this._connected;
     } catch (e) {
-      this.oDbg.log("Resumed failed: "+e.message, 1);
+      if (e.message)
+        this.oDbg.log("Resume failed: "+e.message, 1);
+      else
+        this.oDbg.log("Resume failed: "+e, 1);
       return false;
     }
   }
@@ -979,8 +981,7 @@ function JSJaCKeys(func,oDbg) {
       this._k[i] = func(this._k[i-1]);
       oDbg.log(i+": "+this._k[i],4);
     }
-  } else 
-    throw "Hash function missing";
+  }
 
   /**
    * @private
