@@ -4,7 +4,7 @@
   <head>
     <title>JSJaC Simple Client</title>
 
-    <script type="text/javascript" src="../src/JSJaC.js"></script>
+    <script type="text/javascript" src="../jsjac.js"></script>
 
     <!-- if you want to enable debugging uncomment line below
          debugger available at http://zeank.in-berlin.de/ -->
@@ -171,7 +171,7 @@ function init() {
 }
 onload = init;
 
-onerror = function(e) { 
+onerrror = function(e) { 
   document.getElementById('err').innerHTML = e; 
 
   document.getElementById('login_pane').style.display = '';
@@ -180,13 +180,16 @@ onerror = function(e) {
   return false; 
 };
 
-onunload = function() { 
+onunload = function() {
+  if (typeof(con) != 'undefined') {
   // save backend type
-  if (typeof(con._hold) != 'undefined') // must be binding
-    (new Cookie('btype','binding')).write();
-  else
-    (new Cookie('btype','polling')).write();
-  if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
+    if (con._hold) // must be binding
+      (new Cookie('btype','binding')).write();
+    else
+      (new Cookie('btype','polling')).write();
+    if (con.suspend) 
+      con.suspend(); 
+  }
 };
 
 //-->
