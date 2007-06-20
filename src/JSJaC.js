@@ -12,7 +12,7 @@ var JSJaC = {
      'jsextras',
      'crypt',
      'json',
-     'qm_cookie',
+     'Cookie',
      'JSJaCJID',
      'JSJaCPacket',
      'JSJaCConnection',
