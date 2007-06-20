@@ -57,7 +57,7 @@ function Cookie(name,value,secs)
   /**
    * Gets the name of this cookie
    * @return The name
-   * @type {String}
+   * @type String
    */
   this.getName = function() {
     return this.name;
@@ -77,7 +77,7 @@ function Cookie(name,value,secs)
   /**
    * Gets the value of this cookie
    * @return The value
-   * @type {String}
+   * @type String
    */
   this.getValue = function() {
     return this.value;
