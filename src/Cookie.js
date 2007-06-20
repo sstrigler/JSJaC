@@ -44,14 +44,54 @@ function Cookie(name,value,secs)
       var expires = "; expires="+date.toGMTString();
     } else
       var expires = "";
-    document.cookie = this.name+"="+this.value+expires+"; path=/";
+    document.cookie = this.getName()+"="+this.getValue()+expires+"; path=/";
   };
   /**
    * Deletes this cookie
    */
   this.erase = function() {
-    var c = new Cookie(this.name,"",-1);
+    var c = new Cookie(this.getName(),"",-1);
     c.write();
+  }
+
+  /**
+   * Gets the name of this cookie
+   * @return The name
+   * @type {String}
+   */
+  this.getName = function() {
+    return this.name;
+  }
+  
+  /**
+   * Sets the name of this cookie
+   * @param {String} name The name for this cookie
+   * @return This cookie
+   * @type Cookie
+   */
+  this.setName = function(name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Gets the value of this cookie
+   * @return The value
+   * @type {String}
+   */
+  this.getValue = function() {
+    return this.value;
+  }
+  
+  /**
+   * Sets the value of this cookie
+   * @param {String} value The value for this cookie
+   * @return This cookie
+   * @type Cookie
+   */
+  this.setValue = function(value) {
+    this.value = value;
+    return this;
   }
 }
 
