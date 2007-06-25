@@ -915,7 +915,7 @@ function JSJaCCheckInQ() {
   for (var i=0; i<this._inQ.length && i<10; i++) {
     var item = this._inQ[0];
     this._inQ = this._inQ.slice(1,this._inQ.length);
-    var aJSJaCPacket = JSJaCPWrapNode(item);
+    var aJSJaCPacket = JSJaCPacket.wrapNode(item);
     if (typeof(aJSJaCPacket.pType) != 'undefined')
       if (!this._handlePID(aJSJaCPacket))
         this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
