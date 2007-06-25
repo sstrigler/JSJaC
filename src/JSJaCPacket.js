@@ -359,7 +359,7 @@ function JSJaCIQ() {
    * Creates a 'query' child node with given XMLNS
    * @param {String} xmlns The namespace for the 'query' node
    * @return The query node
-   * @type {Node http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247}
+   * @type {@link  http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
   this.setQuery = function(xmlns) {
     var query;
@@ -378,7 +378,7 @@ function JSJaCIQ() {
   /**
    * Gets the 'query' node of this packet
    * @return The query node
-   * @type {Node http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247}
+   * @type {@link  http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
   this.getQuery = function() {
     return this.getNode().getElementsByTagName('query').item(0);
