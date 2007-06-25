@@ -256,8 +256,11 @@ function JSJaCPresence() {
   this.base('presence');
 
   /**
-   * Sets the status for this presence packet. Must be one of 'chat',
-   * 'away', 'xa', 'dnd', 'available', 'unavailable'
+   * Sets the status for this presence packet. 
+   * @param {String} status An XMPP complient status indicator. Must
+   * be one of 'chat', 'away', 'xa', 'dnd', 'available', 'unavailable'
+   * @return this
+   * @type JSJaCPacket
    */
   this.setStatus = function(status) {
     this._setChildNode("status", status);
@@ -267,6 +270,9 @@ function JSJaCPresence() {
    * Sets the status message for current status. Usually this is set
    * to some human readable string indicating what the user is
    * doing/feel like currently.
+   * @param {String} show A status message
+   * @return this
+   * @type JSJaCPacket
    */
   this.setShow = function(show) {
     this._setChildNode("show",show);
@@ -274,6 +280,9 @@ function JSJaCPresence() {
   };
   /**
    * Sets the priority of the resource bind to with this connection
+   * @param {int} prio The priority to set this resource to
+   * @return this
+   * @type JSJaCPacket
    */
   this.setPriority = function(prio) {
     this._setChildNode("priority", prio);
@@ -282,6 +291,11 @@ function JSJaCPresence() {
   /**
    * Some combined method that allowes for setting show, status and
    * priority at once
+   * @param {String} show A status message
+   * @param {String} status A status indicator as defined by XMPP
+   * @param {int} prio A priority for this resource
+   * @return this
+   * @type JSJaCPacket
    */
   this.setPresence = function(show,status,prio) {
     if (show)
@@ -295,14 +309,20 @@ function JSJaCPresence() {
 
   /**
    * Gets the status of this presence
+   * @return The status indicator as defined by XMPP
+   * @type String
    */
   this.getStatus = function() {	return this._childElVal('status');	};
   /**
    * Gets the status message of this presence
+   * @return The status message
+   * @type String
    */
   this.getShow = function() { return this._childElVal('show'); };
   /**
    * Gets the priority of this status message
+   * @return A resource priority
+   * @type int
    */
   this.getPriority = function() { return this._childElVal('priority'); };
 }
@@ -318,6 +338,14 @@ function JSJaCIQ() {
   this.base = JSJaCPacket;
   this.base('iq');
 
+  /**
+   * Some combined method to set 'to', 'type' and 'id' at once
+   * @param {String} to the recepients JID
+   * @param {String} type A XMPP compliant iq type (one of 'set', 'get', 'result' and 'error'
+   * @param {String} id A packet ID
+   * @return this
+   * @type JSJaCIQ
+   */
   this.setIQ = function(to,type,id) {
     if (to)
       this.setTo(to);
@@ -327,6 +355,12 @@ function JSJaCIQ() {
       this.setID(id);
     return this; 
   };
+  /**
+   * Creates a 'query' child node with given XMLNS
+   * @param {String} xmlns The namespace for the 'query' node
+   * @return The query node
+   * @type {Node http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247}
+   */
   this.setQuery = function(xmlns) {
     var query;
     try {
@@ -340,16 +374,20 @@ function JSJaCIQ() {
     this.getNode().appendChild(query);
     return query;
   };
-  this.setPubsubQuery = function(inner) {
-    query = this.getNode().appendChild(this.getDoc().createElement('pubsub'));
-    query.setAttribute('xmlns', 'http://jabber.org/protocol/pubsub');
-    query.appendChild(inner);
-    return query;
-  }
 
+  /**
+   * Gets the 'query' node of this packet
+   * @return The query node
+   * @type {Node http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247}
+   */
   this.getQuery = function() {
     return this.getNode().getElementsByTagName('query').item(0);
   };
+  /**
+   * Gets the XMLNS of the query node contained within this packet
+   * @return The namespace of the query node
+   * @type String
+   */
   this.getQueryXMLNS = function() {
     if (this.getQuery())
       return this.getQuery().namespaceURI;
@@ -445,44 +483,6 @@ function JSJaCMessage() {
     }
   }
 
-  this.isPubsub = function () { 
-    if(this.getNode().getElementsByTagName('event').length > 0) {
-      var eventXMLNS =  this.getNode().getElementsByTagName('event').item(0).getAttribute('xmlns');
-      return (eventXMLNS == 'http://jabber.org/protocol/pubsub#event');
-    }
-    return false;
-  }
-}
-
-function JSJaCPubsubItem() {
-  this.base = JSJaCPacket;
-  this.base('item');
-  this.getSourceTitle = function() { 
-    this.entry = this.getNode().getElementsByTagName('entry').item(0);
-    this.source = this.entry.getElementsByTagName('source').item(0);
-      return this.source.getElementsByTagName('title').item(0).firstChild.nodeValue; 
-  }
-  this.getEntryTitle = function() { 
-    this.entry = this.getNode().getElementsByTagName('entry').item(0);
-    return this.entry.getElementsByTagName('title').item(0).firstChild.nodeValue; 
-  }
-  this.getEntryContent = function() {
-    this.entry = this.getNode().getElementsByTagName('entry').item(0);
-    return this.entry.getElementsByTagName('content').item(0).firstChild.nodeValue; 
-  }
-  this.getEntryTimestamp = function() {
-    this.entry = this.getNode().getElementsByTagName('entry').item(0);
-    if (this.entry.getElementsByTagName('modified').length > 0) {
-      return this.entry.getElementsByTagName('modified').item(0).firstChild.nodeValue; 
-      } else if (this.entry.getElementsByTagName('updated').length > 0) {
-              return this.entry.getElementsByTagName('updated').item(0).firstChild.nodeValue;
-      } else if (this.entry.getElementsByTagName('issued').length > 0) {
-              return this.entry.getElementsByTagName('issued').item(0).firstChild.nodeValue;
-      } else if (this.entry.getElementsByTagName('created').length > 0) {
-              return this.entry.getElementsByTagName('created').item(0).firstChild.nodeValue;
-      }
-      return false; //ringringring
-  }
 }
 
 /**
