@@ -1,23 +1,57 @@
 var JSJACHBC_MAX_HOLD = 1;
 var JSJACHBC_MAX_WAIT = 300; 
 
+/**
+ * Instantiates an HTTP Binding session @class Implements {@link
+ * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH}
+ * formerly known as HTTP Binding.  
+ * @constructor
+ */
 function JSJaCHttpBindingConnection(oArg) {
+  /**
+   * @ignore
+   */
   this.base = JSJaCConnection;
   this.base(oArg);
 
   // member vars
+  /**
+   * @private
+   */
   this._hold = JSJACHBC_MAX_HOLD;
+  /**
+   * @private
+   */
   this._inactivity = 0;
+  /**
+   * @private
+   */
   this._last_requests = new Object(); // 'hash' storing hold+1 last requests
+  /**
+   * @private
+   */
   this._last_rid = 0;                 // I know what you did last summer
+  /**
+   * @private
+   */
   this._min_polling = 0;
+  /**
+   * @private
+   */
   this._wait = JSJACHBC_MAX_WAIT;
 
   // public methods
   this.connect = JSJaCHBCConnect;
   this.disconnect = JSJaCHBCDisconnect;
   this.inherit = JSJaCHBCInherit;
+  /**
+   * whether this session is in polling mode
+   */
   this.isPolling = function() { return (this._hold == 0) }; 
+  /**
+   * Sets poll interval
+   * @param {int} timerval the interval in seconds
+   */
   this.setPollInterval = function(timerval) {
     if (!timerval || isNaN(timerval)) {
       this.oDbg.log("Invalid timerval: " + timerval,1);
@@ -34,19 +68,31 @@ function JSJaCHttpBindingConnection(oArg) {
 
   // private methods
   this._getRequestString = JSJaCHBCGetRequestString;
+  /**
+   * @private
+   */
   this._getFreeSlot = function() {
     for (var i=0; i<this._hold+1; i++)
       if (typeof(this._req[i]) == 'undefined' || typeof(this._req[i].r) == 'undefined' || this._req[i].r.readyState == 4)
         return i;
     return -1; // nothing found
   }
+  /**
+   * @private
+   */
   this._getHold = function() { return this._hold; }
   this._getStreamID = JSJaCHBCGetStreamID;
+  /**
+   * @private
+   */
   this._getSuspendVars = function() {
     return ('host,port,secure,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests').split(',');
   }
   this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
   this._prepareResponse = JSJaCHBCPrepareResponse;
+  /**
+   * @private
+   */
   this._resume = function() { 
     /* make sure to repeat last request as we can be sure that
      * it had failed 
@@ -58,6 +104,9 @@ function JSJaCHttpBindingConnection(oArg) {
     this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
     this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
   }
+  /**
+   * @private
+   */
   this._setHold = function(hold)  {
     if (!hold || isNaN(hold) || hold < 0)
       hold = 0;
@@ -71,6 +120,10 @@ function JSJaCHttpBindingConnection(oArg) {
   this._reInitStream = JSJaCHBCReInitStream;
 }
 
+/**
+ * Connects to jabber server, creates an HTTP Binding session, thus
+ * creates a stream and handles authentication
+ */
 function JSJaCHBCConnect(oArg) {
   // initial request to get sid and streamid
 
@@ -146,6 +199,9 @@ function JSJaCHBCConnect(oArg) {
   this._req[slot].r.send(reqstr);
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCHandleInitialResponse(slot) {
   try {
     // This will throw an error on Mozilla when the connection was refused
@@ -209,6 +265,9 @@ function JSJaCHBCHandleInitialResponse(slot) {
   this._getStreamID(slot);
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCGetStreamID(slot) {
 
   this.oDbg.log(this._req[slot].r.responseText,4);
@@ -238,7 +297,9 @@ function JSJaCHBCGetStreamID(slot) {
     this._doAuth();
 }
 
-/* inherit an instantiated session */
+/**
+ * Inherit an instantiated HTTP Binding session
+ */
 function JSJaCHBCInherit(oArg) {
   this.domain = oArg.domain || 'localhost';
   this.username = oArg.username;
@@ -261,6 +322,9 @@ function JSJaCHBCInherit(oArg) {
   this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCReInitStream(to,cb,arg) {
   /* [TODO] we can't handle 'to' here as this is not (yet) supported
    * by the protocol
@@ -275,6 +339,9 @@ function JSJaCHBCReInitStream(to,cb,arg) {
    */
 }
 
+/**
+ * Disconnects from stream, terminates HTTP Binding session
+ */
 function JSJaCHBCDisconnect() {
 	
   this._setStatus('disconnecting');
@@ -320,6 +387,9 @@ function JSJaCHBCDisconnect() {
   oCon._handleEvent('ondisconnect');
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCSetupRequest(async) {
   var req = new Object();
   var r = XmlHttp.create();
@@ -333,6 +403,9 @@ function JSJaCHBCSetupRequest(async) {
   return req;
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCGetRequestString(raw) {
   raw = raw || '';
   var xml = '';
@@ -378,6 +451,9 @@ function JSJaCHBCGetRequestString(raw) {
   return reqstr;
 }
 
+/**
+ * @private
+ */
 function JSJaCHBCPrepareResponse(req) {
   if (!this.connected())
     return null;
