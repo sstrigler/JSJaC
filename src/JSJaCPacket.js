@@ -247,6 +247,7 @@ function JSJaCPacket(name) {
 /**
  * A jabber/XMPP presence packet
  * @class Models the XMPP notion of a 'presence' packet
+ * @extends JSJaCPacket
  */
 function JSJaCPresence() {
   /**
@@ -330,6 +331,7 @@ function JSJaCPresence() {
 /**
  * A jabber/XMPP iq packet
  * @class Models the XMPP notion of an 'iq' packet
+ * @extends JSJaCPacket
  */
 function JSJaCIQ() {
   /**
@@ -398,7 +400,8 @@ function JSJaCIQ() {
 
 /**
  * A jabber/XMPP message packet
- * @classModels the XMPP notion of an 'message' packet
+ * @class Models the XMPP notion of an 'message' packet
+ * @extends JSJaCPacket
  */
 function JSJaCMessage() {
   /**

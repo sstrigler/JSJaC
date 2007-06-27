@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Collection of MD5 and SHA1 hashing and encoding
+ * methods.
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
+ */
+
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1

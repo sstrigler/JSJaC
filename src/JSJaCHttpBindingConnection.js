@@ -1,10 +1,18 @@
+/**
+ * @fileoverview All stuff related to HTTP Binding
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
+ */
+
 var JSJACHBC_MAX_HOLD = 1;
 var JSJACHBC_MAX_WAIT = 300; 
 
 /**
- * Instantiates an HTTP Binding session @class Implements {@link
- * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH}
- * formerly known as HTTP Binding.  
+ * Instantiates an HTTP Binding session
+ * @class Implementation of {@link
+ * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH} 
+ * formerly known as HTTP Binding.
+ * @extends JSJaCConnection
  * @constructor
  */
 function JSJaCHttpBindingConnection(oArg) {
@@ -46,6 +54,7 @@ function JSJaCHttpBindingConnection(oArg) {
   this.inherit = JSJaCHBCInherit;
   /**
    * whether this session is in polling mode
+   * @type boolean
    */
   this.isPolling = function() { return (this._hold == 0) }; 
   /**

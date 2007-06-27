@@ -1,6 +1,14 @@
 /**
- * A jabber connection using HTTP Polling for connecting to a jabber server
- * @extends JSJaCConnections
+ * @fileoverview All stuff related to HTTP Polling
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
+ */
+
+/**
+ * Instantiates an HTTP Polling session 
+ * @class Implementation of {@link
+ * http://www.xmpp.org/extensions/xep-0025.html HTTP Polling}
+ * @extends JSJaCConnection
  * @constructor
  */
 function JSJaCHttpPollingConnection(oArg) {
