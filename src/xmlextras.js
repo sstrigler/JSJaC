@@ -1,58 +1,21 @@
-/* *** *** *** *** *** *** *** *** ***
- * this code is taken from http://webfx.eae.net/dhtml/xmlextras/xmlextras.html 
- * *** *** *** *** *** *** *** *** ***
+/**
+ * @fileoverview Wrapper to make working with XmlHttpRequest and the
+ * DOM more convenient (cross browser compliance).
+ * this code is taken from
+ * http://webfx.eae.net/dhtml/xmlextras/xmlextras.html
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
  */
 
-//<script>
-//////////////////
-// Helper Stuff //
-//////////////////
-
-// used to find the Automation server name
-function getDomDocumentPrefix() {
-  if (getDomDocumentPrefix.prefix)
-    return getDomDocumentPrefix.prefix;
-	
-  var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
-  var o;
-  for (var i = 0; i < prefixes.length; i++) {
-    try {
-      // try to create the objects
-      o = new ActiveXObject(prefixes[i] + ".DomDocument");
-      return getDomDocumentPrefix.prefix = prefixes[i];
-    }
-    catch (ex) {};
-  }
-  
-  throw new Error("Could not find an installed XML parser");
-}
-
-function getXmlHttpPrefix() {
-  if (getXmlHttpPrefix.prefix)
-    return getXmlHttpPrefix.prefix;
-  
-  var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
-  var o;
-  for (var i = 0; i < prefixes.length; i++) {
-    try {
-      // try to create the objects
-      o = new ActiveXObject(prefixes[i] + ".XmlHttp");
-      return getXmlHttpPrefix.prefix = prefixes[i];
-    }
-    catch (ex) {};
-  }
-  
-  throw new Error("Could not find an installed XML parser");
-}
-
-//////////////////////////
-// Start the Real stuff //
-//////////////////////////
-
-
-// XmlHttp factory
+/**
+ * XmlHttp factory
+ * @private
+ */
 function XmlHttp() {}
 
+/**
+ * creates a cross browser compliant XmlHttpRequest object
+ */
 XmlHttp.create = function () {
   try {
     if (window.XMLHttpRequest) {
@@ -72,7 +35,7 @@ XmlHttp.create = function () {
       return req;
     }
     if (window.ActiveXObject) {
-      return new ActiveXObject(getXmlHttpPrefix() + ".XmlHttp");
+      return new ActiveXObject(XmlHttp.getPrefix() + ".XmlHttp");
     }
   }
   catch (ex) {}
@@ -80,7 +43,33 @@ XmlHttp.create = function () {
   throw new Error("Your browser does not support XmlHttp objects");
 };
 
-// XmlDocument factory
+/**
+ * used to find the Automation server name
+ * @private
+ */
+XmlHttp.getPrefix = function() {
+  if (XmlHttp.prefix) // I know what you did last summer
+    return XmlHttp.prefix;
+  
+  var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
+  var o;
+  for (var i = 0; i < prefixes.length; i++) {
+    try {
+      // try to create the objects
+      o = new ActiveXObject(prefixes[i] + ".XmlHttp");
+      return XmlHttp.prefix = prefixes[i];
+    }
+    catch (ex) {};
+  }
+  
+  throw new Error("Could not find an installed XML parser");
+};
+
+
+/**
+ * XmlDocument factory
+ * @private
+ */
 function XmlDocument() {}
 
 XmlDocument.create = function (name,ns) {
@@ -127,12 +116,37 @@ XmlDocument.create = function (name,ns) {
   throw new Error("Your browser does not support XmlDocument objects");
 };
 
+/**
+ * used to find the Automation server name
+ * @private
+ */
+XmlDocument.getPrefix = function() {
+  if (XmlDocument.prefix)
+    return XmlDocument.prefix;
+	
+  var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
+  var o;
+  for (var i = 0; i < prefixes.length; i++) {
+    try {
+      // try to create the objects
+      o = new ActiveXObject(prefixes[i] + ".DomDocument");
+      return XmlDocument.prefix = prefixes[i];
+    }
+    catch (ex) {};
+  }
+  
+  throw new Error("Could not find an installed XML parser");
+};
+
+
 // Create the loadXML method 
 if (typeof(Document) != 'undefined' && window.DOMParser) {
 
-  // XMLDocument did not extend the Document interface in some versions
-  // of Mozilla. Extend both!
-  //XMLDocument.prototype.loadXML = 
+  /** 
+   * XMLDocument did not extend the Document interface in some
+   * versions of Mozilla.
+   * @private
+   */
   Document.prototype.loadXML = function (s) {
 		
     // parse the string to a new doc	
@@ -150,30 +164,45 @@ if (typeof(Document) != 'undefined' && window.DOMParser) {
  }
 
 // Create xml getter for Mozilla
-/* IMPORTANT NOTE
- * Usage of this .xml getter method is deprecated 
- */
 if (window.XMLSerializer &&
     window.Node && Node.prototype && Node.prototype.__defineGetter__) {
 	
-  /*
+  /**
    * xml getter
    *
    * This serializes the DOM tree to an XML String
    *
    * Usage: var sXml = oNode.xml
-   *
+   * @deprecated
+   * @private
    */
   // XMLDocument did not extend the Document interface in some versions
   // of Mozilla. Extend both!
   XMLDocument.prototype.__defineGetter__("xml", function () {
                                            return (new XMLSerializer()).serializeToString(this);
                                          });
+  /**
+   * xml getter
+   *
+   * This serializes the DOM tree to an XML String
+   *
+   * Usage: var sXml = oNode.xml
+   * @deprecated
+   * @private
+   */
   Document.prototype.__defineGetter__("xml", function () {
                                         return (new XMLSerializer()).serializeToString(this);
                                       });
 	
-  /* doesn't work correctly in mozi, does it?  */
+  /**
+   * xml getter
+   *
+   * This serializes the DOM tree to an XML String
+   *
+   * Usage: var sXml = oNode.xml
+   * @deprecated
+   * @private
+   */
   Node.prototype.__defineGetter__("xml", function () {
                                     return (new XMLSerializer()).serializeToString(this);
                                   });

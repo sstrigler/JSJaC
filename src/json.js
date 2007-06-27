@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Extends standard types (aray, string, object...) with JSON related methods
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
+ */
+
 /*
     json.js
     2007-06-11
