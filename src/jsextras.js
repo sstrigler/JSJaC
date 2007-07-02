@@ -6,6 +6,7 @@
 
 /**
  * Convert special chars to HTML entities
+ * @addon
  * @return The string with chars encoded for HTML
  * @type String
  */
