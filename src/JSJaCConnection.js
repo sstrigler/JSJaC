@@ -131,6 +131,7 @@ function JSJaCConnection(oArg) {
    */
   this.resume = function() {
     try {
+      this._setStatus('resuming');
       var s = unescape(Cookie.read('JSJaC_State').getValue());
       
       this.oDbg.log('read cookie: '+s,2);
@@ -154,6 +155,7 @@ function JSJaCConnection(oArg) {
         // don't poll too fast!
         setTimeout("oCon._resume()",this.getPollInterval());
 
+      this._handleEvent('resumed');
       return this._connected;
     } catch (e) {
       if (e.message)
