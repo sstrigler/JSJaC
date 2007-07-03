@@ -151,11 +151,12 @@ function JSJaCConnection(oArg) {
         this._keys = this._keys2;
       }
 
-      if (this._connected)
+      if (this._connected) {
         // don't poll too fast!
         setTimeout("oCon._resume()",this.getPollInterval());
+        this._handleEvent('resumed');
+      }
 
-      this._handleEvent('resumed');
       return this._connected;
     } catch (e) {
       if (e.message)
