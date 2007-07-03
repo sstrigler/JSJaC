@@ -272,6 +272,118 @@ function JSJaCPacket(name) {
     }
     return aNode;
   }
+
+  /**
+   * Builds a node using {@link http://wiki.script.aculo.us/scriptaculous/show/Builder script.aculo.us' Dom Builder} notation.
+   * @return The newly create node
+   * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
+   */
+  this.buildNode = function(elementName) {
+    //    elementName = elementName.toLowerCase();
+
+    var doc = this.getDoc();
+
+    // try innerHTML approach
+    var parentTag = this.pType();
+    var parentElement = this.getNode();
+    try { // prevent IE "feature": http://dev.rubyonrails.org/ticket/2707
+      parentElement.innerHTML = "<" + elementName + "></" + elementName + ">";
+    } catch(e) {}
+    var element = parentElement.firstChild || null;
+      
+    // see if browser added wrapping tags
+    if(element && (element.tagName.toUpperCase() != elementName))
+      element = element.getElementsByTagName(elementName)[0];
+    
+    // fallback to createElement approach
+    if(!element) element = doc.createElement(elementName);
+    
+    // abort if nothing could be created
+    if(!element) return;
+
+    // attributes (or text)
+    if(arguments[1])
+      if(JSJaCBuilder._isStringOrNumber(arguments[1]) ||
+         (arguments[0] instanceof Array)) {
+        JSJaCBuilder._children(doc, element, arguments[1]);
+      } else {
+        var attrs = JSJaCBuilder._attributes(arguments[1]);
+        if(attrs.length) {
+          try { // prevent IE "feature": http://dev.rubyonrails.org/ticket/2707
+            parentElement.innerHTML = "<" +elementName + " " +
+              attrs + "></" + elementName + ">";
+          } catch(e) {}
+          element = parentElement.firstChild || null;
+          // workaround firefox 1.0.X bug
+          if(!element) {
+            element = doc.createElement(elementName);
+            for(attr in arguments[1]) {
+              if (arguments[1].hasOwnProperty(attr)) {
+                element.setAttribute(attr, arguments[1][attr]);
+              }}
+            
+          }
+          if(element.tagName != elementName)
+            element = parentElement.getElementsByTagName(elementName)[0];
+        }
+      } 
+    
+    // text, or array of children
+    if(arguments[2])
+      JSJaCBuilder._children(doc, element, arguments[2]);
+    
+    return element;
+  };
+
+  /**
+   * Appends node created by buildNode to this packets parent node.
+   * @see #buildNode
+   * @return This packet
+   * @type JSJaCPacket
+   */
+  this.appendNode = function(elementName) {
+    this.getNode().appendChild(this.buildNode(elementName, arguments[1], arguments[2]));
+    return this;
+  };
+}
+
+/**
+ * @private
+ */
+var JSJaCBuilder = {
+
+  _text: function(doc, text) {
+    return doc.createTextNode(text);
+  },
+
+  _children: function(doc, element, children) {
+    if(typeof children=='object') { // array can hold nodes and text
+//       children.flatten().each( function(e) {
+      for (var e in object) {
+        if(typeof e=='object')
+          element.appendChild(e)
+        else
+          if(JSJaCBuilder._isStringOrNumber(e))
+            element.appendChild(JSJaCBuilder._text(doc, e));
+      };
+    } else
+      if(JSJaCBuilder._isStringOrNumber(children)) 
+        element.appendChild(JSJaCBuilder._text(doc, children));
+  },
+
+  _attributes: function(attributes) {
+    var attrs = [];
+    for(attribute in attributes)
+      if (attributes.hasOwnProperty(attribute))
+        attrs.push(attribute +
+          '="' + attributes[attribute].toString().htmlEnc() + '"');
+    return attrs.join(" ");
+  },
+
+  _isStringOrNumber: function(param) {
+    return(typeof param=='string' || typeof param=='number');
+  }
+
 } 
 
 /**
