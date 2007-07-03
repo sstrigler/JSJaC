@@ -359,13 +359,17 @@ var JSJaCBuilder = {
   _children: function(doc, element, children) {
     if(typeof children=='object') { // array can hold nodes and text
 //       children.flatten().each( function(e) {
-      for (var e in object) {
-        if(typeof e=='object')
-          element.appendChild(e)
-        else
-          if(JSJaCBuilder._isStringOrNumber(e))
-            element.appendChild(JSJaCBuilder._text(doc, e));
-      };
+      for (var e in children) {
+        if (children.hasOwnProperty(e)) {
+          if(typeof children[e]=='object') {
+            element.appendChild(children[e])
+          } else {
+            if(JSJaCBuilder._isStringOrNumber(children[e])) {
+              element.appendChild(JSJaCBuilder._text(doc, children[e]));
+            }
+          }
+        }
+      }
     } else
       if(JSJaCBuilder._isStringOrNumber(children)) 
         element.appendChild(JSJaCBuilder._text(doc, children));
