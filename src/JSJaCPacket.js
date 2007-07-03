@@ -49,6 +49,7 @@ function JSJaCPacket(name) {
 
   /**
    * Sets the 'to' attribute of the root node of this packet
+   * @param {String} to 
    * @type JSJaCPacket
    */
   this.setTo = function(to) {
@@ -161,6 +162,54 @@ function JSJaCPacket(name) {
   this.getXMLNS = function() { return this.getNode().namespaceURI; };
 
   /**
+   * Gets a child element of this packet.
+   * @param {String} name Tagname of child to retrieve.
+   * @param {String} ns   Namespace of child
+   * @return The child node, null if none found
+   * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
+   */ 
+  this.getChild = function(name, ns) {
+    if (!name && this.getNode().firstChild) {
+      // best practice
+      return this.getNode().firstChild;
+    } else {
+      var nodes = this.getNode().childNodes;
+      for (var i=0; i<nodes.length; i++) {
+        if (ns && nodes.item(i).namespaceURI != ns) {
+          continue;
+        }
+        if (nodes.item(i).tagName == name) {
+          return nodes.item(i);
+        }
+      }
+    }
+    return null; // fallback
+  }
+
+  /**
+   * Gets the node value of a child element of this packet.
+   * @param {String} name Tagname of child to retrieve.
+   * @param {String} ns   Namespace of child
+   * @return The value of the child node, empty string if none found
+   * @type String
+   */ 
+  this.getChildVal = function(name, ns) {
+    var node = this.getChild(name, ns);
+    if (node && node.firstChild) {
+      return node.firstChild.nodeValue;
+    } else {
+      return '';
+    }
+  }
+
+  /**
+   * Returns a copy of this node
+   * @return a copy of this node
+   * @type JSJaCPacket
+   */
+  this.clone = function() { return JSJaCPacket.wrapNode(this.getNode()); }
+
+  /**
    * Returns a string representation of the raw xml content of this packet
    * @type String
    */
@@ -174,16 +223,7 @@ function JSJaCPacket(name) {
 
   };
 
-  /**
-   * Gets node value for child node with given name
-   * @private
-   */
-  this._childElVal = function(nodeName) {
-    var aNode = this._getChildNode(nodeName);
-    if (aNode && aNode.firstChild)
-      return aNode.firstChild.nodeValue;
-    return '';
-  };
+  // PRIVATE METHODS DOWN HERE 
 
   /**
    * Gets an attribute of the root element
@@ -191,18 +231,6 @@ function JSJaCPacket(name) {
    */
   this._getAttribue = function(attr) {
     return this.getNode().getAttribute(attr);
-  };
-
-  /**
-   * Gets child node of root element with given tag name
-   * @private
-   */
-  this._getChildNode = function(nodeName) {
-    var children = this.getNode().childNodes;
-    for (var i=0; i<children.length; i++)
-      if (children.item(i).tagName == nodeName)
-        return children.item(i);
-    return null;
   };
 
   /**
@@ -229,7 +257,7 @@ function JSJaCPacket(name) {
    * @private
    */
   this._setChildNode = function(nodeName, nodeValue) {
-    var aNode = this._getChildNode(nodeName);
+    var aNode = this.getChild(nodeName);
     var tNode = this.getDoc().createTextNode(nodeValue);
     if (aNode)
       try {
@@ -241,13 +269,6 @@ function JSJaCPacket(name) {
     }
     return aNode;
   }
-
-  /**
-   * Returns a copy of this node
-   * @return a copy of this node
-   * @type JSJaCPacket
-   */
-  this.clone = function() { return JSJaCPacket.wrapNode(this.getNode()); }
 } 
 
 /**
@@ -319,19 +340,19 @@ function JSJaCPresence() {
    * @return The status indicator as defined by XMPP
    * @type String
    */
-  this.getStatus = function() {	return this._childElVal('status');	};
+  this.getStatus = function() {	return this.getChildVal('status');	};
   /**
    * Gets the status message of this presence
    * @return The status message
    * @type String
    */
-  this.getShow = function() { return this._childElVal('show'); };
+  this.getShow = function() { return this.getChildVal('show'); };
   /**
    * Gets the priority of this status message
    * @return A resource priority
    * @type int
    */
-  this.getPriority = function() { return this._childElVal('priority'); };
+  this.getPriority = function() { return this.getChildVal('priority'); };
 }
 
 /**
@@ -463,33 +484,26 @@ function JSJaCMessage() {
    * @return A thread identifier
    * @type String
    */
-  this.getThread = function() { return this._childElVal('thread'); };
+  this.getThread = function() { return this.getChildVal('thread'); };
   /**
    * Gets the body of this message
    * @return The body of this message
    * @type String
    */
-  this.getBody = function() { return this._childElVal('body'); };
+  this.getBody = function() { return this.getChildVal('body'); };
   /**
    * Gets the subject of this message
    * @return The subject of this message
    * @type String
    */
-  this.getSubject = function() { return this._childElVal('subject') };
+  this.getSubject = function() { return this.getChildVal('subject') };
   /**
    * Gets the nickname of this message
    * @return The nick
    * @type String
    */
   this.getNickname = function() {
-    var nick = this._getChildNode('nick');
-    if (nick && 
-        nick.getAttribute('xmlns') == 'http://jabber.org/protocol/nick' &&
-        nick.firstChild) {
-      return nick.firstChild.nodeValue;
-    } else {
-      return null;
-    }
+    return this.getChildVal('nick', 'http://jabber.org/protocol/nick');
   }
 
 }
