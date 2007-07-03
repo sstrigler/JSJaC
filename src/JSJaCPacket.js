@@ -37,13 +37,13 @@ function JSJaCPacket(name) {
   this.pType = function() { return this.name; };
 
   /**
-   * Gets the associated XmlDocument for this packet
-   * @type XmlDocument
+   * Gets the associated Document for this packet.
+   * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#i-Document Document}
    */
   this.getDoc = function() { return this.doc; };
   /**
    * Gets the root node of this packet
-   * @type Node
+   * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
   this.getNode = function() { return this.getDoc().documentElement; };
 
@@ -78,6 +78,7 @@ function JSJaCPacket(name) {
   };
   /**
    * Sets 'id' attribute of the root node of this packet.
+   * @param {String} id The id of the packet.
    * @type JSJaCPacket
    */
   this.setID = function(id) { 
@@ -89,6 +90,7 @@ function JSJaCPacket(name) {
   };
   /**
    * Sets the 'type' attribute of the root node of this packet.
+   * @param {String} type The type of the packet.
    * @type JSJaCPacket
    */
   this.setType = function(type) { 
@@ -100,6 +102,7 @@ function JSJaCPacket(name) {
   };
   /**
    * Sets 'xml:lang' for this packet
+   * @param {String} xmllang The xml:lang of the packet.
    * @type JSJaCPacket
    */
   this.setXMLLang = function(xmllang) {
@@ -210,7 +213,7 @@ function JSJaCPacket(name) {
   this.clone = function() { return JSJaCPacket.wrapNode(this.getNode()); }
 
   /**
-   * Returns a string representation of the raw xml content of this packet
+   * Returns a string representation of the raw xml content of this packet.
    * @type String
    */
   this.xml = function() { 
