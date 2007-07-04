@@ -17,7 +17,7 @@ build:
 crunch: 
 	@echo "crunching ..."
 	@if [ -e $(OUTFILE) ]; then utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp \
-	"(c) 2005-2007 Stefan Strigler <steve@zeank.in-berlin.de" && \
+	"(c) 2005-2007 Stefan Strigler <steve@zeank.in-berlin.de>" && \
 	mv $(OUTFILE).tmp $(OUTFILE); fi
 
 doc: 
