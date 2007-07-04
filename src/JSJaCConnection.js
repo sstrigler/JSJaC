@@ -113,7 +113,47 @@ function JSJaCConnection(oArg) {
   this.getPollInterval = function() { return this._timerval; };
   /**
    * Registers an event handler (callback) for this connection
-   * @param {String}   event   One of ... [TODO]
+   * @param {String} event One of
+
+   * <ul>
+   * <li>onConnect - connection has been established and authenticated</li>
+   * <li>onDisconnect - connection has been disconnected</li>
+   * <li>onResume - connection has been resumed</li>
+
+   * <li>onStatusChanged - connection status has changed, current
+   * status as being passed argument to handler</li>
+
+   * <li>onError - an error has occured, error node is supplied as
+   * argument, like this:<br><code>&lt;error code='404' type='cancel'&gt;<br>
+   * &lt;item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/&gt;<br>
+   * &lt;/error&gt;</code></li>
+
+   * <li>packet_in - a packet has been received (argument: the
+   * packet)</li>
+
+   * <li>packet_out - a packet is to be sent(argument: the
+   * packet)</li>
+
+   * <li>message_in | message - a message has been received (argument:
+   * the packet)</li>
+
+   * <li>message_out - a message packet is to be sent (argument: the
+   * packet)</li>
+
+   * <li>presence_in | presence - a presence has been received
+   * (argument: the packet)</li>
+
+   * <li>presence_out - a presence packet is to be sent (argument: the
+   * packet)</li>
+
+   * <li>iq_in | iq - an iq has been received (argument: the packet)</li>
+   * <li>iq_out - an iq is to be sent (argument: the packet)</li>
+   * </ul>
+
+   * Note: All of the packet handlers for specific packets (like
+   * message_in, presence_in and iq_in) fire only if there's no
+   * callback associated with the id
+
    * @param {Function} handler The handler to be called when event occurs
    */
   this.registerHandler = function(event,handler) {
@@ -154,7 +194,7 @@ function JSJaCConnection(oArg) {
       if (this._connected) {
         // don't poll too fast!
         setTimeout("oCon._resume()",this.getPollInterval());
-        this._handleEvent('resumed');
+        this._handleEvent('onresume');
       }
 
       return this._connected;
@@ -325,6 +365,7 @@ function JSJaCConnection(oArg) {
       return;
     if (status != this._status) { // status changed!
       this._status = status;
+      this._handleEvent('onstatuschanged', status);
       this._handleEvent('status_changed', status);
     }
   }
