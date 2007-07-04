@@ -44,4 +44,21 @@ function FirebugLogger(level) {
       break;
     }
   };
+
+  /**
+   * Sets verbosity level.
+   * @param {int} level The maximum level for debugging messages to be
+   * displayed. Thus you can tweak the verbosity of the logger. A
+   * value of 0 means very low traffic whilst a value of 4 makes
+   * logging very verbose about what's going on.
+   * @return This debug logger
+   * @type FirebugLogger
+   */
+  this.setLevel = function(level) { this.level = level; return this; }
+  /** 
+   * Gets verbosity level.
+   * @return The level
+   * @type int
+   */
+  this.getLevel = function() { return this.level; }
 }
