@@ -762,6 +762,9 @@ function JSJaCSend(packet,cb,arg) {
   if (packet) {
     try {
       this._pQueue = this._pQueue.concat(packet.xml());
+      this._handleEvent("packet_out", packet);
+      if (packet.pType)
+        this._handleEvent(packet.pType()+'_out', packet);
     } catch (e) {
       this.oDbg.log(e.toString(),1);
     }
@@ -917,10 +920,14 @@ function JSJaCCheckInQ() {
   for (var i=0; i<this._inQ.length && i<10; i++) {
     var item = this._inQ[0];
     this._inQ = this._inQ.slice(1,this._inQ.length);
-    var aJSJaCPacket = JSJaCPacket.wrapNode(item);
-    if (typeof(aJSJaCPacket.pType) != 'undefined')
-      if (!this._handlePID(aJSJaCPacket))
-        this._handleEvent(aJSJaCPacket.pType(),aJSJaCPacket);
+    var packet = JSJaCPacket.wrapNode(item);
+
+    this._handleEvent("packet_in", packet);
+
+    if (packet.pType && !this._handlePID(packet)) {
+        this._handleEvent(packet.pType()+'_in',packet);
+        this._handleEvent(packet.pType(),packet);
+    }
   }
 }
 
