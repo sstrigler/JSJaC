@@ -5,14 +5,17 @@
     <title>JSJaC Simple Client</title>
 
     <script type="text/javascript" src="../jsjac.js"></script>
+    <!-- comment in above and uncomment below if you want to modify/hack
+         on jsjac -->
+    <!--script type="text/javascript" src="../src/JSJaC.js"></script-->
 
     <!-- if you want to enable debugging uncomment line below
-         debugger available at http://zeank.in-berlin.de/ -->
-    <!--<script language="JavaScript" type="text/javascript" src="Debugger.js"></script>-->
+         debugger available at 
+          http://svn.stefan-strigler.de/JSDebugger/trunk -->
+    <!--script type="text/javascript" src="Debugger.js"></script-->
 
     <script language="JavaScript" type="text/javascript">
-<!--
-
+// <![CDATA[
 function handleIQ(aJSJaCPacket) {
   document.getElementById('iResp').innerHTML += 
     "<div class='msg'>IN (raw): " +aJSJaCPacket.xml().htmlEnc() + '</div>';
@@ -142,11 +145,15 @@ function init() {
     oDbg = new Debugger(2,'simpleclient');
     oDbg.start();
   } else {
-    oDbg = function() {};
-    oDbg.log = function() {};
+    // if you're using firebug or safari, use this for debugging
+    oDbg = new ConsoleLogger(2);
+    // comment in above and remove comments below if you don't need debugging
+//     oDbg = function() {};
+//     oDbg.log = function() {};
   }
 
-  if (document.cookie) { // try to resume a session
+
+  try { // try to resume a session
     if (Cookie.read('btype').getValue() == 'binding')
       con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
     else
@@ -155,9 +162,8 @@ function init() {
     con.registerHandler('message',handleMessage);
     con.registerHandler('presence',handlePresence);
     con.registerHandler('iq',handleIQ);
-    con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChanged);
+    con.registerHandler('onStatusChanged',handleStatusChanged);
 
     if (con.resume()) {
 
@@ -166,12 +172,12 @@ function init() {
       document.getElementById('err').innerHTML = '';
 
     }
-  }
+  } catch (e) {} // reading cookie failed - never mind
 
 }
 onload = init;
 
-onerrror = function(e) { 
+onerror = function(e) { 
   document.getElementById('err').innerHTML = e; 
 
   document.getElementById('login_pane').style.display = '';
@@ -192,7 +198,7 @@ onunload = function() {
   }
 };
 
-//-->
+// ]]>
     </script>
     <style type="text/css">
 /*<![CDATA[*/
