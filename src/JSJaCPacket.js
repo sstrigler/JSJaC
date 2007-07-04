@@ -307,7 +307,7 @@ function JSJaCPacket(name) {
     if(arguments[1])
       if(JSJaCBuilder._isStringOrNumber(arguments[1]) ||
          (arguments[0] instanceof Array)) {
-        JSJaCBuilder._children(doc, element, arguments[1]);
+        this._children(element, arguments[1]);
       } else {
         var attrs = JSJaCBuilder._attributes(arguments[1]);
         if(attrs.length) {
@@ -332,20 +332,57 @@ function JSJaCPacket(name) {
     
     // text, or array of children
     if(arguments[2])
-      JSJaCBuilder._children(doc, element, arguments[2]);
+      this._children(element, arguments[2]);
     
     return element;
   };
 
   /**
    * Appends node created by buildNode to this packets parent node.
+   * @param {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node} element The node to append or
+   * @param {String} element A name plus an object hash with attributes (optional) plus an array of childnodes (optional)
    * @see #buildNode
    * @return This packet
    * @type JSJaCPacket
    */
-  this.appendNode = function(elementName) {
-    this.getNode().appendChild(this.buildNode(elementName, arguments[1], arguments[2]));
+  this.appendNode = function(element) {
+    if (typeof element=='object') { // seems to be a prebuilt node
+      this.getNode().appendChild(element)
+    } else { // build node
+      this.getNode().appendChild(this.buildNode(element, arguments[1], arguments[2]));
+    }
     return this;
+  };
+
+  this._text = function(text) {
+    return this.getDoc().createTextNode(text);
+  };
+
+  this._children = function(element, children) {
+    if(typeof children=='object') { // array can hold nodes and text
+//       children.flatten().each( function(e) {
+      for (var i in children) {
+        if (children.hasOwnProperty(i)) {
+          var e = children[i];
+          if (typeof e=='object') {
+            if (e instanceof Array) {
+              var node = this.buildNode(e[0], e[1], e[2]);
+              element.appendChild(node);
+            } else {
+              element.appendChild(e);
+            }
+          } else {
+            if(JSJaCBuilder._isStringOrNumber(e)) {
+              element.appendChild(this._text(e));
+            }
+          }
+        }
+      }
+    } else {
+      if(JSJaCBuilder._isStringOrNumber(children)) {
+        element.appendChild(this._text(children));
+      }
+    }
   };
 }
 
@@ -353,30 +390,6 @@ function JSJaCPacket(name) {
  * @private
  */
 var JSJaCBuilder = {
-
-  _text: function(doc, text) {
-    return doc.createTextNode(text);
-  },
-
-  _children: function(doc, element, children) {
-    if(typeof children=='object') { // array can hold nodes and text
-//       children.flatten().each( function(e) {
-      for (var e in children) {
-        if (children.hasOwnProperty(e)) {
-          if(typeof children[e]=='object') {
-            element.appendChild(children[e])
-          } else {
-            if(JSJaCBuilder._isStringOrNumber(children[e])) {
-              element.appendChild(JSJaCBuilder._text(doc, children[e]));
-            }
-          }
-        }
-      }
-    } else
-      if(JSJaCBuilder._isStringOrNumber(children)) 
-        element.appendChild(JSJaCBuilder._text(doc, children));
-  },
-
   _attributes: function(attributes) {
     var attrs = [];
     for(attribute in attributes)
@@ -389,7 +402,6 @@ var JSJaCBuilder = {
   _isStringOrNumber: function(param) {
     return(typeof param=='string' || typeof param=='number');
   }
-
 } 
 
 /**
