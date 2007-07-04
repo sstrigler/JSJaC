@@ -22,7 +22,8 @@ var JSJaC = {
      'JSJaCPacket',
      'JSJaCConnection',
      'JSJaCHttpPollingConnection',
-     'JSJaCHttpBindingConnection'
+     'JSJaCHttpBindingConnection',
+     'FirebugLogger'
      ];
     var scripts = document.getElementsByTagName("script");
     var path = './';
