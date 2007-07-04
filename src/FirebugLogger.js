@@ -1,6 +1,6 @@
 /**
  * @fileoverview Contains Debugger interface for Firebug
- * @class Implementation of the Debugger interface for {@lin http://www.getfirebug.com/ Firebug}
+ * @class Implementation of the Debugger interface for {@link http://www.getfirebug.com/ Firebug}
  * Creates a new debug logger to be passed to jsjac's connection constructor. Of course you can use it for debugging in your code too.
  * @constructor
  * @param {int} level The maximum level for debugging messages to be displayed. Thus you can tweak the verbosity of the logger. A value of 0 means very low traffic whilst a value of 4 makes logging very verbose about what's going on.
