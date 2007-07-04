@@ -11,7 +11,7 @@ JSJaC v1.0beta1
 * buildNode: build nodes using script.aculo.us famous DOM builder
 * appendNode: append nodes to root node, may also be used with DOM builder 
   syntax
-* FirebugLogger: debug logger using firebug's console
+* ConsoleLogger: debug logger using firebug's or safari's console
 * getChild(name, ns): get child node with given name (and namespace)
 * getChildVal(name, ns): get value of child node with given name 
   (and namespace)
