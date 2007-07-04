@@ -274,8 +274,23 @@ function JSJaCPacket(name) {
   }
 
   /**
-   * Builds a node using {@link http://wiki.script.aculo.us/scriptaculous/show/Builder script.aculo.us' Dom Builder} notation.
-   * @return The newly create node
+   * Builds a node using {@link
+   * http://wiki.script.aculo.us/scriptaculous/show/Builder
+   * script.aculo.us' Dom Builder} notation.
+   * This code is taken from {@link
+   * http://wiki.script.aculo.us/scriptaculous/show/Builder
+   * script.aculo.us' Dom Builder} and has been modified to suit our
+   * needs.<br/>
+   * The original parts of the code do have the following copyright
+   * and license notice:<br/>
+   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+   * http://mir.acu lo.us) <br/>
+   * script.aculo.us is freely distributable under the terms of an
+   * MIT-style licen se.  // For details, see the script.aculo.us web
+   * site: http://script.aculo.us/<br>
+   * @author Thomas Fuchs
+   * @author Stefan Strigler
+   * @return The newly created node
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
   this.buildNode = function(elementName) {
@@ -354,10 +369,38 @@ function JSJaCPacket(name) {
     return this;
   };
 
+  /**
+   * @private
+   * This code is taken from {@link
+   * http://wiki.script.aculo.us/scriptaculous/show/Builder
+   * script.aculo.us' Dom Builder} and has been modified to suit our
+   * needs.<br/>
+   * The original parts of the code do have the following copyright
+   * and license notice:<br/>
+   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+   * http://mir.acu lo.us) <br/>
+   * script.aculo.us is freely distributable under the terms of an
+   * MIT-style licen se.  // For details, see the script.aculo.us web
+   * site: http://script.aculo.us/<br>
+   */
   this._text = function(text) {
     return this.getDoc().createTextNode(text);
   };
 
+  /**
+   * @private
+   * This code is taken from {@link
+   * http://wiki.script.aculo.us/scriptaculous/show/Builder
+   * script.aculo.us' Dom Builder} and has been modified to suit our
+   * needs.<br/>
+   * The original parts of the code do have the following copyright
+   * and license notice:<br/>
+   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+   * http://mir.acu lo.us) <br/>
+   * script.aculo.us is freely distributable under the terms of an
+   * MIT-style licen se.  // For details, see the script.aculo.us web
+   * site: http://script.aculo.us/<br>
+   */
   this._children = function(element, children) {
     if(typeof children=='object') { // array can hold nodes and text
 //       children.flatten().each( function(e) {
@@ -388,6 +431,17 @@ function JSJaCPacket(name) {
 
 /**
  * @private
+   * This code is taken from {@link
+   * http://wiki.script.aculo.us/scriptaculous/show/Builder
+   * script.aculo.us' Dom Builder} and has been modified to suit our
+   * needs.<br/>
+   * The original parts of the code do have the following copyright
+   * and license notice:<br/>
+   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+   * http://mir.acu lo.us) <br/>
+   * script.aculo.us is freely distributable under the terms of an
+   * MIT-style licen se.  // For details, see the script.aculo.us web
+   * site: http://script.aculo.us/<br>
  */
 var JSJaCBuilder = {
   _attributes: function(attributes) {
