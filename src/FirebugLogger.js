@@ -6,6 +6,9 @@
  * @param {int} level The maximum level for debugging messages to be displayed. Thus you can tweak the verbosity of the logger. A value of 0 means very low traffic whilst a value of 4 makes logging very verbose about what's going on.
  */
 function FirebugLogger(level) {
+  /**
+   * @private
+   */
   this.level = level || 4;
 
   /**
