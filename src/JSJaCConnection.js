@@ -761,10 +761,10 @@ function JSJaCSend(packet,cb,arg) {
 
   if (packet) {
     try {
-      this._pQueue = this._pQueue.concat(packet.xml());
-      this._handleEvent("packet_out", packet);
       if (packet.pType)
         this._handleEvent(packet.pType()+'_out', packet);
+      this._handleEvent("packet_out", packet);
+      this._pQueue = this._pQueue.concat(packet.xml());
     } catch (e) {
       this.oDbg.log(e.toString(),1);
     }
