@@ -121,7 +121,7 @@ function JSJaCConnection(oArg) {
    * <li>onResume - connection has been resumed</li>
 
    * <li>onStatusChanged - connection status has changed, current
-   * status as being passed argument to handler</li>
+   * status as being passed argument to handler. See {@link #status}.</li>
 
    * <li>onError - an error has occured, error node is supplied as
    * argument, like this:<br><code>&lt;error code='404' type='cancel'&gt;<br>
@@ -225,7 +225,19 @@ function JSJaCConnection(oArg) {
     this.setPollInterval(oArg.timerval);
   /**
    * Returns current status of this connection
-   * @return String to denote current state
+   * @return String to denote current state. One of
+   * <ul>
+   * <li>'initializing' ... well
+   * <li>'connecting' if connect() was called
+   * <li>'resuming' if resume() was called
+   * <li>'processing' if it's about to operate as normal
+   * <li>'onerror_fallback' if there was an error with the request object
+   * <li>'protoerror_fallback' if there was an error at the http binding protocol flow (most likely that's where you interested in)
+   * <li>'internal_server_error' in case of an internal server error
+   * <li>'suspending' if suspend() is being called
+   * <li>'aborted' if abort() was called
+   * <li>'disconnecting' if disconnect() has been called
+   * </ul>
    * @type String
    */
   this.status = function() { return this._status; }
