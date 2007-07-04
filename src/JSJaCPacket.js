@@ -232,7 +232,7 @@ function JSJaCPacket(name) {
    * Gets an attribute of the root element
    * @private
    */
-  this._getAttribue = function(attr) {
+  this._getAttribute = function(attr) {
     return this.getNode().getAttribute(attr);
   };
 
