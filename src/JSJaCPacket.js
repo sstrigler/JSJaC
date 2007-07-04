@@ -622,7 +622,7 @@ function JSJaCMessage() {
 }
 
 /**
- * Tries to Transform a w3c DOM node to JSJaC's internal representation 
+ * Tries to transform a w3c DOM node to JSJaC's internal representation 
  * (JSJaCPacket type, one of JSJaCPresence, JSJaCMessage, JSJaCIQ)
  * @param: {Node
  * http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247}
