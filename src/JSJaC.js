@@ -23,7 +23,7 @@ var JSJaC = {
      'JSJaCConnection',
      'JSJaCHttpPollingConnection',
      'JSJaCHttpBindingConnection',
-     'FirebugLogger'
+     'ConsoleLogger'
      ];
     var scripts = document.getElementsByTagName("script");
     var path = './';
