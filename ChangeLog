@@ -8,6 +8,18 @@ JSJaC v1.0beta1
   'hrTime' (static)  and 'jab2date' (static)
 * fixed all occurrences of 'for .. in' to be compliant with having prototypes 
   of objects (arrays) extended (like prototype.js does e.g.).
+* buildNode: build nodes using script.aculo.us famous DOM builder
+* appendNode: append nodes to root node, may also be used with DOM builder 
+  syntax
+* FirebugLogger: debug logger using firebug's console
+* getChild(name, ns): get child node with given name (and namespace)
+* getChildVal(name, ns): get value of child node with given name 
+  (and namespace)
+* new API documentation using jsdoc
+* new build system using jsmin to create single minimized file (jsjac.js)
+* new events: resumed, packet_in/out, presence_in/out, message_in/out, 
+  iq_in/out
+* new status: resuming
 
 JSJaC v0.6
 ==========
