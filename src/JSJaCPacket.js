@@ -431,17 +431,15 @@ function JSJaCPacket(name) {
 
 /**
  * @private
-   * This code is taken from {@link
-   * http://wiki.script.aculo.us/scriptaculous/show/Builder
-   * script.aculo.us' Dom Builder} and has been modified to suit our
-   * needs.<br/>
-   * The original parts of the code do have the following copyright
-   * and license notice:<br/>
-   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
-   * http://mir.acu lo.us) <br/>
-   * script.aculo.us is freely distributable under the terms of an
-   * MIT-style licen se.  // For details, see the script.aculo.us web
-   * site: http://script.aculo.us/<br>
+ * This code is taken from {@link
+ * http://wiki.script.aculo.us/scriptaculous/show/Builder
+ * script.aculo.us' Dom Builder} and has been modified to suit our
+ * needs.<br/> The original parts of the code do have the following
+ * copyright and license notice:<br/> Copyright (c) 2005, 2006 Thomas
+ * Fuchs (http://script.aculo.us, http://mir.acu lo.us) <br/>
+ * script.aculo.us is freely distributable under the terms of an
+ * MIT-style licen se.  // For details, see the script.aculo.us web
+ * site: http://script.aculo.us/<br>
  */
 var JSJaCBuilder = {
   _attributes: function(attributes) {
