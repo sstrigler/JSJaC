@@ -285,7 +285,9 @@ function JSJaCPacket(name) {
 
     // try innerHTML approach
     var parentTag = this.pType();
-    var parentElement = this.getNode();
+    // we cannot use this.getNode() here as with the innerHTML
+    // approach we would wipe out all pre-existing childnodes.
+    var parentElement = doc.createElement(parentTag);
     try { // prevent IE "feature": http://dev.rubyonrails.org/ticket/2707
       parentElement.innerHTML = "<" + elementName + "></" + elementName + ">";
     } catch(e) {}
