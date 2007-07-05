@@ -92,7 +92,7 @@ XmlDocument.create = function (name,ns) {
       }
     }
     if (window.ActiveXObject)
-      doc = new ActiveXObject(getDomDocumentPrefix() + ".DomDocument");
+      doc = new ActiveXObject(XmlDocument.getPrefix() + ".DomDocument");
     
     try { 
       if (ns != '')
