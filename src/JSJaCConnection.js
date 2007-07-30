@@ -658,7 +658,10 @@ function JSJaCSASLAuthDigestMd5S2(req) {
   var doc = this._prepareResponse(req);
 
   if (doc.firstChild.nodeName == 'failure') {
-    this.oDbg.log("auth error: "+doc.firstChild.xml,1);
+    if (doc.firstChild.xml)
+      this.oDbg.log("auth error: "+doc.firstChild.xml,1);
+    else 
+      this.oDbg.log("auth error",1);
     this.disconnect();
   }
 
