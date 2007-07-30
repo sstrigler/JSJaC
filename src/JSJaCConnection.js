@@ -495,8 +495,10 @@ function JSJaCLegacyAuth() {
    */
   var iq = new JSJaCIQ();
   iq.setIQ(oCon.server,'get','auth1');
-  var query = iq.setQuery('jabber:iq:auth');
-  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
+  iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
+                [['username', oCon.username]]);
+//   var query = iq.setQuery('jabber:iq:auth');
+//   query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
 
   this.send(iq,this._doLegacyAuth2);
   return true;
@@ -507,34 +509,28 @@ function JSJaCLegacyAuth() {
  */
 function JSJaCLegacyAuth2(iq) {
   if (!iq || iq.getType() != 'result') {
-    if (iq.getType() == 'error') 
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    if (iq && iq.getType() == 'error') 
+      oCon._handleEvent('onerror',iq.getChild('error'));
     oCon.disconnect();
     return;
   } 
 
-  oCon.oDbg.log("got iq: " + iq.xml(),4);
-  var use_digest = false;
-  for (var aChild=iq.getNode().firstChild.firstChild; aChild!=null; aChild=aChild.nextSibling) {
-    if (aChild.nodeName == 'digest') {
-      use_digest = true;
-      break;
-    }
-  }
+  var use_digest = (iq.getChild('digest') != null);
 
   /* ***
    * Send authentication
    */
   iq = new JSJaCIQ();
   iq.setIQ(oCon.server,'set','auth2');
-  query = iq.setQuery('jabber:iq:auth');
-  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
-  query.appendChild(iq.getDoc().createElement('resource')).appendChild(iq.getDoc().createTextNode(oCon.resource));
+
+  query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
+                        [['username', oCon.username],
+                         ['resource', oCon.resource]]);
 
   if (use_digest) { // digest login
-    query.appendChild(iq.getDoc().createElement('digest')).appendChild(iq.getDoc().createTextNode(hex_sha1(oCon.streamid + oCon.pass)));
+    query.appendNode('digest', hex_sha1(oCon.streamid + oCon.pass));
   } else if (oCon.allow_plain) { // use plaintext auth
-    query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(oCon.pass));
+    query.appendNode('password', oCon.pass);
   } else {
     oCon.oDbg.log("no valid login mechanism found",1);
     oCon.disconnect();
@@ -700,7 +696,7 @@ function JSJaCSASLAuthDigestMd5S2(req) {
 function JSJaCSASLAuthDone(req) {
   var doc = this._prepareResponse(req);
   if (doc.firstChild.nodeName != 'success') {
-    this.oDgb.log("auth failed",1);
+    this.oDbg.log("auth failed",1);
     this.disconnect();
   } else
     this._reInitStream(this.domain,'_doStreamBind');
@@ -974,6 +970,11 @@ function JSJaCCheckInQ() {
     var item = this._inQ[0];
     this._inQ = this._inQ.slice(1,this._inQ.length);
     var packet = JSJaCPacket.wrapNode(item);
+
+    if (!packet) {
+      this.oDbg.log("wrapNode failed on "+item.xml,1);
+      return;
+    }
 
     this._handleEvent("packet_in", packet);
 
