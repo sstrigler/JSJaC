@@ -495,7 +495,7 @@ function JSJaCSASLAuthDigestMd5S2(req) {
 function JSJaCSASLAuthDone(req) {
   var doc = this._prepareResponse(req);
   if (doc.firstChild.nodeName != 'success') {
-    this.oDgb.log("auth failed",1);
+    this.oDbg.log("auth failed",1);
     this.disconnect();
   } else
     this._reInitStream(this.domain,'_doStreamBind');
