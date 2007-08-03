@@ -852,8 +852,10 @@ function JSJaCProcess(timerval) {
     return;
   }
 		
-  if (!this.isPolling() && this._pQueue.length == 0 && this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4)
+  if (!this.isPolling() && this._pQueue.length == 0 && this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4) {
+    this.oDbg.log("all slots bussy, standby ...", 2);
     return;
+  }
 
   if (!this.isPolling())
     this.oDbg.log("Found working slot at "+slot,2);
@@ -869,9 +871,11 @@ function JSJaCProcess(timerval) {
       oCon._setStatus('processing');
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
       oCon._handleResponse(oCon._req[slot]);
-      if (oCon._pQueue.length)
+      // schedule next tick
+      if (oCon._pQueue.length) {
         oCon._process();
-      else { // schedule next tick
+      } else {
+        oCon.oDbg.log("scheduling next poll in "+oCon.getPollInterval()+" msec", 4);
         oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
       }
     }
