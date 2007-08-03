@@ -3,9 +3,11 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  * @version $Revision$
  */
+var JSJACHBC_BOSH_VERSION = "1.6";
 
 var JSJACHBC_MAX_HOLD = 1;
 var JSJACHBC_MAX_WAIT = 300; 
+
 
 /**
  * Instantiates an HTTP Binding session
@@ -66,7 +68,9 @@ function JSJaCHttpBindingConnection(oArg) {
       this.oDbg.log("Invalid timerval: " + timerval,1);
       return -1;
     }
-    if (this._min_polling && timerval < this._min_polling*1000)
+    if (!this.isPolling()) 
+      this._timerval = 1;
+    else if (this._min_polling && timerval < this._min_polling*1000)
       this._timerval = this._min_polling*1000;
     else if (this._inactivity && timerval > this._inactivity*1000)
       this._timerval = this._inactivity*1000;
@@ -182,6 +186,10 @@ function JSJaCHBCConnect(oArg) {
   }
   if (this._xmllang)
     reqstr += " xml:lang='"+this._xmllang + "'";
+
+  reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
+  reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
+  reqstr += " xmpp:version='1.0'";
   reqstr += "/>";
 
 
