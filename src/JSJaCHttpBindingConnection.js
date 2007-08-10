@@ -69,7 +69,7 @@ function JSJaCHttpBindingConnection(oArg) {
       return -1;
     }
     if (!this.isPolling()) 
-      this._timerval = 1;
+      this._timerval = 100;
     else if (this._min_polling && timerval < this._min_polling*1000)
       this._timerval = this._min_polling*1000;
     else if (this._inactivity && timerval > this._inactivity*1000)
@@ -110,9 +110,8 @@ function JSJaCHttpBindingConnection(oArg) {
     /* make sure to repeat last request as we can be sure that
      * it had failed 
      */
-    this._rid--; 
-    if (JSJAC_HAVEKEYS)
-      this._keys._indexAt++;
+    if (this._rid >= this._last_rid)
+      this._rid = this._last_rid-1; 
     this._process();
     this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
     this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
@@ -365,6 +364,7 @@ function JSJaCHBCDisconnect() {
 
   if (!this.connected())
     return;
+  this._connected = false;
 
   clearInterval(this._interval);
   clearInterval(this._inQto);
@@ -396,11 +396,12 @@ function JSJaCHBCDisconnect() {
   this.oDbg.log("Disconnecting: " + reqstr,4);
   this._req[slot].r.send(reqstr);	
   clearTimeout(abortTimerID);
+
   try {
-    Cookie.read('s').erase();
+    Cookie.read('JSJaC_State').erase();
   } catch (e) {}
+
   oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
-  oCon._connected = false;
   oCon._handleEvent('ondisconnect');
 }
 
@@ -425,44 +426,47 @@ function JSJaCHBCSetupRequest(async) {
  */
 function JSJaCHBCGetRequestString(raw) {
   raw = raw || '';
-  var xml = '';
+  var reqstr = '';
 
   // check if we're repeating a request
 
   if (this._rid <= this._last_rid && typeof(this._last_requests[this._rid]) != 'undefined') // repeat!
-    xml = this._last_requests[this._rid].xml;
+    reqstr = this._last_requests[this._rid].xml;
   else { // grab from queue
+    var xml = '';
     while (this._pQueue.length) {
       var curNode = this._pQueue[0];
       xml += curNode;
       this._pQueue = this._pQueue.slice(1,this._pQueue.length);
     }
+
+    reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
+    if (JSJAC_HAVEKEYS) {
+      reqstr += "key='"+this._keys.getKey()+"' ";
+      if (this._keys.lastKey()) {
+        this._keys = new JSJaCKeys(hex_sha1,this.oDbg);
+        reqstr += "newkey='"+this._keys.getKey()+"' ";
+      }
+    }
+    if (this._reinit) {
+      reqstr += "xmpp:restart='true' ";
+      this._reinit = false;
+    }
+
+    if (xml != '' || raw != '') {
+      reqstr += ">" + raw + xml + "</body>";
+    } else {
+      reqstr += "/>"; 
+    }
+
     this._last_requests[this._rid] = new Object();
-    this._last_requests[this._rid].xml = xml;
+    this._last_requests[this._rid].xml = reqstr;
     this._last_rid = this._rid;
 
     for (var i in this._last_requests)
       if (this._last_requests.hasOwnProperty(i) &&
           i < this._rid-this._hold)
         delete(this._last_requests[i]); // truncate
-  }
-  var reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
-  if (JSJAC_HAVEKEYS) {
-    reqstr += "key='"+this._keys.getKey()+"' ";
-    if (this._keys.lastKey()) {
-      this._keys = new JSJaCKeys(hex_sha1,this.oDbg);
-      reqstr += "newkey='"+this._keys.getKey()+"' ";
-    }
-  }
-  if (this._reinit) {
-    reqstr += "xmpp:restart='true' ";
-    this._reinit = false;
-  }
-
-  if (xml != '' || raw != '') {
-    reqstr += ">" + raw + xml + "</body>";
-  } else {
-    reqstr += "/>"; 
   }
 	 
   return reqstr;
