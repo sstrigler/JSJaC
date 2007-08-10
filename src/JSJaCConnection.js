@@ -191,10 +191,14 @@ function JSJaCConnection(oArg) {
         this._keys = this._keys2;
       }
 
+      try {
+        Cookie.read('JSJaC_State').erase();
+      } catch (e) {}
+
       if (this._connected) {
         // don't poll too fast!
-        setTimeout("oCon._resume()",this.getPollInterval());
         this._handleEvent('onresume');
+        setTimeout("oCon._resume()",this.getPollInterval());
       }
 
       return this._connected;
@@ -873,7 +877,7 @@ function JSJaCProcess(timerval) {
       oCon._handleResponse(oCon._req[slot]);
       // schedule next tick
       if (oCon._pQueue.length) {
-        oCon._process();
+        oCon._timeout = setTimeout("oCon._process()",100);
       } else {
         oCon.oDbg.log("scheduling next poll in "+oCon.getPollInterval()+" msec", 4);
         oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
@@ -979,7 +983,7 @@ function JSJaCCheckInQ() {
     var packet = JSJaCPacket.wrapNode(item);
 
     if (!packet) {
-      this.oDbg.log("wrapNode failed on "+item.xml,1);
+      this.oDbg.log("wrapNode failed on "+item.xml,2);
       return;
     }
 
