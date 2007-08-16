@@ -255,6 +255,8 @@ function JSJaCConnection(oArg) {
     clearInterval(this._interval);
     clearInterval(this._inQto);
 
+    this._suspend();
+
     var u = ('_connected,_keys,_ID,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
     u = u.concat(this._getSuspendVars());
     var s = new Object();
@@ -280,10 +282,11 @@ function JSJaCConnection(oArg) {
       if (c.value != c2.value) {
         this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(readCookie('JSJaC_State')), 1);
         c.erase();
-        this._connected = false;
-
-        this._setStatus('suspending');
       }
+
+      this._connected = false;
+
+      this._setStatus('suspending');
     } catch (e) {
       this.oDbg.log("Failed reading cookie 'JSJaC_State': "+e.message);
     }
