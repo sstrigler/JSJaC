@@ -75,3 +75,15 @@ Date.prototype.jabberDate = function() {
 
   return jDate;
 };
+
+/**
+ * Determines the maximum of two given numbers
+ * @addon
+ * @param {Number} A a number
+ * @param {Number} B another number 
+ * @return the maximum of A and B
+ * @type Number
+ */
+Number.max = function(A, B) {
+  return (A > B)? A : B;
+};
