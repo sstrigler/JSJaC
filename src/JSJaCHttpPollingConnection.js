@@ -52,6 +52,7 @@ function JSJaCHttpPollingConnection(oArg) {
     return new Array();
   }
   this._prepareResponse = JSJaCHPCPrepareResponse;
+  this._reInitStream = JSJaCHPCReInitStream;
   /**
    * @private
    */
@@ -61,8 +62,10 @@ function JSJaCHttpPollingConnection(oArg) {
     this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
   }
   this._setupRequest = JSJaCHPCSetupRequest;
-
-  this._reInitStream = JSJaCHPCReInitStream;
+  /**
+   * @private
+   */
+  this._suspend = function() {};
 }
 
 /**
