@@ -504,8 +504,6 @@ function JSJaCLegacyAuth() {
   iq.setIQ(oCon.server,'get','auth1');
   iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
                 [['username', oCon.username]]);
-//   var query = iq.setQuery('jabber:iq:auth');
-//   query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(oCon.username));
 
   this.send(iq,this._doLegacyAuth2);
   return true;
@@ -527,7 +525,7 @@ function JSJaCLegacyAuth2(iq) {
   /* ***
    * Send authentication
    */
-  iq = new JSJaCIQ();
+  var iq = new JSJaCIQ();
   iq.setIQ(oCon.server,'set','auth2');
 
   query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
@@ -535,9 +533,9 @@ function JSJaCLegacyAuth2(iq) {
                          ['resource', oCon.resource]]);
 
   if (use_digest) { // digest login
-    query.appendNode('digest', hex_sha1(oCon.streamid + oCon.pass));
+    query.appendChild(iq.buildNode('digest', hex_sha1(oCon.streamid + oCon.pass)));
   } else if (oCon.allow_plain) { // use plaintext auth
-    query.appendNode('password', oCon.pass);
+    query.appendChild(iq.buildNode('password', oCon.pass));
   } else {
     oCon.oDbg.log("no valid login mechanism found",1);
     oCon.disconnect();
@@ -716,7 +714,7 @@ function JSJaCSASLAuthDone(req) {
  * @private
  */
 function JSJaCStreamBind() {
-  iq = new JSJaCIQ();
+  var iq = new JSJaCIQ();
   iq.setIQ(this.domain,'set','bind_1');
   var eBind = iq.getDoc().createElement("bind");
   eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind");
