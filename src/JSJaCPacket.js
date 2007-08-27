@@ -5,6 +5,7 @@
  */
 
 var JSJACPACKET_USE_XMLNS = true;
+
 /**
  * Creates a new packet with given root tag name (for internal use)
  * @class Somewhat abstract base class for all kinds of specialised packets
@@ -40,12 +41,14 @@ function JSJaCPacket(name) {
    * Gets the associated Document for this packet.
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#i-Document Document}
    */
-  this.getDoc = function() { return this.doc; };
+  this.getDoc = function() { 
+    return this.doc; 
+  };
   /**
    * Gets the root node of this packet
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
-  this.getNode = function() { return this.getDoc().documentElement; };
+  this.getNode = function() { if (this.doc) return this.getDoc().documentElement; else return null};
 
   /**
    * Sets the 'to' attribute of the root node of this packet
@@ -176,7 +179,7 @@ function JSJaCPacket(name) {
       // best practice
       return this.getNode().firstChild;
     } else {
-      var nodes = this.getNode().childNodes;
+      var nodes = this.getNode().getElementsByTagName(name);
       for (var i=0; i<nodes.length; i++) {
         if (ns && nodes.item(i).namespaceURI != ns) {
           continue;
@@ -217,8 +220,10 @@ function JSJaCPacket(name) {
    * @type String
    */
   this.xml = function() { 
-    if (this.getDoc().xml)
-      return this.getDoc().xml;
+
+    if (this.getDoc().xml) // IE
+        return this.getDoc().xml;
+
     var xml = (new XMLSerializer()).serializeToString(this.getNode()); // opera needs the node
     if (typeof(xml) != 'undefined') 
       return xml;
@@ -252,7 +257,6 @@ function JSJaCPacket(name) {
         this.getNode().appendChild(this.getDoc().importNode(aNode.childNodes.item(i),true));
       else
         this.getNode().appendChild(aNode.childNodes.item(i).cloneNode(true));
-	
   };
   
   /**
@@ -294,62 +298,10 @@ function JSJaCPacket(name) {
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
   this.buildNode = function(elementName) {
-    //    elementName = elementName.toLowerCase();
-
-    var doc = this.getDoc();
-
-    // try innerHTML approach
-    var parentTag = this.pType();
-    // we cannot use this.getNode() here as with the innerHTML
-    // approach we would wipe out all pre-existing childnodes.
-    var parentElement = doc.createElement(parentTag);
-    try { // prevent IE "feature": http://dev.rubyonrails.org/ticket/2707
-      parentElement.innerHTML = "<" + elementName + "></" + elementName + ">";
-    } catch(e) {}
-    var element = parentElement.firstChild || null;
-      
-    // see if browser added wrapping tags
-    if(element && (element.tagName.toUpperCase() != elementName))
-      element = element.getElementsByTagName(elementName)[0];
-    
-    // fallback to createElement approach
-    if(!element) element = doc.createElement(elementName);
-    
-    // abort if nothing could be created
-    if(!element) return;
-
-    // attributes (or text)
-    if(arguments[1])
-      if(JSJaCBuilder._isStringOrNumber(arguments[1]) ||
-         (arguments[0] instanceof Array)) {
-        this._children(element, arguments[1]);
-      } else {
-        var attrs = JSJaCBuilder._attributes(arguments[1]);
-        if(attrs.length) {
-          try { // prevent IE "feature": http://dev.rubyonrails.org/ticket/2707
-            parentElement.innerHTML = "<" +elementName + " " +
-              attrs + "></" + elementName + ">";
-          } catch(e) {}
-          element = parentElement.firstChild || null;
-          // workaround firefox 1.0.X bug
-          if(!element) {
-            element = doc.createElement(elementName);
-            for(attr in arguments[1]) {
-              if (arguments[1].hasOwnProperty(attr)) {
-                element.setAttribute(attr, arguments[1][attr]);
-              }}
-            
-          }
-          if(element.tagName != elementName)
-            element = parentElement.getElementsByTagName(elementName)[0];
-        }
-      } 
-    
-    // text, or array of children
-    if(arguments[2])
-      this._children(element, arguments[2]);
-    
-    return element;
+    return JSJaCBuilder.buildNode(this.getDoc(), 
+                                  elementName, 
+                                  arguments[1], 
+                                  arguments[2]);
   };
 
   /**
@@ -362,99 +314,15 @@ function JSJaCPacket(name) {
    */
   this.appendNode = function(element) {
     if (typeof element=='object') { // seems to be a prebuilt node
-      this.getNode().appendChild(element)
+      return this.getNode().appendChild(element)
     } else { // build node
-      this.getNode().appendChild(this.buildNode(element, arguments[1], arguments[2]));
-    }
-    return this;
-  };
-
-  /**
-   * @private
-   * This code is taken from {@link
-   * http://wiki.script.aculo.us/scriptaculous/show/Builder
-   * script.aculo.us' Dom Builder} and has been modified to suit our
-   * needs.<br/>
-   * The original parts of the code do have the following copyright
-   * and license notice:<br/>
-   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
-   * http://mir.acu lo.us) <br/>
-   * script.aculo.us is freely distributable under the terms of an
-   * MIT-style licen se.  // For details, see the script.aculo.us web
-   * site: http://script.aculo.us/<br>
-   */
-  this._text = function(text) {
-    return this.getDoc().createTextNode(text);
-  };
-
-  /**
-   * @private
-   * This code is taken from {@link
-   * http://wiki.script.aculo.us/scriptaculous/show/Builder
-   * script.aculo.us' Dom Builder} and has been modified to suit our
-   * needs.<br/>
-   * The original parts of the code do have the following copyright
-   * and license notice:<br/>
-   * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
-   * http://mir.acu lo.us) <br/>
-   * script.aculo.us is freely distributable under the terms of an
-   * MIT-style licen se.  // For details, see the script.aculo.us web
-   * site: http://script.aculo.us/<br>
-   */
-  this._children = function(element, children) {
-    if(typeof children=='object') { // array can hold nodes and text
-//       children.flatten().each( function(e) {
-      for (var i in children) {
-        if (children.hasOwnProperty(i)) {
-          var e = children[i];
-          if (typeof e=='object') {
-            if (e instanceof Array) {
-              var node = this.buildNode(e[0], e[1], e[2]);
-              element.appendChild(node);
-            } else {
-              element.appendChild(e);
-            }
-          } else {
-            if(JSJaCBuilder._isStringOrNumber(e)) {
-              element.appendChild(this._text(e));
-            }
-          }
-        }
-      }
-    } else {
-      if(JSJaCBuilder._isStringOrNumber(children)) {
-        element.appendChild(this._text(children));
-      }
+      return this.getNode().appendChild(this.buildNode(element, 
+                                                       arguments[1], 
+                                                       arguments[2]));
     }
   };
+
 }
-
-/**
- * @private
- * This code is taken from {@link
- * http://wiki.script.aculo.us/scriptaculous/show/Builder
- * script.aculo.us' Dom Builder} and has been modified to suit our
- * needs.<br/> The original parts of the code do have the following
- * copyright and license notice:<br/> Copyright (c) 2005, 2006 Thomas
- * Fuchs (http://script.aculo.us, http://mir.acu lo.us) <br/>
- * script.aculo.us is freely distributable under the terms of an
- * MIT-style licen se.  // For details, see the script.aculo.us web
- * site: http://script.aculo.us/<br>
- */
-var JSJaCBuilder = {
-  _attributes: function(attributes) {
-    var attrs = [];
-    for(attribute in attributes)
-      if (attributes.hasOwnProperty(attribute))
-        attrs.push(attribute +
-          '="' + attributes[attribute].toString().htmlEnc() + '"');
-    return attrs.join(" ");
-  },
-
-  _isStringOrNumber: function(param) {
-    return(typeof param=='string' || typeof param=='number');
-  }
-} 
 
 /**
  * A jabber/XMPP presence packet

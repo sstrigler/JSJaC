@@ -19,6 +19,7 @@ var JSJaC = {
      'json',
      'Cookie',
      'JSJaCJID',
+     'JSJaCBuilder',
      'JSJaCPacket',
      'JSJaCConnection',
      'JSJaCHttpPollingConnection',
