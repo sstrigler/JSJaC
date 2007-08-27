@@ -14,7 +14,7 @@
  * @param {String} value The value to store
  * @param {int}    secs  Number of seconds until cookie expires (may be empty)
  */
-function Cookie(name,value,secs)
+function JSJaCCookie(name,value,secs)
 {
   /** 
    * This cookie's name
