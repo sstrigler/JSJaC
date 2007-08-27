@@ -446,7 +446,7 @@ function JSJaCHBCDisconnect() {
   clearTimeout(abortTimerID);
 
   try {
-    Cookie.read('JSJaC_State').erase();
+    JSJaCCookie.read('JSJaC_State').erase();
   } catch (e) {}
 
   oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);

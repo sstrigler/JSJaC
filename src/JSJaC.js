@@ -17,14 +17,14 @@ var JSJaC = {
      'jsextras',
      'crypt',
      'json',
-     'Cookie',
+     'JSJaCCookie',
      'JSJaCJID',
      'JSJaCBuilder',
      'JSJaCPacket',
      'JSJaCConnection',
      'JSJaCHttpPollingConnection',
      'JSJaCHttpBindingConnection',
-     'ConsoleLogger'
+     'JSJaCConsoleLogger'
      ];
     var scripts = document.getElementsByTagName("script");
     var path = './';

@@ -172,7 +172,7 @@ function JSJaCConnection(oArg) {
   this.resume = function() {
     try {
       this._setStatus('resuming');
-      var s = unescape(Cookie.read('JSJaC_State').getValue());
+      var s = unescape(JSJaCCookie.read('JSJaC_State').getValue());
       
       this.oDbg.log('read cookie: '+s,2);
 
@@ -192,7 +192,7 @@ function JSJaCConnection(oArg) {
       }
 
       try {
-        Cookie.read('JSJaC_State').erase();
+        JSJaCCookie.read('JSJaC_State').erase();
       } catch (e) {}
 
       if (this._connected) {
@@ -273,14 +273,14 @@ function JSJaCConnection(oArg) {
 
       s[u[i]] = o;
     }
-    var c = new Cookie('JSJaC_State', escape(s.toJSONString()), this._inactivity);
+    var c = new JSJaCCookie('JSJaC_State', escape(s.toJSONString()), this._inactivity);
     this.oDbg.log("writing cookie: "+unescape(c.value)+"\n(length:"+unescape(c.value).length+")",2);
     c.write();
 
     try {
-      var c2 = Cookie.read('JSJaC_State');
+      var c2 = JSJaCCookie.read('JSJaC_State');
       if (c.value != c2.value) {
-        this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(readCookie('JSJaC_State')), 1);
+        this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(JSJaCCookie.read('JSJaC_State')), 1);
         c.erase();
       }
 

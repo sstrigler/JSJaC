@@ -328,7 +328,7 @@ function JSJaCHPCDisconnect() {
     this._req[0].r.send(this._sid+",</stream:stream>");
 
   try {
-    Cookie.read('JSJaC_State').erase();
+    JSJaCCookie.read('JSJaC_State').erase();
   } catch (e) {}
 
   this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
