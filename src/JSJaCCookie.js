@@ -50,7 +50,7 @@ function JSJaCCookie(name,value,secs)
    * Deletes this cookie
    */
   this.erase = function() {
-    var c = new Cookie(this.getName(),"",-1);
+    var c = new JSJaCCookie(this.getName(),"",-1);
     c.write();
   }
 
@@ -103,15 +103,15 @@ function JSJaCCookie(name,value,secs)
  * @type Cookie
  * @throws CookieException when cookie with given name could not be found
  */
-Cookie.read = function(name) {
+JSJaCCookie.read = function(name) {
   var nameEQ = name + "=";
   var ca = document.cookie.split(';');
   for(var i=0;i < ca.length;i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') c = c.substring(1,c.length);
-    if (c.indexOf(nameEQ) == 0) return new Cookie(name, c.substring(nameEQ.length,c.length));
+    if (c.indexOf(nameEQ) == 0) return new JSJaCCookie(name, c.substring(nameEQ.length,c.length));
   }
-  throw new CookieException("Cookie not found");
+  throw new JSJaCCookieException("Cookie not found");
 };
 
 /**
@@ -119,7 +119,7 @@ Cookie.read = function(name) {
  * @constructor
  * @param {String} msg The message to pass to the exception
  */
-function CookieException(msg) {
+function JSJaCCookieException(msg) {
   this.message = msg;
   this.name = "CookieException";
 }
