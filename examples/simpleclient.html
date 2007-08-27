@@ -12,7 +12,7 @@
     <!-- if you want to enable debugging uncomment line below
          debugger available at 
           http://svn.stefan-strigler.de/JSDebugger/trunk -->
-    <!--script type="text/javascript" src="Debugger.js"></script-->
+    <!--script type="text/javascript" src="Debugger.js"></script--!>
 
     <script language="JavaScript" type="text/javascript">
 // <![CDATA[
@@ -49,14 +49,6 @@ function handlePresence(aJSJaCPacket) {
   document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
-function handleConnected() {
-  document.getElementById('login_pane').style.display = 'none';
-  document.getElementById('sendmsg_pane').style.display = '';
-  document.getElementById('err').innerHTML = '';
-
-  con.send(new JSJaCPresence());
-}
-
 function handleError(e) {
   document.getElementById('err').innerHTML = "An error occured:<br />"+ 
     ("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
@@ -67,6 +59,14 @@ function handleError(e) {
 
 function handleStatusChanged(status) {
   oDbg.log("status changed: "+status);
+}
+
+function handleConnected() {
+  document.getElementById('login_pane').style.display = 'none';
+  document.getElementById('sendmsg_pane').style.display = '';
+  document.getElementById('err').innerHTML = '';
+
+  con.send(new JSJaCPresence());
 }
 
 function doLogin(aForm) {
@@ -146,7 +146,7 @@ function init() {
     oDbg.start();
   } else {
     // if you're using firebug or safari, use this for debugging
-    oDbg = new ConsoleLogger(2);
+    oDbg = new JSJaCConsoleLogger(2);
     // comment in above and remove comments below if you don't need debugging
 //     oDbg = function() {};
 //     oDbg.log = function() {};
@@ -154,7 +154,7 @@ function init() {
 
 
   try { // try to resume a session
-    if (Cookie.read('btype').getValue() == 'binding')
+    if (JSJaCCookie.read('btype').getValue() == 'binding')
       con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
     else
       con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
@@ -190,9 +190,9 @@ onunload = function() {
   if (typeof(con) != 'undefined') {
   // save backend type
     if (con._hold) // must be binding
-      (new Cookie('btype','binding')).write();
+      (new JSJaCCookie('btype','binding')).write();
     else
-      (new Cookie('btype','polling')).write();
+      (new JSJaCCookie('btype','polling')).write();
     if (con.suspend) 
       con.suspend(); 
   }
@@ -241,7 +241,7 @@ color: red;
     </style>
   </head>
   <body>
-  <h1>JSJaC Simple Client</h1>
+  <h1><a href="">JSJaC Simple Client</a></h1>
 
   <div id="err"></div>
 
