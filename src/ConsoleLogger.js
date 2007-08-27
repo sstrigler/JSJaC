@@ -11,7 +11,7 @@
  * of 0 means very low traffic whilst a value of 4 makes logging very
  * verbose about what's going on.
  */
-function ConsoleLogger(level) {
+function JSJaCConsoleLogger(level) {
   /**
    * @private
    */
