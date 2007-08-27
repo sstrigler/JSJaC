@@ -1,3 +1,8 @@
+JSJaC v1.0beta2
+===============
+* support for pausing sessions as described in http://www.xmpp.org/extensions/xep-0124.html#inactive
+* bosh compliance v1.6
+
 JSJaC v1.0beta1
 ===============
 
@@ -17,7 +22,7 @@ JSJaC v1.0beta1
   (and namespace)
 * new API documentation using jsdoc
 * new build system using jsmin to create single minimized file (jsjac.js)
-* new events: resumed, packet_in/out, presence_in/out, message_in/out, 
+* new events: onresume, packet_in/out, presence_in/out, message_in/out, 
   iq_in/out
 * new status: resuming
 
