@@ -55,6 +55,9 @@ function handleError(e) {
     "\nCondition: "+e.firstChild.nodeName).htmlEnc(); 
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
+  
+  if (con.connected())
+    con.disconnect();
 }
 
 function handleStatusChanged(status) {
@@ -67,6 +70,11 @@ function handleConnected() {
   document.getElementById('err').innerHTML = '';
 
   con.send(new JSJaCPresence());
+}
+
+function handleDisconnected() {
+  document.getElementById('login_pane').style.display = '';
+  document.getElementById('sendmsg_pane').style.display = 'none';
 }
 
 function doLogin(aForm) {
@@ -92,6 +100,7 @@ function doLogin(aForm) {
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
     con.registerHandler('status_changed',handleStatusChanged);
+    con.registerHandler('ondisconnect',handleDisconnected);
 
     // setup args for connect method
     oArgs = new Object();
@@ -164,6 +173,7 @@ function init() {
     con.registerHandler('iq',handleIQ);
     con.registerHandler('onerror',handleError);
     con.registerHandler('onStatusChanged',handleStatusChanged);
+    con.registerHandler('ondisconnect', handleDisconnected);
 
     if (con.resume()) {
 
@@ -183,6 +193,8 @@ onerror = function(e) {
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
 
+  if (con && con.connected())
+    con.disconnect();
   return false; 
 };
 
@@ -203,7 +215,7 @@ onunload = function() {
     <style type="text/css">
 /*<![CDATA[*/
 body {
-font-family: "Bitstream Vera Sans", sans;
+font-family: "Bitstream Vera Sans", "Verdana", sans;
 font-size: 0.8em;
 margin: 12px;
 }
