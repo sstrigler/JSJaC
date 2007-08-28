@@ -337,9 +337,10 @@ function JSJaCPresence() {
   this.base('presence');
 
   /**
-   * Sets the status for this presence packet. 
-   * @param {String} status An XMPP complient status indicator. Must
-   * be one of 'chat', 'away', 'xa', 'dnd', 'available', 'unavailable'
+   * Sets the status message for current status. Usually this is set
+   * to some human readable string indicating what the user is
+   * doing/feel like currently.
+   * @param {String} status A status message
    * @return this
    * @type JSJaCPacket
    */
@@ -348,10 +349,9 @@ function JSJaCPresence() {
     return this; 
   };
   /** 
-   * Sets the status message for current status. Usually this is set
-   * to some human readable string indicating what the user is
-   * doing/feel like currently.
-   * @param {String} show A status message
+   * Sets the online status for this presence packet. 
+   * @param {String} show An XMPP complient status indicator. Must
+   * be one of 'chat', 'away', 'xa', 'dnd', 'available', 'unavailable'
    * @return this
    * @type JSJaCPacket
    */
