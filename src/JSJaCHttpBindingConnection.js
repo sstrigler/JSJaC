@@ -233,7 +233,6 @@ function JSJaCHBCConnect(oArg) {
   reqstr += " xmpp:version='1.0'";
   reqstr += "/>";
 
-
   this.oDbg.log(reqstr,4);
 
   this._req[slot].r.onreadystatechange = function() {
