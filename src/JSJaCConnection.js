@@ -1024,7 +1024,7 @@ function JSJaCError(code,type,condition) {
   xmldoc.documentElement.setAttribute('code',code);
   xmldoc.documentElement.setAttribute('type',type);
   xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
-  return xmldoc;
+  return xmldoc.documentElement;
 }
 
 /**
