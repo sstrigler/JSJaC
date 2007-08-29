@@ -48,7 +48,12 @@ function JSJaCPacket(name) {
    * Gets the root node of this packet
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */
-  this.getNode = function() { if (this.doc) return this.getDoc().documentElement; else return null};
+  this.getNode = function() { 
+    if (this.getDoc() && this.getDoc().documentElement) 
+      return this.getDoc().documentElement; 
+    else
+      return null;
+  };
 
   /**
    * Sets the 'to' attribute of the root node of this packet
@@ -175,11 +180,14 @@ function JSJaCPacket(name) {
    * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
    */ 
   this.getChild = function(name, ns) {
+    if (!this.getNode()) {
+      return null;
+    }
     if (!name && this.getNode().firstChild) {
       // best practice
       return this.getNode().firstChild;
     } else {
-      var nodes = this.getNode().getElementsByTagName(name);
+      var nodes = this.getNode().childNodes;
       for (var i=0; i<nodes.length; i++) {
         if (ns && nodes.item(i).namespaceURI != ns) {
           continue;
@@ -224,7 +232,7 @@ function JSJaCPacket(name) {
     if (this.getDoc().xml) // IE
         return this.getDoc().xml;
 
-    var xml = (new XMLSerializer()).serializeToString(this.getNode()); // opera needs the node
+    var xml = (new XMLSerializer()).serializeToString(this.getNode());
     if (typeof(xml) != 'undefined') 
       return xml;
     return (new XMLSerializer()).serializeToString(this.doc); // oldschool
@@ -249,12 +257,15 @@ function JSJaCPacket(name) {
     // copy attribs
     for (var i=0; i<aNode.attributes.length; i++)
       if (aNode.attributes.item(i).nodeName != 'xmlns')
-        this.getNode().setAttribute(aNode.attributes.item(i).nodeName,aNode.attributes.item(i).nodeValue);
+        this.getNode().setAttribute(aNode.attributes.item(i).nodeName,
+                                    aNode.attributes.item(i).nodeValue);
 
     // copy children
     for (var i=0; i<aNode.childNodes.length; i++)
       if (this.getDoc().importNode)
-        this.getNode().appendChild(this.getDoc().importNode(aNode.childNodes.item(i),true));
+        this.getNode().appendChild(this.getDoc().importNode(aNode.
+                                                            childNodes.item(i),
+                                                            true));
       else
         this.getNode().appendChild(aNode.childNodes.item(i).cloneNode(true));
   };
@@ -271,7 +282,8 @@ function JSJaCPacket(name) {
         aNode.replaceChild(tNode,aNode.firstChild);
       } catch (e) { }
     else {
-      aNode = this.getNode().appendChild(this.getDoc().createElement(nodeName));
+      aNode = this.getNode().appendChild(this.getDoc().
+                                         createElement(nodeName));
       aNode.appendChild(tNode);
     }
     return aNode;
