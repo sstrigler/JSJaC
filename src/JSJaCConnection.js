@@ -606,6 +606,7 @@ function JSJaCSASLAuthDigestMd5S1(req) {
   var doc = oCon._prepareResponse(req);
   if (!doc || doc.getElementsByTagName("challenge").length == 0) {
     this.oDbg.log("challenge missing",1);
+    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
     var challenge = atob(doc.getElementsByTagName("challenge")
@@ -667,6 +668,7 @@ function JSJaCSASLAuthDigestMd5S2(req) {
       this.oDbg.log("auth error: "+doc.firstChild.xml,1);
     else 
       this.oDbg.log("auth error",1);
+    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   }
 
