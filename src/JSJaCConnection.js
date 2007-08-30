@@ -273,14 +273,17 @@ function JSJaCConnection(oArg) {
 
       s[u[i]] = o;
     }
-    var c = new JSJaCCookie('JSJaC_State', escape(s.toJSONString()), this._inactivity);
-    this.oDbg.log("writing cookie: "+unescape(c.value)+"\n(length:"+unescape(c.value).length+")",2);
+    var c = new JSJaCCookie('JSJaC_State', escape(s.toJSONString()), 
+                            this._inactivity);
+    this.oDbg.log("writing cookie: "+unescape(c.value)+"\n(length:"+
+                  unescape(c.value).length+")",2);
     c.write();
 
     try {
       var c2 = JSJaCCookie.read('JSJaC_State');
       if (c.value != c2.value) {
-        this.oDbg.log("Suspend failed writing cookie.\nRead: "+unescape(JSJaCCookie.read('JSJaC_State')), 1);
+        this.oDbg.log("Suspend failed writing cookie.\nRead: "+
+                      unescape(JSJaCCookie.read('JSJaC_State')), 1);
         c.erase();
       }
 
@@ -416,7 +419,8 @@ function JSJaCParseStreamFeatures(doc) {
   var lMec1 = doc.getElementsByTagName("mechanisms");
   this.has_sasl = false;
   for (var i=0; i<lMec1.length; i++)
-    if (lMec1.item(i).getAttribute("xmlns") == "urn:ietf:params:xml:ns:xmpp-sasl") {
+    if (lMec1.item(i).getAttribute("xmlns") == 
+        "urn:ietf:params:xml:ns:xmpp-sasl") {
       this.has_sasl=true;
       var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
       for (var j=0; j<lMec2.length; j++)
@@ -450,9 +454,9 @@ function JSJaCInBandReg() {
   var iq = new JSJaCIQ();
   iq.setType('set');
   iq.setID('reg1');
-  var query = iq.setQuery('jabber:iq:register');
-  query.appendChild(iq.getDoc().createElement('username')).appendChild(iq.getDoc().createTextNode(this.username));
-  query.appendChild(iq.getDoc().createElement('password')).appendChild(iq.getDoc().createTextNode(this.pass));
+  iq.appendNode("query", {xmlns: "jabber:iq:register"},
+                [["username", this.username],
+                 ["password", this.pass]]);
 
   this.send(iq,this._doInBandRegDone);
 }
@@ -463,7 +467,7 @@ function JSJaCInBandReg() {
 function JSJaCInBandRegDone(iq) {
   if (iq && iq.getType() == 'error') { // we failed to register
     oCon.oDbg.log("registration failed for "+oCon.username,0);
-    oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+    oCon._handleEvent('onerror',iq.getChild('error'));
     return;
   }
 
@@ -533,7 +537,8 @@ function JSJaCLegacyAuth2(iq) {
                          ['resource', oCon.resource]]);
 
   if (use_digest) { // digest login
-    query.appendChild(iq.buildNode('digest', hex_sha1(oCon.streamid + oCon.pass)));
+    query.appendChild(iq.buildNode('digest', 
+                                   hex_sha1(oCon.streamid + oCon.pass)));
   } else if (oCon.allow_plain) { // use plaintext auth
     query.appendChild(iq.buildNode('password', oCon.pass));
   } else {
@@ -551,7 +556,7 @@ function JSJaCLegacyAuth2(iq) {
 function JSJaCLegacyAuthDone(iq) {
   if (iq.getType() != 'result') { // auth' failed
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+      oCon._handleEvent('onerror',iq.getChild('error'));
     oCon.disconnect();
   } else
     oCon._handleEvent('onconnect');
@@ -731,7 +736,7 @@ function JSJaCXMPPSess(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
     oCon.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+      oCon._handleEvent('onerror',iq.getChild('error'));
     return;
   }
   
@@ -850,12 +855,15 @@ function JSJaCProcess(timerval) {
   if (slot < 0)
     return;
 
-  if (typeof(this._req[slot]) != 'undefined' && typeof(this._req[slot].r) != 'undefined' && this._req[slot].r.readyState != 4) {
+  if (typeof(this._req[slot]) != 'undefined' && 
+      typeof(this._req[slot].r) != 'undefined' && 
+      this._req[slot].r.readyState != 4) {
     this.oDbg.log("Slot "+slot+" is not ready");
     return;
   }
 		
-  if (!this.isPolling() && this._pQueue.length == 0 && this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4) {
+  if (!this.isPolling() && this._pQueue.length == 0 && 
+      this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4) {
     this.oDbg.log("all slots bussy, standby ...", 2);
     return;
   }
@@ -869,7 +877,8 @@ function JSJaCProcess(timerval) {
   this._req[slot].r.onreadystatechange = function() {
     if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
       return;
-    oCon.oDbg.log("ready state changed for slot "+slot+" ["+oCon._req[slot].r.readyState+"]",4);
+    oCon.oDbg.log("ready state changed for slot "+slot+
+                  " ["+oCon._req[slot].r.readyState+"]",4);
     if (oCon._req[slot].r.readyState == 4) {
       oCon._setStatus('processing');
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
@@ -878,7 +887,8 @@ function JSJaCProcess(timerval) {
       if (oCon._pQueue.length) {
         oCon._timeout = setTimeout("oCon._process()",100);
       } else {
-        oCon.oDbg.log("scheduling next poll in "+oCon.getPollInterval()+" msec", 4);
+        oCon.oDbg.log("scheduling next poll in "+oCon.getPollInterval()+
+                      " msec", 4);
         oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
       }
     }
@@ -966,7 +976,8 @@ function JSJaCHandleResponse(req) {
 
   this.oDbg.log("childNodes: "+rootEl.childNodes.length,3);
   for (var i=0; i<rootEl.childNodes.length; i++) {
-    this.oDbg.log("rootEl.childNodes.item("+i+").nodeName: "+rootEl.childNodes.item(i).nodeName,3);
+    this.oDbg.log("rootEl.childNodes.item("+i+").nodeName: "+
+                  rootEl.childNodes.item(i).nodeName,3);
     this._inQ = this._inQ.concat(rootEl.childNodes.item(i));
   }
   return null;
@@ -1004,7 +1015,8 @@ function JSJaCAbort() {
 
   this.oDbg.log("Disconnected.",1);
   this._handleEvent('ondisconnect');
-  this._handleEvent('onerror',JSJaCError('500','cancel','service-unavailable'));
+  this._handleEvent('onerror',
+                    JSJaCError('500','cancel','service-unavailable'));
 }
 
 /**
@@ -1017,7 +1029,8 @@ function JSJaCError(code,type,condition) {
 
   xmldoc.documentElement.setAttribute('code',code);
   xmldoc.documentElement.setAttribute('type',type);
-  xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
+  xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).
+    setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
   return xmldoc.documentElement;
 }
 
