@@ -79,7 +79,7 @@ XmlDocument.create = function (name,ns) {
     var doc;
     // DOM2
     if (document.implementation && document.implementation.createDocument) {
-      doc = document.implementation.createDocument("", "", null);
+      doc = document.implementation.createDocument(ns, name, null);
       // some versions of Moz do not support the readyState property
       // and the onreadystate event so we patch it!
       if (doc.readyState == null) {
@@ -90,29 +90,36 @@ XmlDocument.create = function (name,ns) {
 				 doc.onreadystatechange();
 			     }, false);
       }
-    }
-    if (window.ActiveXObject)
+    } else if (window.ActiveXObject) {
       doc = new ActiveXObject(XmlDocument.getPrefix() + ".DomDocument");
-    
-    try { 
-      if (ns != '')
-	doc.appendChild(doc.createElement(name)).setAttribute('xmlns',ns);
-      else
-	doc.appendChild(doc.createElement(name));
-    } catch (dex) { 
-      doc = document.implementation.createDocument(ns,name,null);
-      
-      if (doc.documentElement == null)
-	doc.appendChild(doc.createElement(name));
-      
-      if (ns != '' && 
-	  doc.documentElement.getAttribute('xmlns') != ns) // fixes buggy opera 8.5x
-	doc.documentElement.setAttribute('xmlns',ns);
     }
+    
+    if (!doc.documentElement || doc.documentElement.tagName != name || 
+        (doc.documentElement.namespaceURI && 
+         doc.documentElement.namespaceURI != ns)) {
+          try { 
+            if (ns != '')
+              doc.appendChild(doc.createElement(name)).
+                setAttribute('xmlns',ns);
+            else
+              doc.appendChild(doc.createElement(name));
+          } catch (dex) { 
+            doc = document.implementation.createDocument(ns,name,null);
+            
+            if (doc.documentElement == null)
+              doc.appendChild(doc.createElement(name));
+
+             // fix buggy opera 8.5x
+            if (ns != '' && 
+                doc.documentElement.getAttribute('xmlns') != ns) {
+              doc.documentElement.setAttribute('xmlns',ns);
+            }
+          }
+        }
     
     return doc;
   }
-  catch (ex) { }
+  catch (ex) { alert(ex.name+": "+ex.message); }
   throw new Error("Your browser does not support XmlDocument objects");
 };
 
