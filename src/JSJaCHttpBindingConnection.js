@@ -3,12 +3,15 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  * @version $Revision$
  */
-var JSJACHBC_BOSH_VERSION = "1.6";
+
+var JSJACHBC_BOSH_VERSION  = "1.6";
+var JSJACHBC_USE_BOSH_VER  = true;
 
 var JSJACHBC_MAX_HOLD = 1;
 var JSJACHBC_MAX_WAIT = 300; 
 
 var JSJACHBC_MAXPAUSE = 120;
+
 /**
  * Instantiates an HTTP Binding session
  * @class Implementation of {@link
@@ -228,9 +231,12 @@ function JSJaCHBCConnect(oArg) {
   if (this._xmllang)
     reqstr += " xml:lang='"+this._xmllang + "'";
 
-  reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
-  reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
-  reqstr += " xmpp:version='1.0'";
+  if (JSJACHBC_USE_BOSH_VER) {
+    reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
+    reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
+    reqstr += " xmpp:version='1.0'";
+  }
+
   reqstr += "/>";
 
   this.oDbg.log(reqstr,4);
