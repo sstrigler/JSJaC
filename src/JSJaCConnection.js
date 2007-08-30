@@ -735,7 +735,7 @@ function JSJaCXMPPSess(iq) {
     return;
   }
   
-  oCon.fulljid = iq.getDoc().firstChild.getElementsByTagName('jid').item(0).firstChild.nodeValue;
+  oCon.fulljid = iq.getChildVal("jid");
   oCon.jid = oCon.fulljid.substring(0,oCon.fulljid.lastIndexOf('/'));
   
   iq = new JSJaCIQ();
@@ -753,7 +753,7 @@ function JSJaCXMPPSessDone(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
     oCon.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getNode().getElementsByTagName('error').item(0));
+      oCon._handleEvent('onerror',iq.getChild('error'));
     return;
   } else
     oCon._handleEvent('onconnect');
