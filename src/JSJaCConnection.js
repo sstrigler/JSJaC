@@ -718,11 +718,9 @@ function JSJaCSASLAuthDone(req) {
 function JSJaCStreamBind() {
   var iq = new JSJaCIQ();
   iq.setIQ(this.domain,'set','bind_1');
-  var eBind = iq.getDoc().createElement("bind");
-  eBind.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-bind");
-  eBind.appendChild(iq.getDoc().createElement("resource"))
-    .appendChild(iq.getDoc().createTextNode(this.resource));
-  iq.getNode().appendChild(eBind);
+  iq.appendNode("bind", {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
+                [["resource",  {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
+                  this.resource]]);
   this.oDbg.log(iq.xml());
   this.send(iq,this._doXMPPSess);
 }
@@ -743,9 +741,8 @@ function JSJaCXMPPSess(iq) {
   
   iq = new JSJaCIQ();
   iq.setIQ(this.domain,'set','sess_1');
-  var eSess = iq.getDoc().createElement("session");
-  eSess.setAttribute("xmlns","urn:ietf:params:xml:ns:xmpp-session");
-  iq.getNode().appendChild(eSess);
+  iq.appendNode("session", {xmlns: "urn:ietf:params:xml:ns:xmpp-session"},
+                []);
   oCon.oDbg.log(iq.xml());
   oCon.send(iq,oCon._doXMPPSessDone);
 }
@@ -985,10 +982,8 @@ function JSJaCCheckInQ() {
     this._inQ = this._inQ.slice(1,this._inQ.length);
     var packet = JSJaCPacket.wrapNode(item);
 
-    if (!packet) {
-      this.oDbg.log("wrapNode failed on "+item.xml,2);
+    if (!packet)
       return;
-    }
 
     this._handleEvent("packet_in", packet);
 
