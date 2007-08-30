@@ -719,8 +719,7 @@ function JSJaCStreamBind() {
   var iq = new JSJaCIQ();
   iq.setIQ(this.domain,'set','bind_1');
   iq.appendNode("bind", {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
-                [["resource",  {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
-                  this.resource]]);
+                [["resource", this.resource]]);
   this.oDbg.log(iq.xml());
   this.send(iq,this._doXMPPSess);
 }
