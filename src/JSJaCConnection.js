@@ -675,6 +675,7 @@ function JSJaCSASLAuthDigestMd5S2(req) {
       this.oDbg.log("auth error",1);
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
+    return;
   }
 
   var response = atob(doc.firstChild.firstChild.nodeValue)
