@@ -187,14 +187,12 @@ function JSJaCPacket(name) {
       // best practice
       return this.getNode().firstChild;
     } else {
-      var nodes = this.getNode().childNodes;
+      var nodes = this.getNode().getElementsByTagName(name);
       for (var i=0; i<nodes.length; i++) {
         if (ns && nodes.item(i).namespaceURI != ns) {
           continue;
         }
-        if (nodes.item(i).tagName == name) {
-          return nodes.item(i);
-        }
+        return nodes.item(i);
       }
     }
     return null; // fallback
