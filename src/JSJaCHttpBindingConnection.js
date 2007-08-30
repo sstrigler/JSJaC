@@ -584,7 +584,6 @@ function JSJaCHBCPrepareResponse(req) {
     this.oDbg.log("Disconnected.",1);
     this._handleEvent('ondisconnect');
     return null;
-
   }
 
   if (typeof(req.rid) != 'undefined' && this._last_requests[req.rid]) {
