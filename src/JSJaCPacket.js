@@ -188,6 +188,8 @@ function JSJaCPacket(name) {
       return this.getNode().firstChild;
     } else {
       var nodes = this.getNode().getElementsByTagName(name);
+      if (nodes.length == 0 && this.getNode().getElementsByTagNameNS)
+        nodes = this.getNode().getElementsByTagNameNS("*", name);
       for (var i=0; i<nodes.length; i++) {
         if (ns && nodes.item(i).namespaceURI != ns) {
           continue;
