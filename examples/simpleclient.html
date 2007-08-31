@@ -4,56 +4,64 @@
   <head>
     <title>JSJaC Simple Client</title>
 
-    <script type="text/javascript" src="../JSJaC.js"></script>
+    <script type="text/javascript" src="../jsjac.js"></script>
+    <!-- comment in above and uncomment below if you want to modify/hack
+         on jsjac -->
+    <!--script type="text/javascript" src="../src/JSJaC.js"></script-->
 
     <!-- if you want to enable debugging uncomment line below
-         debugger available at http://zeank.in-berlin.de/ -->
-    <script language="JavaScript" type="text/javascript" src="Debugger.js"></script>
+         debugger available at 
+          http://svn.stefan-strigler.de/JSDebugger/trunk -->
+    <!--script type="text/javascript" src="Debugger.js"></script-->
 
     <script language="JavaScript" type="text/javascript">
-<!--
-function htmlEnc(str) {
-  try {
-    str = str.replace(/&/g,"&amp;");
-    str = str.replace(/</g,"&lt;");
-    str = str.replace(/>/g,"&gt;");
-    str = str.replace(/\"/g,"&quot;");
-    str = str.replace(/\n/g,"<br />");
-    return str;
-  } catch (e) { 
-    oDbg.log(typeof(str) + ":" + e);
-    return null;
-  }
-}
-
-function handleEvent(aJSJaCPacket) {
+// <![CDATA[
+function handleIQ(aJSJaCPacket) {
   document.getElementById('iResp').innerHTML += 
-    "IN (raw):<br/>" +htmlEnc(aJSJaCPacket.xml()) + '<hr noshade size="1"/>';
+    "<div class='msg'>IN (raw): " +aJSJaCPacket.xml().htmlEnc() + '</div>';
+  document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
 function handleMessage(aJSJaCPacket) {
   var html = '';
-  html += '<b>Received Message from '+aJSJaCPacket.getFrom()+':</b><br/>';
-  html += htmlEnc(aJSJaCPacket.getBody()) + '<hr noshade size="1"/>';
+  html += '<div class="msg"><b>Received Message from '+aJSJaCPacket.getFromJID()+':</b><br/>';
+  html += aJSJaCPacket.getBody().htmlEnc() + '</div>';
   document.getElementById('iResp').innerHTML += html;
+  document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
 function handlePresence(aJSJaCPacket) {
-  var html = '';
+  var html = '<div class="msg">';
   if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
-    html += '<b>'+aJSJaCPacket.getFrom()+' has become available.</b>';
+    html += '<b>'+aJSJaCPacket.getFromJID()+' has become available.</b>';
   else {
-    html += '<b>'+aJSJaCPacket.getFrom()+' has set his presence to ';
+    html += '<b>'+aJSJaCPacket.getFromJID()+' has set his presence to ';
     if (aJSJaCPacket.getType())
       html += aJSJaCPacket.getType() + '.</b>';
     else
       html += aJSJaCPacket.getShow() + '.</b>';
     if (aJSJaCPacket.getStatus())
-      html += ' ('+htmlEnc(aJSJaCPacket.getStatus())+')';
+      html += ' ('+aJSJaCPacket.getStatus().htmlEnc()+')';
   }
-  html += '<hr noshade size=1>';
+  html += '</div>';
 
   document.getElementById('iResp').innerHTML += html;
+  document.getElementById('iResp').lastChild.scrollIntoView();
+}
+
+function handleError(e) {
+  document.getElementById('err').innerHTML = "An error occured:<br />"+ 
+    ("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
+    "\nCondition: "+e.firstChild.nodeName).htmlEnc(); 
+  document.getElementById('login_pane').style.display = '';
+  document.getElementById('sendmsg_pane').style.display = 'none';
+  
+  if (con.connected())
+    con.disconnect();
+}
+
+function handleStatusChanged(status) {
+  oDbg.log("status changed: "+status);
 }
 
 function handleConnected() {
@@ -64,25 +72,15 @@ function handleConnected() {
   con.send(new JSJaCPresence());
 }
 
-
-function handleError(e) {
-  document.getElementById('err').innerHTML = "An error occured:<br />"+ 
-    htmlEnc("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
-            "\nCondition: "+e.firstChild.nodeName); 
+function handleDisconnected() {
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
-
-}
-
-function handleStatusChange(status) {
-  oDbg.log("status changed: "+status);
 }
 
 function doLogin(aForm) {
   document.getElementById('err').innerHTML = ''; // reset
 
   try {
-
     // setup args for contructor
     oArgs = new Object();
     oArgs.httpbase = aForm.http_base.value;
@@ -98,10 +96,11 @@ function doLogin(aForm) {
 
     con.registerHandler('message',handleMessage);
     con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleEvent);
+    con.registerHandler('iq',handleIQ);
     con.registerHandler('onconnect',handleConnected);
     con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('status_changed',handleStatusChanged);
+    con.registerHandler('ondisconnect',handleDisconnected);
 
     // setup args for connect method
     oArgs = new Object();
@@ -125,14 +124,21 @@ function sendMsg(aForm) {
   if (aForm.sendTo.value.indexOf('@') == -1)
     aForm.sendTo.value += '@' + con.domain;
 
-  var aMsg = new JSJaCMessage();
-  aMsg.setTo(aForm.sendTo.value);
-  aMsg.setBody(aForm.msg.value);
-  con.send(aMsg);
+  try {
+    var aMsg = new JSJaCMessage();
+    aMsg.setTo(new JSJaCJID(aForm.sendTo.value));
+    aMsg.setBody(aForm.msg.value);
+    con.send(aMsg);
 
-  aForm.msg.value = '';
+    aForm.msg.value = '';
 
-  return false;
+    return false;
+  } catch (e) {
+    html = "<div class='msg error''>Error: "+e.message+"</div>"; 
+    document.getElementById('iResp').innerHTML += html;
+    document.getElementById('iResp').lastChild.scrollIntoView();
+    return false;
+  }
 }
 
 function quit() {
@@ -147,20 +153,27 @@ function init() {
   if (typeof(Debugger) == 'function') {
     oDbg = new Debugger(2,'simpleclient');
     oDbg.start();
+  } else {
+    // if you're using firebug or safari, use this for debugging
+    oDbg = new JSJaCConsoleLogger(2);
+    // comment in above and remove comments below if you don't need debugging
+//     oDbg = function() {};
+//     oDbg.log = function() {};
   }
 
-  if (document.cookie) { // try to resume a session
-    if (readCookie('btype') == 'binding')
+
+  try { // try to resume a session
+    if (JSJaCCookie.read('btype').getValue() == 'binding')
       con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
     else
       con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
 
     con.registerHandler('message',handleMessage);
     con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleEvent);
-    con.registerHandler('onconnect',handleConnected);
+    con.registerHandler('iq',handleIQ);
     con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChange);
+    con.registerHandler('onStatusChanged',handleStatusChanged);
+    con.registerHandler('ondisconnect', handleDisconnected);
 
     if (con.resume()) {
 
@@ -169,7 +182,7 @@ function init() {
       document.getElementById('err').innerHTML = '';
 
     }
-  }
+  } catch (e) {} // reading cookie failed - never mind
 
 }
 onload = init;
@@ -180,23 +193,29 @@ onerror = function(e) {
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
 
+  if (con && con.connected())
+    con.disconnect();
   return false; 
 };
-onunload = function() { 
+
+onunload = function() {
+  if (typeof(con) != 'undefined') {
   // save backend type
-  if (typeof(con._hold) != 'undefined') // must be binding
-    createCookie('btype','binding');
-  else
-    createCookie('btype','polling');
-  if (typeof(con) != 'undefined' && con.suspend) con.suspend(); 
+    if (con._hold) // must be binding
+      (new JSJaCCookie('btype','binding')).write();
+    else
+      (new JSJaCCookie('btype','polling')).write();
+    if (con.suspend) 
+      con.suspend(); 
+  }
 };
 
-//-->
+// ]]>
     </script>
     <style type="text/css">
 /*<![CDATA[*/
 body {
-font-family: "Bitstream Vera Sans", sans;
+font-family: "Bitstream Vera Sans", "Verdana", sans;
 font-size: 0.8em;
 margin: 12px;
 }
@@ -223,11 +242,18 @@ border: 2px dashed grey;
 .spaced {
 margin-bottom: 4px;
 }
+.msg {
+border-bottom: 1px solid black;
+}
+.error {
+font-weight: bold;
+color: red;
+}
 /*]]>*/
     </style>
   </head>
   <body>
-  <h1>JSJaC Simple Client</h1>
+  <h1><a href="">JSJaC Simple Client</a></h1>
 
   <div id="err"></div>
 
@@ -249,7 +275,7 @@ margin-bottom: 4px;
 
   <div id="sendmsg_pane" style="display:none;">
     <h2>Incoming:</h2>
-    <div name="iResp" id="iResp"></div>
+    <div id="iResp"></div>
     <h2>Send Message</h2>
       <form name="sendForm" onSubmit="return sendMsg(this);" action="#">
 	<div class="spaced"><b>To:</b> <input type="text" name="sendTo" tabindex="1"></div>

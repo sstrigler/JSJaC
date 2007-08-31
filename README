@@ -19,48 +19,83 @@ this distribution for details.
 Hints on Usage
 ==============
 
-Due to security restrictions you will have to proxy requests like
-mod_proxy and mod_rewrite for apache web servers can do and add a
-RewriteRule for the domain which serves your web application so that
-request on a certain base address (which can be chosen by yourself)
-are redirect by use of apache's built in proxy module to the http base
-address of the HTTP Polling or HTTP Binding service. E.g.:
+Service Address
+---------------
+
+Due to security restrictions you may have to forward or proxy requests
+to your jabber server's service address.
+
+Let's say your JSJaC based web application is located at
+http://example.com. Your Jabber server is at jabber.example.com and
+it's HTTP Binding service is located at
+http://jabber.example.org:5280.
+
+As most browser don't allow scripts to connect to a different domain
+and/or port as they have been loaded from you'd have to find a way how
+to access this service at some URI hosted at http://example.com/.
+
+If you're using apache you could use mod_proxy and mod_rewrite to do
+this job for you:
 
 %<---
 <VirtualHost *>
-  Servername jabber.mydomain.com
-  DocumentRoot /home/jabber/jwchat/htdocs
+  Servername example.com
+  DocumentRoot /var/ww
   AddDefaultCharset UTF-8
   RewriteEngine On
-  RewriteRule ^/http-poll/ http://jabber.mydomain.com:5280/http-poll/ [P]
+  RewriteRule ^/http-bind/ http://jabber.example.com:5280/http-bind/ [P]
 </VirtualHost>
 %<---
 
+With this you'd end up having access to the Jabber server's service at
+http://example.com/http-bind/ (the httpbase address).
+
+for in Intrigue
+---------------
+
+JSJaC extends the prototypes of the built-in types. This may cause
+problems with for loops. Please have a look at
+http://yuiblog.com/blog/2006/09/26/for-in-intrigue/ for a detailed
+description of what's going on here and how to fix it.
+
+Debug Logger
+------------
+
+JSJaCConnection supports use of [3]JSDebugger which is available
+separately.
+
+JSJaC also ships with a class 'FirebugLogger' which lets you log to
+Firebug's console.
+
+
+Example
+-------
 For an example on how to use this library within your web application
 please have to look at 'examples/simpleclient.html'.
-
-Note: JSJaCConnection supports use of [3]Debugger which is available separately.
 
 Supported Browsers and Platforms
 ================================
 
 Windows
 -------
-* Internet Explorer v5.0 or newer
-* Mozilla/Firefox and any other Gecko based browsers
-* Netscape v6.0 or newer
+* Internet Explorer 5.5+
+* Mozilla/Firefox 1.5+
+* Netscape 7.0+
+* Opera 9.0+
 
 Linux/UNI*X
 -----------
-* Mozilla/Firefox and any other Gecko based browsers
-* Netscape v6.0 or newer
+* Mozilla/Firefox 1.5+
+* Opera 9.0+
+* Netscape 7.0+
+* Konqueror
 
 Macintosh
 ---------
-* Mozilla/Firefox and any other Gecko based browsers
-* Safari (in development, please help out by submitting bug reports)
+* Mozilla/Firefox 1.5+
+* Safari
 
 
 [1] http://www.jabber.org/jeps/jep-0025.html
 [2] http://www.jabber.org/jeps/jep-0124.html
-[3] http://zeank.in-berlin.de/javascript-debug-logger/
+[3] http://svn.stefan-strigler.de/JSDebugger/trunk

@@ -1,3 +1,31 @@
+JSJaC v1.0beta2
+===============
+* support for pausing sessions as described in http://www.xmpp.org/extensions/xep-0124.html#inactive
+* bosh compliance v1.6
+
+JSJaC v1.0beta1
+===============
+
+* JSJacJID.js: dedicated class for handling with JIDs
+* JSJaCPacket.js: getToJID(), getFromJID() return a JID object
+* JSJaCPacket.js: setTo and setFrom accept JID object too
+* jsextras.js: extends string with 'htmlEnc', extends Date with 'jabberDate',
+  'hrTime' (static)  and 'jab2date' (static)
+* fixed all occurrences of 'for .. in' to be compliant with having prototypes 
+  of objects (arrays) extended (like prototype.js does e.g.).
+* buildNode: build nodes using script.aculo.us famous DOM builder
+* appendNode: append nodes to root node, may also be used with DOM builder 
+  syntax
+* ConsoleLogger: debug logger using firebug's or safari's console
+* getChild(name, ns): get child node with given name (and namespace)
+* getChildVal(name, ns): get value of child node with given name 
+  (and namespace)
+* new API documentation using jsdoc
+* new build system using jsmin to create single minimized file (jsjac.js)
+* new events: onresume, packet_in/out, presence_in/out, message_in/out, 
+  iq_in/out
+* new status: resuming
+
 JSJaC v0.6
 ==========
 

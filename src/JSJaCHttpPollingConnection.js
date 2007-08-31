@@ -1,4 +1,20 @@
+/**
+ * @fileoverview All stuff related to HTTP Polling
+ * @author Stefan Strigler steve@zeank.in-berlin.de
+ * @version $Revision$
+ */
+
+/**
+ * Instantiates an HTTP Polling session 
+ * @class Implementation of {@link
+ * http://www.xmpp.org/extensions/xep-0025.html HTTP Polling}
+ * @extends JSJaCConnection
+ * @constructor
+ */
 function JSJaCHttpPollingConnection(oArg) {
+  /**
+   * @ignore
+   */
   this.base = JSJaCConnection;
   this.base(oArg);
 
@@ -7,8 +23,20 @@ function JSJaCHttpPollingConnection(oArg) {
 
   this.connect = JSJaCHPCConnect;
   this.disconnect = JSJaCHPCDisconnect;
+  /**
+   * Tells whether this implementation of JSJaCConnection is polling
+   * Useful if it needs to be decided
+   * whether it makes sense to allow for adjusting or adjust the
+   * polling interval {@link JSJaCConnection#setPollInterval}
+   * @return <code>true</code> if this is a polling connection, 
+   * <code>false</code> otherwise.
+   * @type boolean
+   */
   this.isPolling = function() { return true; };
 
+  /**
+   * @private
+   */
   this._getFreeSlot = function() {
     if (typeof(this._req[0]) == 'undefined' || typeof(this._req[0].r) == 'undefined' || this._req[0].r.readyState == 4)
       return 0; 
@@ -17,20 +45,32 @@ function JSJaCHttpPollingConnection(oArg) {
   }
   this._getRequestString = JSJaCHPCGetRequestString;
   this._getStreamID = JSJaCHPCGetStream;
+  /**
+   * @private
+   */
   this._getSuspendVars = function() {
     return new Array();
   }
   this._prepareResponse = JSJaCHPCPrepareResponse;
+  this._reInitStream = JSJaCHPCReInitStream;
+  /**
+   * @private
+   */
   this._resume = function() { 
     this._process(this._timerval);
-    this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-    this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+    this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+    this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
   }
   this._setupRequest = JSJaCHPCSetupRequest;
-
-  this._reInitStream = JSJaCHPCReInitStream;
+  /**
+   * @private
+   */
+  this._suspend = function() {};
 }
 
+/**
+ * @private
+ */
 function JSJaCHPCSetupRequest(async) {
   var r = XmlHttp.create();
   try {
@@ -43,9 +83,12 @@ function JSJaCHPCSetupRequest(async) {
   return req;
 }
 
+/**
+ * @private
+ */
 function JSJaCHPCGetRequestString(raw) {
   var reqstr = this._sid;
-  if (JSJaC_HAVEKEYS) {
+  if (JSJAC_HAVEKEYS) {
     reqstr += ";"+this._keys.getKey();
     if (this._keys.lastKey()) {
       this._keys = new JSJaCKeys(b64_sha1,this.oDbg);
@@ -62,6 +105,9 @@ function JSJaCHPCGetRequestString(raw) {
   return reqstr;
 }
 
+/**
+ * @private
+ */
 function JSJaCHPCPrepareResponse(r) {
   var req = r.r;
   if (!this.connected())
@@ -128,12 +174,12 @@ function JSJaCHPCPrepareResponse(r) {
 
   try {
 		
-    var doc = _parseTree("<body>"+req.responseText+"</body>");
+    var doc = JSJaCHttpPollingConnection.parseTree("<body>"+req.responseText+"</body>");
 
     if (!doc || doc.tagName == 'parsererror') {
       this.oDbg.log("parsererror",1);
 
-      doc = _parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
+      doc = JSJaCHttpPollingConnection.parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
       if (doc && doc.tagName != 'parsererror') {
         this.oDbg.log("stream closed",1);
 
@@ -160,18 +206,10 @@ function JSJaCHPCPrepareResponse(r) {
   return null;;
 }
 
-function _parseTree(s) {
-  try {
-    var r = XmlDocument.create("body","foo");
-    if (typeof(r.loadXML) != 'undefined') {
-      r.loadXML(s);
-      return r.documentElement;
-    } else if (window.DOMParser)
-      return (new DOMParser()).parseFromString(s, "text/xml").documentElement;
-  } catch (e) { }
-  return null;
-}
-
+/**
+ * Actually triggers a connect for this connection
+ * @params {JSON} oArg arguments in JSON as follows:
+ */
 function JSJaCHPCConnect(oArg) {
   // initial request to get sid and streamid
 
@@ -188,7 +226,7 @@ function JSJaCHPCConnect(oArg) {
   this.authhost = oArg.authhost || this.domain;
 
   var reqstr = "0";
-  if (JSJaC_HAVEKEYS) {
+  if (JSJAC_HAVEKEYS) {
     this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
     key = this._keys.getKey();
     reqstr += ";"+key;
@@ -214,8 +252,8 @@ function JSJaCHPCConnect(oArg) {
   this.oDbg.log("got sid: "+this._sid,2);
 
   oCon = this;
-  this._interval= setInterval("oCon._checkQueue()",JSJaC_CheckQueueInterval);
-  this._inQto = setInterval("oCon._checkInQ();",JSJaC_CheckInQueueInterval);
+  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
 
   /* wait for initial stream response to extract streamid needed
    * for digest auth
@@ -223,6 +261,9 @@ function JSJaCHPCConnect(oArg) {
   this._getStreamID();
 }
 
+/**
+ * @private
+ */
 function JSJaCHPCGetStream() {
 
   if (!this._req[0].r.responseXML || this._req[0].r.responseText == '') {
@@ -257,10 +298,16 @@ function JSJaCHPCGetStream() {
   this._process(this._timerval); // start polling
 }
 
+/**
+ * @private
+ */
 function JSJaCHPCReInitStream(to,cb,arg) {
   oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
 }
 
+/**
+ * Disconnect from stream, terminate HTTP Polling session
+ */
 function JSJaCHPCDisconnect() {
   if (!this.connected())
     return;
@@ -275,11 +322,32 @@ function JSJaCHPCDisconnect() {
 
   this._req[0] = this._setupRequest(false);
 	
-  if (JSJaC_HAVEKEYS)
+  if (JSJAC_HAVEKEYS)
     this._req[0].r.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
   else
     this._req[0].r.send(this._sid+",</stream:stream>");
+
+  try {
+    JSJaCCookie.read('JSJaC_State').erase();
+  } catch (e) {}
+
   this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
   this._connected = false;
   this._handleEvent('ondisconnect');
+}
+
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.parseTree = function(s) {
+  try {
+    var r = XmlDocument.create("body","foo");
+    if (typeof(r.loadXML) != 'undefined') {
+      r.loadXML(s);
+      return r.documentElement;
+    } else if (window.DOMParser)
+      return (new DOMParser()).parseFromString(s, "text/xml").documentElement;
+  } catch (e) { }
+  return null;
 }
