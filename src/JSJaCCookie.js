@@ -119,10 +119,10 @@ JSJaCCookie.read = function(name) {
 
 /**
  * Deletes cookie with given <code>name</code>
- * @param {String} name The name of the cookie to erase
+ * @param {String} name The name of the cookie to delete
  * @throws CookieException when cookie with given name could not be found
  */
-JSJaCCookie.erase = function(name) {
+JSJaCCookie.delete = function(name) {
   JSJaCCookie.read(name).erase();
 }
 
