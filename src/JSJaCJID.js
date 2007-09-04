@@ -44,7 +44,7 @@ function JSJaCJID(jid) {
       jid = jid.substring(0,jid.indexOf('/'));
     }
     this.setDomain(jid);
-  } else {
+  } else if (jid) {
     this.setNode(jid.node);
     this.setDomain(jid.domain);
     this.setResource(jid.resource);
