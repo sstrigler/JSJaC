@@ -16,6 +16,9 @@
  */
 function JSJaCCookie(name,value,secs)
 {
+  if (window == this) 
+    return new JSJaCCookie(name, value, secs);
+
   /** 
    * This cookie's name
    * @type String
