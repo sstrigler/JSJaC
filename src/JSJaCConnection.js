@@ -834,7 +834,7 @@ function JSJaCSend(packet,cb,arg) {
     this.oDbg.log(e.toString(),1);
     return false;
   }
-  return false
+  return true;
 }
 
 /**
