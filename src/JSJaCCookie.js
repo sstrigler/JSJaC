@@ -134,9 +134,9 @@ JSJaCCookie.get = function(name) {
  * @param {String} name The name of the cookie to delete
  * @throws CookieException when cookie with given name could not be found
  */
-JSJaCCookie.delete = function(name) {
+JSJaCCookie.remove = function(name) {
   JSJaCCookie.read(name).erase();
-}
+};
 
 /**
  * Some exception denoted to dealing with cookies
