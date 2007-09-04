@@ -118,6 +118,15 @@ JSJaCCookie.read = function(name) {
 };
 
 /**
+ * Deletes cookie with given <code>name</code>
+ * @param {String} name The name of the cookie to erase
+ * @throws CookieException when cookie with given name could not be found
+ */
+JSJaCCookie.erase = function(name) {
+  JSJaCCookie.read(name).erase();
+}
+
+/**
  * Some exception denoted to dealing with cookies
  * @constructor
  * @param {String} msg The message to pass to the exception
