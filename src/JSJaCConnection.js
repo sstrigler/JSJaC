@@ -809,10 +809,15 @@ function JSJaCSendRaw(xml,cb,arg)
  * to this packet (identified by id) [optional]
  * @param {Object}      arg     Arguments passed to the callback 
  * (additionally to the packet received) [optional]
+ * @return true on succes, false otherwise
+ * @type Boolean
  */
 function JSJaCSend(packet,cb,arg) {
+  if (!packet)
+    return false;
+
   // remember id for response if callback present
-  if (packet && cb) {
+  if (cb) {
     if (!packet.getID())
       packet.setID('JSJaCID_'+this._ID++); // generate an ID
 
@@ -820,18 +825,16 @@ function JSJaCSend(packet,cb,arg) {
     this._registerPID(packet.getID(),cb,arg);
   }
 
-  if (packet) {
-    try {
-      if (packet.pType)
-        this._handleEvent(packet.pType()+'_out', packet);
-      this._handleEvent("packet_out", packet);
-      this._pQueue = this._pQueue.concat(packet.xml());
-    } catch (e) {
-      this.oDbg.log(e.toString(),1);
-    }
+  try {
+    if (packet.pType)
+      this._handleEvent(packet.pType()+'_out', packet);
+    this._handleEvent("packet_out", packet);
+    this._pQueue = this._pQueue.concat(packet.xml());
+  } catch (e) {
+    this.oDbg.log(e.toString(),1);
+    return false;
   }
-
-  return;
+  return false
 }
 
 /**
