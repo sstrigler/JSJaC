@@ -118,6 +118,18 @@ JSJaCCookie.read = function(name) {
 };
 
 /**
+ * Reads the value for given <code>name</code> from cookies and returns 
+ * its valued new
+ * @param {String} name The name of the cookie to read
+ * @return The value of the cookie read
+ * @type String
+ * @throws CookieException when cookie with given name could not be found
+ */
+JSJaCCookie.get = function(name) {
+  return JSJaCCookie.read(name).getValue();
+};
+
+/**
  * Deletes cookie with given <code>name</code>
  * @param {String} name The name of the cookie to delete
  * @throws CookieException when cookie with given name could not be found
