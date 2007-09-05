@@ -16,6 +16,9 @@
  */
 function JSJaCCookie(name,value,secs)
 {
+  if (window == this) 
+    return new JSJaCCookie(name, value, secs);
+
   /** 
    * This cookie's name
    * @type String
@@ -112,6 +115,27 @@ JSJaCCookie.read = function(name) {
     if (c.indexOf(nameEQ) == 0) return new JSJaCCookie(name, c.substring(nameEQ.length,c.length));
   }
   throw new JSJaCCookieException("Cookie not found");
+};
+
+/**
+ * Reads the value for given <code>name</code> from cookies and returns 
+ * its valued new
+ * @param {String} name The name of the cookie to read
+ * @return The value of the cookie read
+ * @type String
+ * @throws CookieException when cookie with given name could not be found
+ */
+JSJaCCookie.get = function(name) {
+  return JSJaCCookie.read(name).getValue();
+};
+
+/**
+ * Deletes cookie with given <code>name</code>
+ * @param {String} name The name of the cookie to delete
+ * @throws CookieException when cookie with given name could not be found
+ */
+JSJaCCookie.remove = function(name) {
+  JSJaCCookie.read(name).erase();
 };
 
 /**
