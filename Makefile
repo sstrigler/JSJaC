@@ -9,16 +9,22 @@ build:
 	@echo "building ...";
 	@for i in src/*.js; do \
 		if [ "$$i" != "src/JSJaC.js" ]; then \
-			echo "\t$$i"; \
-			cat "$$i" >> $(OUTFILE); \
+			if [ "$$i" != "src/JSJaCConfig.js" ]; then \
+				echo "\t$$i"; \
+				cat "$$i" >> $(OUTFILE); \
+			fi; \
 		fi; \
 	done
 
 crunch: 
 	@echo "crunching ..."
-	@if [ -e $(OUTFILE) ]; then utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp \
-	"(c) 2005-2007 Stefan Strigler <steve@zeank.in-berlin.de>" && \
-	mv $(OUTFILE).tmp $(OUTFILE); fi
+	@if [ -e $(OUTFILE) ]; then \
+		utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp \
+		"(c) 2005-2007 Stefan Strigler <steve@zeank.in-berlin.de>" && \
+		cat src/JSJaCConfig.js > $(OUTFILE) && \
+		cat $(OUTFILE).tmp >> $(OUTFILE) && \
+		rm $(OUTFILE).tmp; \
+	fi
 
 doc: 
 	@/opt/JSDoc/jsdoc.pl --project-name JSJaC -d doc src/

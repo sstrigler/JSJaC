@@ -5,16 +5,6 @@
  * @version $Revision$
  */
 
-var JSJAC_HAVEKEYS = true;  // whether to use keys
-var JSJAC_NKEYS    = 16;    // number of keys to generate
-var JSJAC_INACTIVITY = 300; // qnd hack to make suspend/resume work more smoothly with polling
-var JSJAC_ERR_COUNT = 10;   // number of retries in case of connection errors
-
-var JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
-
-var JSJAC_CHECKQUEUEINTERVAL = 100; // msecs to poll send queue
-var JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue
-
 /**
  * Creates a new Jabber connection (a connection to a jabber server)
  * @class Somewhat abstract base class for jabber connections. Contains all
