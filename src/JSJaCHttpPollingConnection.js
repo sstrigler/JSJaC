@@ -67,6 +67,7 @@ function JSJaCHttpPollingConnection(oArg) {
    */
   this._suspend = function() {};
 }
+JSJaCHttpPollingConnection.prototype = new JSJaCConnection();
 
 /**
  * @private

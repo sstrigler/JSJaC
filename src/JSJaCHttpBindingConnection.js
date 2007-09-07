@@ -168,6 +168,7 @@ function JSJaCHttpBindingConnection(oArg) {
     clearTimeout(abortTimerID); 
   }
 }
+JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
 
 /**
  * Connects to jabber server, creates an HTTP Binding session, thus
