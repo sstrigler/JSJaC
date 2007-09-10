@@ -219,8 +219,8 @@ JSJaCConnection.prototype.resume = function() {
  * (additionally to the packet received) [optional]
  */
 JSJaCConnection.prototype.send = function(packet,cb,arg) {
-  if (!packet || packet.constructor != 'JSJaCPacket') {
-    this.oDbg.log("no packet: "+packet.constructor, 1);
+  if (!packet || !packet.pType) {
+    this.oDbg.log("no packet: "+packet, 1);
     return false;
   }
 
@@ -234,8 +234,7 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   }
 
   try {
-    if (packet.pType)
-      this._handleEvent(packet.pType()+'_out', packet);
+    this._handleEvent(packet.pType()+'_out', packet);
     this._handleEvent("packet_out", packet);
     this._pQueue = this._pQueue.concat(packet.xml());
   } catch (e) {
