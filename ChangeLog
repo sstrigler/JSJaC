@@ -2,6 +2,10 @@ JSJaC v1.1
 ==========
 * fixed bug with empty JID giving null pointer exception when using getters
 * use prototype property to declare member methods
+* static methods for cookie retrieval/erase for convenience
+* moved config vars to own file 'src/JSJaCConfig.js'
+* fixed make process of single include file to not compress config vars 
+  and place them on top of 'jsjac.js'
 
 JSJaC v1.0
 ==========
