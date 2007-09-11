@@ -1,5 +1,10 @@
-JSJaC v1.0beta2
-===============
+JSJaC v1.1
+==========
+* fixed bug with empty JID giving null pointer exception when using getters
+* use prototype property to declare member methods
+
+JSJaC v1.0
+==========
 * support for pausing sessions as described in http://www.xmpp.org/extensions/xep-0124.html#inactive
 * bosh compliance v1.6
 
