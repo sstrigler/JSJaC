@@ -1,4 +1,9 @@
 OUTFILE=./jsjac.js
+SRC=src/jsextras.js src/crypt.js src/json.js src/xmlextras.js \
+src/JSJaCBuilder.js src/JSJaCConfig.js src/JSJaCConnection.js \
+src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
+src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js \
+src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js
 
 all: clean utils install doc
 
@@ -7,13 +12,9 @@ install: build crunch
 
 build: 
 	@echo "building ...";
-	@for i in src/*.js; do \
-		if [ "$$i" != "src/JSJaC.js" ]; then \
-			if [ "$$i" != "src/JSJaCConfig.js" ]; then \
-				echo "\t$$i"; \
-				cat "$$i" >> $(OUTFILE); \
-			fi; \
-		fi; \
+	@for i in ${SRC}; do \
+		echo "\t$$i"; \
+		cat "$$i" >> $(OUTFILE); \
 	done
 
 crunch: 
