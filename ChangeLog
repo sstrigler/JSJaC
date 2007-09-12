@@ -1,3 +1,7 @@
+JSJaC v1.1.1
+============
+* fixed but with jsjac.js not having XmlDocument.create 
+
 JSJaC v1.1
 ==========
 * fixed bug with empty JID giving null pointer exception when using getters
