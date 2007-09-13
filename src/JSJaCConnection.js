@@ -154,12 +154,24 @@ JSJaCConnection.prototype.getPollInterval = function() {
 
  * @param {Function} handler The handler to be called when event occurs
  */
-JSJaCConnection.prototype.registerHandler = function(event,handler) {
+JSJaCConnection.prototype.registerHandler = function(event) {
   event = event.toLowerCase(); // don't be case-sensitive here
+  this.oDbg.log("arguments.length:"+arguments.length);
+  var eArg = {handler: arguments[arguments.length-1],
+              childName: '*',
+              childNS: '*'};
+  if (arguments.length > 2) {
+    this.oDbg.log("registering for "+arguments[1]);
+    eArg.childName = arguments[1];
+  }
+  if (arguments.length > 3) {
+    this.oDbg.log("registering for "+arguments[2]);
+    eArg.childNS = arguments[2];
+  }
   if (!this._events[event])
-    this._events[event] = new Array(handler);
+    this._events[event] = new Array(eArg);
   else
-    this._events[event] = this._events[event].concat(handler);
+    this._events[event] = this._events[event].concat(eArg);
   this.oDbg.log("registered handler for event '"+event+"'",2);
 };
 
@@ -736,12 +748,25 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
     return;
   this.oDbg.log("handling event '"+event+"'",2);
   for (var i=0;i<this._events[event].length; i++) {
-    if (this._events[event][i]) {
+    var aEvent = this._events[event][i];
+    if (aEvent.handler) {
       try {
-        if (arg)
-          this._events[event][i](arg);
+        if (arg) {
+          if (arg.pType) { // it's a packet
+            this.oDbg.log(aEvent.childName+","+aEvent.childNS+","+arg.getChild(aEvent.childName, aEvent.childNS));
+            if (aEvent.childName != '*' &&
+                !arg.getChild(aEvent.childName)) 
+              // packet misses required childElement
+              continue;
+            if (aEvent.childName != '*' &&
+                aEvent.childNS != '*' &&
+                !arg.getChild(aEvent.childName, aEvent.childNS))
+              continue;
+          }
+          aEvent.handler(arg);
+        }
         else
-          this._events[event][i]();
+          aEvent.handler();
       } catch (e) { this.oDbg.log(e.name+": "+ e.message); }
     }
   }
