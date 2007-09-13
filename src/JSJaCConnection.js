@@ -152,6 +152,9 @@ JSJaCConnection.prototype.getPollInterval = function() {
  * message_in, presence_in and iq_in) fire only if there's no
  * callback associated with the id
 
+ * Example:
+ * <code>con.registerHandler('iq', 'query', 'jabber:iq:version', handleIqVersion);</code>
+
  * @param {String} childName A childnodes name that must occur within a 
  * retrieved packet [optional]
 
