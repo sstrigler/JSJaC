@@ -152,6 +152,12 @@ JSJaCConnection.prototype.getPollInterval = function() {
  * message_in, presence_in and iq_in) fire only if there's no
  * callback associated with the id
 
+ * @param {String} childName A childnodes name that must occur within a 
+ * retrieved packet [optional]
+
+ * @param {String} childNS A childnodes namespace that must occure within
+ * a retrieved packet (works only if childName is given) [optional]
+
  * @param {Function} handler The handler to be called when event occurs
  */
 JSJaCConnection.prototype.registerHandler = function(event) {
