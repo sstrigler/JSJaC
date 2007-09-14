@@ -1,3 +1,16 @@
+JSJaC v1.2
+==========
+fixes:
+* JSJaCConnection.prototype.getChild: rewrite
+
+new:
+* JSJaCConstants.js: various XMPP Constants and error conditions
+* JSJaCPacket.prototype.errorReply: create an error reply to a packet
+* JSJaCIQ.prototype.reply: Create an iq reply with type 'result'
+* JSJaCConnection.prototype.registerHandler: allow to register tagnames, namespaces and packet types. make events bubble and allow handlers to cancel bubbling of the event.
+* JSJaCConnection.prototype.registerIQGet: here for your convenience
+* JSJaCConnection.prototype.registerIQSet: here for your convenience
+	
 JSJaC v1.1.1
 ============
 * fixed but with jsjac.js not having XmlDocument.create 
