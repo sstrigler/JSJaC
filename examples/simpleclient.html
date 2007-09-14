@@ -16,10 +16,11 @@
 
     <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-function handleIQ(aJSJaCPacket) {
+function handleIQ(aIQ) {
   document.getElementById('iResp').innerHTML += 
-    "<div class='msg'>IN (raw): " +aJSJaCPacket.xml().htmlEnc() + '</div>';
+    "<div class='msg'>IN (raw): " +aIQ.xml().htmlEnc() + '</div>';
   document.getElementById('iResp').lastChild.scrollIntoView();
+  con.send(aIQ.errorReply(ERR_FEATURE_NOT_IMPLEMENTED));
 }
 
 function handleMessage(aJSJaCPacket) {
@@ -77,6 +78,27 @@ function handleDisconnected() {
   document.getElementById('sendmsg_pane').style.display = 'none';
 }
 
+function handleIqVersion(iq) {
+  con.send(iq.reply([
+                     iq.buildNode('name', 'jsjac simpleclient'),
+                     iq.buildNode('version', JSJaC.Version),
+                     iq.buildNode('os', navigator.userAgent)
+                     ]));
+  return true;
+}
+
+function handleIqTime(iq) {
+  var now = new Date();
+  con.send(iq.reply([iq.buildNode('display',
+                                  now.toLocaleString()),
+                     iq.buildNode('utc',
+                                  now.jabberDate()),
+                     iq.buildNode('tz',
+                                  now.toLocaleString().substring(now.toLocaleString().lastIndexOf(' ')+1))
+                     ]));
+  return true;
+}
+
 function doLogin(aForm) {
   document.getElementById('err').innerHTML = ''; // reset
 
@@ -94,13 +116,7 @@ function doLogin(aForm) {
     else
       con = new JSJaCHttpPollingConnection(oArgs);
 
-    con.registerHandler('message',handleMessage);
-    con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleIQ);
-    con.registerHandler('onconnect',handleConnected);
-    con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChanged);
-    con.registerHandler('ondisconnect',handleDisconnected);
+    setupCon(con);
 
     // setup args for connect method
     oArgs = new Object();
@@ -115,6 +131,19 @@ function doLogin(aForm) {
   } finally {
     return false;
   }
+}
+
+function setupCon(con) {
+    con.registerHandler('message',handleMessage);
+    con.registerHandler('presence',handlePresence);
+    con.registerHandler('iq',handleIQ);
+    con.registerHandler('onconnect',handleConnected);
+    con.registerHandler('onerror',handleError);
+    con.registerHandler('status_changed',handleStatusChanged);
+    con.registerHandler('ondisconnect',handleDisconnected);
+
+    con.registerIQGet('query', NS_VERSION, handleIqVersion);
+    con.registerIQGet('query', NS_TIME, handleIqTime);
 }
 
 function sendMsg(aForm) {
@@ -168,12 +197,7 @@ function init() {
     else
       con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
 
-    con.registerHandler('message',handleMessage);
-    con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleIQ);
-    con.registerHandler('onerror',handleError);
-    con.registerHandler('onStatusChanged',handleStatusChanged);
-    con.registerHandler('ondisconnect', handleDisconnected);
+    setupCon(con);
 
     if (con.resume()) {
 
