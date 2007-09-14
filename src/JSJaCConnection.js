@@ -179,6 +179,31 @@ JSJaCConnection.prototype.registerHandler = function(event) {
     this._events[event] = new Array(eArg);
   else
     this._events[event] = this._events[event].concat(eArg);
+
+  // sort events in order how specific they match criterias thus using
+  // wildcard patterns puts them back in queue when it comes to
+  // bubbling the event
+  this._events[event] =
+  this._events[event].sort(function(a,b) {
+                             with (a) {
+                               if (type == '*') {
+                                 if (b.type == '*')
+                                   return 0;
+                                 return 1;
+                               }
+                               if (childNS == '*') {
+                                 if (b.childNS == '*')
+                                   return 0;
+                                 return 1;
+                               }
+                               if (childName == '*') {
+                                 if (b.childName == '*')
+                                   return 0;
+                                 return 1;
+                               }
+                             }
+                             return -1;
+                           });
   this.oDbg.log("registered handler for event '"+event+"'",2);
 };
 
@@ -775,12 +800,14 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
             if (aEvent.type != '*' &&
                 arg.getType() != aEvent.type) 
               continue;
-            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
+            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,2);
           }
-          aEvent.handler(arg);
+          if (aEvent.handler(arg)) // handled!
+            break;
         }
         else
-          aEvent.handler();
+          if (aEvent.handler()) // handled!
+            break;
       } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message); }
     }
   }
