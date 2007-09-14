@@ -165,16 +165,13 @@ JSJaCConnection.prototype.getPollInterval = function() {
  */
 JSJaCConnection.prototype.registerHandler = function(event) {
   event = event.toLowerCase(); // don't be case-sensitive here
-  this.oDbg.log("arguments.length:"+arguments.length);
   var eArg = {handler: arguments[arguments.length-1],
               childName: '*',
               childNS: '*'};
   if (arguments.length > 2) {
-    this.oDbg.log("registering for "+arguments[1]);
     eArg.childName = arguments[1];
   }
   if (arguments.length > 3) {
-    this.oDbg.log("registering for "+arguments[2]);
     eArg.childNS = arguments[2];
   }
   if (!this._events[event])
@@ -762,7 +759,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
       try {
         if (arg) {
           if (arg.pType) { // it's a packet
-            this.oDbg.log(aEvent.childName+","+aEvent.childNS+","+arg.getChild(aEvent.childName, aEvent.childNS));
+            this.oDbg.log(aEvent.childName+","+aEvent.childNS+","+((arg.getChild(aEvent.childName, aEvent.childNS)!= null)?'match':'no match'),2);
             if (aEvent.childName != '*' &&
                 !arg.getChild(aEvent.childName)) 
               // packet misses required childElement
@@ -776,7 +773,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
         }
         else
           aEvent.handler();
-      } catch (e) { this.oDbg.log(e.name+": "+ e.message); }
+      } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message); }
     }
   }
 };
