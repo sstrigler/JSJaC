@@ -233,6 +233,25 @@ JSJaCPacket.prototype.clone = function() {
 };
 
 /**
+ * Returns an error condition reply according to {@link http://www.xmpp.org/extensions/xep-0086.html XEP-0086}. Creates a clone of the calling packet with senders and recipient exchanged and error stanza appended.
+ * @param {STANZA_ERROR} stanza_error an error stanza containing error cody, type and condition of the error to be indicated
+ * @return an error reply packet
+ * @type JSJaCPacket
+ */
+JSJaCPacket.prototype.errorReply = function(stanza_error) {
+  var rPacket = this.clone();
+  rPacket.setTo(this.getFrom());
+  rPacket.setFrom();
+  rPacket.setType('error');
+
+  rPacket.appendNode('error', 
+                     {code: stanza_error.code, type: stanza_error.type},
+                     [[stanza_error.cond]]);
+
+  return rPacket;
+};
+
+/**
  * Returns a string representation of the raw xml content of this packet.
  * @type String
  */
