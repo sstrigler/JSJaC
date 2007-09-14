@@ -181,8 +181,8 @@ JSJaCPacket.prototype.getXMLNS = function() {
 
 /**
  * Gets a child element of this packet. If no params given returns first child.
- * @param {String} name Tagname of child to retrieve. [optional]
- * @param {String} ns   Namespace of child. [optional]
+ * @param {String} name Tagname of child to retrieve. Use '*' to match any tag. [optional]
+ * @param {String} ns   Namespace of child. Use '*' to match any ns.[optional]
  * @return The child node, null if none found
  * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
  */ 
@@ -190,15 +190,21 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
   if (!this.getNode()) {
     return null;
   }
-  if (!name && this.getNode().firstChild) {
+  if (!name) {
     // best practice
     for (var i=0; i<this.getNode().childNodes.length; i++)
       if (this.getNode().childNodes.item(i).nodeType == 1)
         return this.getNode().childNodes.item(i);
   } else {
+    if (this.getNode().getElementsByTagNameNS)
+      return this.getNode().getElementsByTagNameNS(ns, name).item(0);
+
     var nodes = this.getNode().getElementsByTagName(name);
+
+    // fix for buggy safari
     if (nodes.length == 0 && this.getNode().getElementsByTagNameNS)
       nodes = this.getNode().getElementsByTagNameNS("*", name);
+
     for (var i=0; i<nodes.length; i++) {
       if (ns && nodes.item(i).namespaceURI != ns) {
         continue;
