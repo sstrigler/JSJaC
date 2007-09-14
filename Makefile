@@ -1,6 +1,6 @@
 OUTFILE=./jsjac.js
 SRC=src/jsextras.js src/crypt.js src/json.js src/xmlextras.js \
-src/JSJaCBuilder.js src/JSJaCConnection.js \
+src/JSJaCBuilder.js src/JSJaCConstants.js src/JSJaCConnection.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
 src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js \
 src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js

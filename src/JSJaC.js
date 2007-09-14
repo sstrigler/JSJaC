@@ -18,6 +18,7 @@ var JSJaC = {
      'crypt',
      'json',
      'JSJaCConfig',
+     'JSJaCConstants',
      'JSJaCCookie',
      'JSJaCJID',
      'JSJaCBuilder',
