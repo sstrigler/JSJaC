@@ -180,9 +180,9 @@ JSJaCPacket.prototype.getXMLNS = function() {
 };
 
 /**
- * Gets a child element of this packet.
- * @param {String} name Tagname of child to retrieve.
- * @param {String} ns   Namespace of child
+ * Gets a child element of this packet. If no params given returns first child.
+ * @param {String} name Tagname of child to retrieve. [optional]
+ * @param {String} ns   Namespace of child. [optional]
  * @return The child node, null if none found
  * @type {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node}
  */ 
@@ -192,7 +192,9 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
   }
   if (!name && this.getNode().firstChild) {
     // best practice
-    return this.getNode().firstChild;
+    for (var i=0; i<this.getNode().childNodes.length; i++)
+      if (this.getNode().childNodes.item(i).nodeType == 1)
+        return this.getNode().childNodes.item(i);
   } else {
     var nodes = this.getNode().getElementsByTagName(name);
     if (nodes.length == 0 && this.getNode().getElementsByTagNameNS)
@@ -526,6 +528,24 @@ JSJaCIQ.prototype.getQueryXMLNS = function() {
     return null;
 };
 
+/**
+ * Creates an IQ reply with type set to 'result'. If given appends payload to first child if IQ. Payload maybe XML as string or a DOM element.
+ * @param {Element} payload A payload to be appended [optional]
+ * @return An IQ reply packet
+ * @type JSJaCIQ
+ */ 
+JSJaCIQ.prototype.reply = function(payload) {
+  var rIQ = this.clone();
+  rIQ.setTo(this.getFrom());
+  rIQ.setType('result');
+  if (payload) {
+    if (typeof payload == 'string')
+      rIQ.getChild.appendChild(rIQ.getDoc().loadXML(payload));
+    else if (typeof payload == 'object')
+      rIQ.getChild().appendChild(payload);
+  }
+  return rIQ;
+}
 
 /**
  * A jabber/XMPP message packet
