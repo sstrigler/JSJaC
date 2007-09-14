@@ -167,18 +167,29 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   event = event.toLowerCase(); // don't be case-sensitive here
   var eArg = {handler: arguments[arguments.length-1],
               childName: '*',
-              childNS: '*'};
-  if (arguments.length > 2) {
+              childNS: '*',
+              type: '*'};
+  if (arguments.length > 2)
     eArg.childName = arguments[1];
-  }
-  if (arguments.length > 3) {
+  if (arguments.length > 3)
     eArg.childNS = arguments[2];
-  }
+  if (arguments.length > 4)
+    eArg.type = arguments[3];
   if (!this._events[event])
     this._events[event] = new Array(eArg);
   else
     this._events[event] = this._events[event].concat(eArg);
   this.oDbg.log("registered handler for event '"+event+"'",2);
+};
+
+JSJaCConnection.prototype.registerIQSet = 
+  function(childName, childNS, handler) {
+  this.registerHandler('iq', childName, childNS, 'set', handler);
+};
+
+JSJaCConnection.prototype.registerIQGet = 
+  function(childName, childNS, handler) {
+  this.registerHandler('iq', childName, childNS, 'get', handler);
 };
 
 /** 
@@ -759,15 +770,12 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
       try {
         if (arg) {
           if (arg.pType) { // it's a packet
-            this.oDbg.log(aEvent.childName+","+aEvent.childNS+","+((arg.getChild(aEvent.childName, aEvent.childNS)!= null)?'match':'no match'),2);
-            if (aEvent.childName != '*' &&
-                !arg.getChild(aEvent.childName)) 
-              // packet misses required childElement
+            if (!arg.getChild(aEvent.childName, aEvent.childNS))
               continue;
-            if (aEvent.childName != '*' &&
-                aEvent.childNS != '*' &&
-                !arg.getChild(aEvent.childName, aEvent.childNS))
+            if (aEvent.type != '*' &&
+                arg.getType() != aEvent.type) 
               continue;
+            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
           }
           aEvent.handler(arg);
         }
