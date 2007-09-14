@@ -533,7 +533,7 @@ JSJaCIQ.prototype.getQueryXMLNS = function() {
 };
 
 /**
- * Creates an IQ reply with type set to 'result'. If given appends payload to first child if IQ. Payload maybe XML as string or a DOM element.
+ * Creates an IQ reply with type set to 'result'. If given appends payload to first child if IQ. Payload maybe XML as string or a DOM element (or an array of such elements as well).
  * @param {Element} payload A payload to be appended [optional]
  * @return An IQ reply packet
  * @type JSJaCIQ
