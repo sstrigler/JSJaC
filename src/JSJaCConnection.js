@@ -161,7 +161,7 @@ JSJaCConnection.prototype.getPollInterval = function() {
  * @param {String} childNS A childnodes namespace that must occure within
  * a retrieved packet (works only if childName is given) [optional]
 
- * @param {Function} handler The handler to be called when event occurs
+ * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
  */
 JSJaCConnection.prototype.registerHandler = function(event) {
   event = event.toLowerCase(); // don't be case-sensitive here
