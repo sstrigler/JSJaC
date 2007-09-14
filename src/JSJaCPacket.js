@@ -190,27 +190,25 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
   if (!this.getNode()) {
     return null;
   }
-  if (!name) {
-    // best practice
-    for (var i=0; i<this.getNode().childNodes.length; i++)
-      if (this.getNode().childNodes.item(i).nodeType == 1)
-        return this.getNode().childNodes.item(i);
-  } else {
-    if (this.getNode().getElementsByTagNameNS)
-      return this.getNode().getElementsByTagNameNS(ns, name).item(0);
+  
+  name = name || '*';
+  ns = ns || '*';
 
-    var nodes = this.getNode().getElementsByTagName(name);
+  if (this.getNode().getElementsByTagNameNS)
+    return this.getNode().getElementsByTagNameNS(ns, name).item(0);
 
-    // fix for buggy safari
-    if (nodes.length == 0 && this.getNode().getElementsByTagNameNS)
-      nodes = this.getNode().getElementsByTagNameNS("*", name);
-
-    for (var i=0; i<nodes.length; i++) {
-      if (ns && nodes.item(i).namespaceURI != ns) {
-        continue;
-      }
-      return nodes.item(i);
+  // fallback
+  var nodes = this.getNode().childNodes;
+    
+  for (var i=0; i<nodes.length; i++) {
+    if (nodes.item(i).nodeType != 1)
+      continue;
+    if (name != '*' && nodes.item(i).tagName != name)
+      continue;
+    if (ns != '*' && nodes.item(i).namespaceURI != ns) {
+      continue;
     }
+    return nodes.item(i);
   }
   return null; // fallback
 };
@@ -547,6 +545,14 @@ JSJaCIQ.prototype.reply = function(payload) {
   if (payload) {
     if (typeof payload == 'string')
       rIQ.getChild.appendChild(rIQ.getDoc().loadXML(payload));
+    else if (payload.constructor == Array) {
+      var node = rIQ.getChild();
+      for (var i=0; i<payload.length; i++)
+        if(typeof payload[i] == 'string')
+          node.appendChild(rIQ.getDoc().loadXML(payload[i]));
+        else if (typeof payload[i] == 'object')
+          node.appendChild(payload[i]);
+    }
     else if (typeof payload == 'object')
       rIQ.getChild().appendChild(payload);
   }
