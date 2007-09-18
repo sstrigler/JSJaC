@@ -28,7 +28,7 @@ crunch:
 	fi
 
 doc: 
-	@/opt/JSDoc/jsdoc.pl --project-name JSJaC -d doc src/
+	@utils/JSDoc/jsdoc.pl --project-name JSJaC -d doc src/
 
 utils:
 	@make -C utils
