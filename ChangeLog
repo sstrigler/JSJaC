@@ -11,7 +11,10 @@ new:
 * JSJaCConnection.prototype.registerIQGet: here for your convenience
 * JSJaCConnection.prototype.registerIQSet: here for your convenience
 * JSJaCConnection.prototype.sendIQ: like send but with different callbacks for different types of iq replies ('error' & 'result') and default handlers
-	
+
+stuff:
+* include JSDoc for your convenience
+
 JSJaC v1.1.1
 ============
 * fixed jsjac.js not having XmlDocument.create defined
