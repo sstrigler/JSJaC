@@ -299,6 +299,35 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   return true;
 };
 
+JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
+  handlers = handlers || {};
+  var error_handler = handlers.error_handler || function(aIq) {
+    oCon.oDbg.log(iq.xml(), 1);
+  };
+  
+  var result_handler = handlers.result_handler ||  function(aIq) {
+    oCon.oDbg.log(aIq.xml(), 2);
+  };
+  
+  var default_handler = handlers.default_handler || function(aIq) {
+    oCon.oDbg.log(aIq.xml(), 2);
+  }
+
+  var iqHandler = function(aIq, arg) {
+    switch (aIq.getType()) {
+      case 'error': 
+      error_handler(aIq);
+      break;
+      case 'result':
+      result_handler(aIq, arg);
+      break;
+      default:
+      default_handler(aIq, arg);
+    }
+  };
+  this.send(iq, iqHandler, arg);
+};
+
 /**
  * Sets polling interval for this connection
  * @param {int} millisecs Milliseconds to set timer to
@@ -800,7 +829,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
             if (aEvent.type != '*' &&
                 arg.getType() != aEvent.type) 
               continue;
-            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,2);
+            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
           }
           if (aEvent.handler(arg)) // handled!
             break;
@@ -808,7 +837,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
         else
           if (aEvent.handler()) // handled!
             break;
-      } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message); }
+      } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1); }
     }
   }
 };
@@ -917,7 +946,7 @@ JSJaCConnection.prototype._process = function(timerval) {
 		
   if (!this.isPolling() && this._pQueue.length == 0 && 
       this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4) {
-    this.oDbg.log("all slots bussy, standby ...", 2);
+    this.oDbg.log("all slots busy, standby ...", 2);
     return;
   }
 
