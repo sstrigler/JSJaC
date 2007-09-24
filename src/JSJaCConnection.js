@@ -854,10 +854,19 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
       var pID = aJSJaCPacket.getID();
       this.oDbg.log("handling "+pID,3);
       try {
-        this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg);
-      } catch (e) { this.oDbg.log(e.name+": "+ e.message); }
-      this._unregisterPID(pID);
-      return true;
+        if (this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg) === false) {
+          // don't unregister
+          return false;
+        } else {
+          this._unregisterPID(pID);
+          return true;
+        }
+      } catch (e) {
+        // broken handler?
+        this.oDbg.log(e.name+": "+ e.message); 
+        this._unregisterPID(pID);
+        return true;
+      }
     }
   }
   return false;
