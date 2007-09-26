@@ -271,12 +271,17 @@ JSJaCConnection.prototype.resume = function() {
  * to this packet (identified by id) [optional]
  * @param {Object}      arg     Arguments passed to the callback 
  * (additionally to the packet received) [optional]
+ * @return 'true' if sending was successfull, 'false' otherwise
+ * @type boolean
  */
 JSJaCConnection.prototype.send = function(packet,cb,arg) {
   if (!packet || !packet.pType) {
     this.oDbg.log("no packet: "+packet, 1);
     return false;
   }
+
+  if (!this.connected())
+    return false;
 
   // remember id for response if callback present
   if (cb) {
