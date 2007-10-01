@@ -564,18 +564,22 @@ function JSJaCHBCPrepareResponse(req) {
   }
 
   var body = r.responseXML.documentElement;
-  if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+  if (!body || body.tagName != 'body' || 
+	  body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
     this.oDbg.log("invalid response:\n" + r.responseText,1);
-
-    this._setStatus('internal_server_error');
 
     clearTimeout(this._timeout); // remove timer
     clearInterval(this._interval);
     clearInterval(this._inQto);
-    this._handleEvent('onerror',JSJaCError('500','wait','internal-server-error'));
+
     this._connected = false;
     this.oDbg.log("Disconnected.",1);
     this._handleEvent('ondisconnect');
+
+    this._setStatus('internal_server_error');
+    this._handleEvent('onerror',
+					  JSJaCError('500','wait','internal-server-error'));
+
     return null;
   }
 
