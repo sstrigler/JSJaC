@@ -214,14 +214,34 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   this.oDbg.log("registered handler for event '"+event+"'",2);
 };
 
-JSJaCConnection.prototype.registerIQSet = 
-  function(childName, childNS, handler) {
-  this.registerHandler('iq', childName, childNS, 'set', handler);
-};
+/**
+ * Register for iq packets of type 'get'
+ * @param {String} childName A childnodes name that must occur within a 
+ * retrieved packet
 
+ * @param {String} childNS A childnodes namespace that must occure within
+ * a retrieved packet (works only if childName is given)
+
+ * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+ */
 JSJaCConnection.prototype.registerIQGet = 
   function(childName, childNS, handler) {
   this.registerHandler('iq', childName, childNS, 'get', handler);
+};
+
+/**
+ * Register for iq packets of type 'set'
+ * @param {String} childName A childnodes name that must occur within a 
+ * retrieved packet
+
+ * @param {String} childNS A childnodes namespace that must occure within
+ * a retrieved packet (works only if childName is given)
+
+ * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+ */
+JSJaCConnection.prototype.registerIQSet = 
+  function(childName, childNS, handler) {
+  this.registerHandler('iq', childName, childNS, 'set', handler);
 };
 
 /** 
