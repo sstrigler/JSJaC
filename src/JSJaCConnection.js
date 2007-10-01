@@ -254,7 +254,7 @@ JSJaCConnection.prototype.resume = function() {
       setTimeout("oCon._resume()",this.getPollInterval());
     }
 
-    return this._connected;
+    return (this._connected === true);
   } catch (e) {
     if (e.message)
       this.oDbg.log("Resume failed: "+e.message, 1);
