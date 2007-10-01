@@ -205,7 +205,6 @@ JSJaCConnection.prototype.registerHandler = function(event) {
                                if (childName == '*') 
 								 bRank++;
                              }
-							 this.oDbg.log("rank: "+aRank+":"+bRank);
 							 if (aRank > bRank)
 							   return 1;
 							 if (aRank < bRank)
