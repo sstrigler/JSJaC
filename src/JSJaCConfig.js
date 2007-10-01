@@ -6,8 +6,8 @@ var JSJAC_ERR_COUNT = 10;   // number of retries in case of connection errors
 
 var JSJAC_ALLOW_PLAIN = true; // whether to allow plaintext logins
 
-var JSJAC_CHECKQUEUEINTERVAL = 100; // msecs to poll send queue
-var JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue
+var JSJAC_CHECKQUEUEINTERVAL = 1; // msecs to poll send queue
+var JSJAC_CHECKINQUEUEINTERVAL = 1; // msecs to poll incoming queue
 
 // Options specific to HTTP Binding (BOSH)
 var JSJACHBC_BOSH_VERSION  = "1.6";
