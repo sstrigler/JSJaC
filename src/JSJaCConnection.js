@@ -110,7 +110,16 @@ JSJaCConnection.prototype.getPollInterval = function() {
 };
 
 /**
- * Registers an event handler (callback) for this connection
+ * Registers an event handler (callback) for this connection.
+
+ * <p>Note: All of the packet handlers for specific packets (like
+ * message_in, presence_in and iq_in) fire only if there's no
+ * callback associated with the id.<br>
+
+ * <p>Example:<br/>
+ * <code>con.registerHandler('iq', 'query', 'jabber:iq:version', handleIqVersion);</code>
+
+
  * @param {String} event One of
  
  * <ul>
@@ -148,17 +157,10 @@ JSJaCConnection.prototype.getPollInterval = function() {
  * <li>iq_out - an iq is to be sent (argument: the packet)</li>
  * </ul>
 
- * Note: All of the packet handlers for specific packets (like
- * message_in, presence_in and iq_in) fire only if there's no
- * callback associated with the id
-
- * Example:
- * <code>con.registerHandler('iq', 'query', 'jabber:iq:version', handleIqVersion);</code>
-
- * @param {String} childName A childnodes name that must occur within a 
+ * @param {String} childName A childnode's name that must occur within a 
  * retrieved packet [optional]
 
- * @param {String} childNS A childnodes namespace that must occure within
+ * @param {String} childNS A childnode's namespace that must occure within
  * a retrieved packet (works only if childName is given) [optional]
 
  * @param {String} type The type of the packet to handle (works only if childName and chidNS are given (both may be set to '*' in order to get skipped) [optional]
@@ -215,11 +217,11 @@ JSJaCConnection.prototype.registerHandler = function(event) {
 };
 
 /**
- * Register for iq packets of type 'get'
- * @param {String} childName A childnodes name that must occur within a 
+ * Register for iq packets of type 'get'.
+ * @param {String} childName A childnode's name that must occur within a 
  * retrieved packet
 
- * @param {String} childNS A childnodes namespace that must occure within
+ * @param {String} childNS A childnode's namespace that must occure within
  * a retrieved packet (works only if childName is given)
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
@@ -230,11 +232,11 @@ JSJaCConnection.prototype.registerIQGet =
 };
 
 /**
- * Register for iq packets of type 'set'
- * @param {String} childName A childnodes name that must occur within a 
+ * Register for iq packets of type 'set'.
+ * @param {String} childName A childnode's name that must occur within a 
  * retrieved packet
 
- * @param {String} childNS A childnodes namespace that must occure within
+ * @param {String} childNS A childnode's namespace that must occure within
  * a retrieved packet (works only if childName is given)
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
