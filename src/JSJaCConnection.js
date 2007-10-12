@@ -189,30 +189,30 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   // bubbling the event
   this._events[event] =
   this._events[event].sort(function(a,b) {
-							 var aRank = 0;
-							 var bRank = 0;
-                             with (a) {
-                               if (type == '*') 
-								 aRank++;
-                               if (childNS == '*') 
-								 aRank++;
-                               if (childName == '*') 
-								 aRank++;
-                             }
-                             with (b) {
-                               if (type == '*') 
-								 bRank++;
-                               if (childNS == '*') 
-								 bRank++;
-                               if (childName == '*') 
-								 bRank++;
-                             }
-							 if (aRank > bRank)
-							   return 1;
-							 if (aRank < bRank)
-							   return -1;
-							 return 0;
-                           });
+    var aRank = 0;
+    var bRank = 0;
+    with (a) {
+      if (type == '*') 
+        aRank++;
+      if (childNS == '*') 
+        aRank++;
+      if (childName == '*') 
+        aRank++;
+    }
+    with (b) {
+      if (type == '*') 
+        bRank++;
+      if (childNS == '*') 
+        bRank++;
+      if (childName == '*') 
+        bRank++;
+    }
+    if (aRank > bRank)
+      return 1;
+    if (aRank < bRank)
+      return -1;
+    return 0;
+  });
   this.oDbg.log("registered handler for event '"+event+"'",2);
 };
 
