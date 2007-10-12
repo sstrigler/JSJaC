@@ -1,3 +1,8 @@
+JSJaC v1.2.1
+============
+* fixed handlers for packets with empty childnodes (fixes #17)
+* updated docs
+
 JSJaC v1.2
 ==========
 fixes:
