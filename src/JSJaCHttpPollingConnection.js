@@ -51,7 +51,7 @@ function JSJaCHttpPollingConnection(oArg) {
   this._getSuspendVars = function() {
     return new Array();
   }
-  this._prepareResponse = JSJaCHPCPrepareResponse;
+  this._parseResponse = JSJaCHPCParseResponse;
   this._reInitStream = JSJaCHPCReInitStream;
   /**
    * @private
@@ -109,7 +109,7 @@ function JSJaCHPCGetRequestString(raw) {
 /**
  * @private
  */
-function JSJaCHPCPrepareResponse(r) {
+function JSJaCHPCParseResponse(r) {
   var req = r.r;
   if (!this.connected())
     return null;

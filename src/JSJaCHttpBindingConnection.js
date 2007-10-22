@@ -102,7 +102,7 @@ function JSJaCHttpBindingConnection(oArg) {
     return ('host,port,secure,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests,_pause').split(',');
   }
   this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
-  this._prepareResponse = JSJaCHBCPrepareResponse;
+  this._parseResponse = JSJaCHBCParseResponse;
   this._reInitStream = JSJaCHBCReInitStream;
   /**
    * @private
@@ -521,20 +521,16 @@ function JSJaCHBCGetRequestString(raw) {
 /**
  * @private
  */
-function JSJaCHBCPrepareResponse(req) {
-  if (!this.connected())
-    return null;
-
-  if (!req)
+function JSJaCHBCParseResponse(req) {
+  if (!this.connected() || !req)
     return null;
 
   var r = req.r; // the XmlHttpRequest
 
-
   try {
     if (r.status == 404 || r.status == 403) {
       // connection manager killed session
-      oCon._abort();
+      this._abort();
       return null;
     }
 
@@ -546,7 +542,7 @@ function JSJaCHBCPrepareResponse(req) {
       this.oDbg.log(errmsg,1);
       if (this._errcnt > JSJAC_ERR_COUNT) {
         // abort
-        oCon._abort();
+        this._abort();
         return null;
       }
       this.oDbg.log("repeating ("+this._errcnt+")",1);
@@ -554,12 +550,24 @@ function JSJaCHBCPrepareResponse(req) {
       this._setStatus('proto_error_fallback');
       
       // schedule next tick
-      setTimeout("oCon._resume()",oCon.getPollInterval());
+      setTimeout("oCon._resume()",this.getPollInterval());
       
       return null;
     } 
   } catch (e) {
     this.oDbg.log("XMLHttpRequest error: status not available", 1);
+	this._errcnt++;
+	if (this._errcnt > JSJAC_ERR_COUNT) {
+	  // abort
+	  this._abort();
+	} else {
+	  this.oDbg.log("repeating ("+this._errcnt+")",1);
+      
+	  this._setStatus('proto_error_fallback');
+      
+	  // schedule next tick
+	  setTimeout("oCon._resume()",this.getPollInterval());  
+    } 
     return null;
   }
 

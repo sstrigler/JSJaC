@@ -686,7 +686,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
 JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(req) {
   this.oDbg.log(req.r.responseText,2);
 
-  var doc = oCon._prepareResponse(req);
+  var doc = oCon._parseResponse(req);
   if (!doc || doc.getElementsByTagName("challenge").length == 0) {
     this.oDbg.log("challenge missing",1);
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
@@ -744,7 +744,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(req) {
 JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
   this.oDbg.log(req.r.responseText,2);
 
-  var doc = this._prepareResponse(req);
+  var doc = this._parseResponse(req);
 
   if (doc.firstChild.nodeName == 'failure') {
     if (doc.firstChild.xml)
@@ -788,7 +788,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
  * @private
  */
 JSJaCConnection.prototype._doSASLAuthDone = function (req) {
-  var doc = this._prepareResponse(req);
+  var doc = this._parseResponse(req);
   if (doc.firstChild.nodeName != 'success') {
     this.oDbg.log("auth failed",1);
     this.disconnect();
@@ -912,18 +912,13 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
  * @private
  */
 JSJaCConnection.prototype._handleResponse = function(req) {
-  var rootEl = this._prepareResponse(req);
+  var rootEl = this._parseResponse(req);
 
   if (!rootEl)
-    return null;
+    return;
 
-  this.oDbg.log("childNodes: "+rootEl.childNodes.length,3);
-  for (var i=0; i<rootEl.childNodes.length; i++) {
-    this.oDbg.log("rootEl.childNodes.item("+i+").nodeName: "+
-                  rootEl.childNodes.item(i).nodeName,3);
+  for (var i=0; i<rootEl.childNodes.length; i++)
     this._inQ = this._inQ.concat(rootEl.childNodes.item(i));
-  }
-  return null;
 };
 
 /** 
@@ -1004,8 +999,6 @@ JSJaCConnection.prototype._process = function(timerval) {
   this._req[slot].r.onreadystatechange = function() {
     if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
       return;
-    oCon.oDbg.log("ready state changed for slot "+slot+
-                  " ["+oCon._req[slot].r.readyState+"]",4);
     if (oCon._req[slot].r.readyState == 4) {
       oCon._setStatus('processing');
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
@@ -1022,15 +1015,11 @@ JSJaCConnection.prototype._process = function(timerval) {
   };
 
   try {
-	this._req[slot].r.onerror = function(e) {
+	this._req[slot].r.onerror = function() {
 	  if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
 		return;
 	  oCon._errcnt++;
-	  if (e)
-		oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+'): ['+
-					  e.name+'] '+e.message,1);
-	  else
-		oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
+	  oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
 	  if (oCon._errcnt > JSJAC_ERR_COUNT) {
 		// abort
 		oCon._abort();
