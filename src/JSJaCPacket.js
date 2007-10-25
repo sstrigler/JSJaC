@@ -245,7 +245,7 @@ JSJaCPacket.prototype.clone = function() {
  */
 JSJaCPacket.prototype.isError = function() {
   return (this.getType() == 'error');
-}
+};
 
 /**
  * Returns an error condition reply according to {@link http://www.xmpp.org/extensions/xep-0086.html XEP-0086}. Creates a clone of the calling packet with senders and recipient exchanged and error stanza appended.
@@ -566,7 +566,7 @@ JSJaCIQ.prototype.reply = function(payload) {
       rIQ.getChild().appendChild(payload);
   }
   return rIQ;
-}
+};
 
 /**
  * A jabber/XMPP message packet
