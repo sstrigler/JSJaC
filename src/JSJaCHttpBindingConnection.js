@@ -89,18 +89,18 @@ function JSJaCHttpBindingConnection(oArg) {
       if (typeof(this._req[i]) == 'undefined' || typeof(this._req[i].r) == 'undefined' || this._req[i].r.readyState == 4)
         return i;
     return -1; // nothing found
-  }
+  };
   /**
    * @private
    */
-  this._getHold = function() { return this._hold; }
+  this._getHold = function() { return this._hold; };
   this._getStreamID = JSJaCHBCGetStreamID;
   /**
    * @private
    */
   this._getSuspendVars = function() {
     return ('host,port,secure,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests,_pause').split(',');
-  }
+  };
   this._handleInitialResponse = JSJaCHBCHandleInitialResponse;
   this._parseResponse = JSJaCHBCParseResponse;
   this._reInitStream = JSJaCHBCReInitStream;
@@ -117,7 +117,7 @@ function JSJaCHttpBindingConnection(oArg) {
     this._process();
     this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
     this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
-  }
+  };
   /**
    * @private
    */
@@ -166,7 +166,7 @@ function JSJaCHttpBindingConnection(oArg) {
     this.oDbg.log("Disconnecting: " + reqstr,4);
     this._req[slot].r.send(reqstr);
     clearTimeout(abortTimerID); 
-  }
+  };
 }
 JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
 
@@ -241,7 +241,7 @@ function JSJaCHBCConnect(oArg) {
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
       oCon._handleInitialResponse(slot); // handle response
     }
-  }
+  };
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {

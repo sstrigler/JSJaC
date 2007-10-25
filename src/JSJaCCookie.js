@@ -55,7 +55,7 @@ function JSJaCCookie(name,value,secs)
   this.erase = function() {
     var c = new JSJaCCookie(this.getName(),"",-1);
     c.write();
-  }
+  };
 
   /**
    * Gets the name of this cookie
@@ -64,7 +64,7 @@ function JSJaCCookie(name,value,secs)
    */
   this.getName = function() {
     return this.name;
-  }
+  };
   
   /**
    * Sets the name of this cookie
@@ -75,7 +75,7 @@ function JSJaCCookie(name,value,secs)
   this.setName = function(name) {
     this.name = name;
     return this;
-  }
+  };
 
   /**
    * Gets the value of this cookie
@@ -84,7 +84,7 @@ function JSJaCCookie(name,value,secs)
    */
   this.getValue = function() {
     return this.value;
-  }
+  };
   
   /**
    * Sets the value of this cookie
@@ -95,7 +95,7 @@ function JSJaCCookie(name,value,secs)
   this.setValue = function(value) {
     this.value = value;
     return this;
-  }
+  };
 }
 
 /**

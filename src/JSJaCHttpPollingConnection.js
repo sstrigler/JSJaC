@@ -42,7 +42,7 @@ function JSJaCHttpPollingConnection(oArg) {
       return 0; 
     else
       return -1;
-  }
+  };
   this._getRequestString = JSJaCHPCGetRequestString;
   this._getStreamID = JSJaCHPCGetStream;
   /**
@@ -50,7 +50,7 @@ function JSJaCHttpPollingConnection(oArg) {
    */
   this._getSuspendVars = function() {
     return new Array();
-  }
+  };
   this._parseResponse = JSJaCHPCParseResponse;
   this._reInitStream = JSJaCHPCReInitStream;
   /**
@@ -60,7 +60,7 @@ function JSJaCHttpPollingConnection(oArg) {
     this._process(this._timerval);
     this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
     this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
-  }
+  };
   this._setupRequest = JSJaCHPCSetupRequest;
   /**
    * @private
@@ -351,4 +351,4 @@ JSJaCHttpPollingConnection.parseTree = function(s) {
       return (new DOMParser()).parseFromString(s, "text/xml").documentElement;
   } catch (e) { }
   return null;
-}
+};

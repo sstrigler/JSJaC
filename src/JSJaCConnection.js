@@ -345,7 +345,7 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
   
   var default_handler = handlers.default_handler || function(aIq) {
     oCon.oDbg.log(aIq.xml(), 2);
-  }
+  };
 
   var iqHandler = function(aIq, arg) {
     switch (aIq.getType()) {
@@ -627,7 +627,7 @@ JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
       if (typeof(cb) != 'undefined')
         eval("oCon."+cb+"(oCon._req[slot],"+arg+")");
     }
-  }
+  };
   
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {
@@ -635,7 +635,7 @@ JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
         return;
       oCon.oDbg.log('XmlHttpRequest error',1);
       return false;
-    }
+    };
   }
   
   var reqstr = this._getRequestString(xml);
@@ -756,7 +756,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
     return;
   }
 
-  var response = atob(doc.firstChild.firstChild.nodeValue)
+  var response = atob(doc.firstChild.firstChild.nodeValue);
   this.oDbg.log("response: "+response,2);
 
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
@@ -1074,7 +1074,7 @@ JSJaCConnection.prototype._sendEmpty = function JSJaCSendEmpty() {
       oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
       oCon._getStreamID(slot); // handle response
     }
-  }
+  };
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror = function(e) {

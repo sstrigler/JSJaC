@@ -64,11 +64,11 @@ function JSJaCConsoleLogger(level) {
    * @return This debug logger
    * @type ConsoleLogger
    */
-  this.setLevel = function(level) { this.level = level; return this; }
+  this.setLevel = function(level) { this.level = level; return this; };
   /** 
    * Gets verbosity level.
    * @return The level
    * @type int
    */
-  this.getLevel = function() { return this.level; }
+  this.getLevel = function() { return this.level; };
 }
