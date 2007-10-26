@@ -258,7 +258,7 @@ JSJaCConnection.prototype.resume = function() {
       
     this.oDbg.log('read cookie: '+s,2);
 
-    var o = s.parseJSON();
+    var o = JSJaCJSON.parse(s);
       
     for (var i in o)
       if (o.hasOwnProperty(i))
@@ -424,7 +424,7 @@ JSJaCConnection.prototype.suspend = function() {
 
       s[u[i]] = o;
     }
-    var c = new JSJaCCookie('JSJaC_State', escape(s.toJSONString()), 
+    var c = new JSJaCCookie('JSJaC_State', escape(JSJaCJSON.toString(s)), 
                             this._inactivity);
     this.oDbg.log("writing cookie: "+unescape(c.value)+"\n(length:"+
                   unescape(c.value).length+")",2);
