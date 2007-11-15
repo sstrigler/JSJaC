@@ -141,6 +141,28 @@ JSJaCJID.prototype.removeResource = function() {
 };
 
 /**
+ * creates a copy of this JSJaCJID object
+ * @return A copy of this
+ * @type JSJaCJID
+ */
+JSJaCJID.prototype.clone = function() {
+  return new JSJaCJID(this.toString());
+}
+
+/**
+ * Compares two jids if they belong to the same entity (i.e. w/o resource)
+ * @param {String} jid a jid as string or JSJaCJID object
+ * @return 'true' if jid is same entity as this
+ * @type Boolean
+ */
+JSJaCJID.prototype.isEntity = function(jid) {
+  if (typeof jid == 'string')
+	  jid = (new JSJaCJID(jid))
+  jid.removeResource();
+  return (this.clone().removeResource().toString() === jid.toString());
+};
+
+/**
  * Check if node name is valid
  * @private
  * @param {String} node A name for a node
