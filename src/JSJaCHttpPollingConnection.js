@@ -58,8 +58,6 @@ function JSJaCHttpPollingConnection(oArg) {
    */
   this._resume = function() { 
     this._process(this._timerval);
-    this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
-    this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
   };
   this._setupRequest = JSJaCHPCSetupRequest;
   /**

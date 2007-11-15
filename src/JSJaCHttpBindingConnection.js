@@ -115,8 +115,6 @@ function JSJaCHttpBindingConnection(oArg) {
         this._rid = this._last_rid-1; 
 
     this._process();
-    this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
-    this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
   };
   /**
    * @private

@@ -281,6 +281,10 @@ JSJaCConnection.prototype.resume = function() {
       // don't poll too fast!
       this._handleEvent('onresume');
       setTimeout("oCon._resume()",this.getPollInterval());
+      this._interval = setInterval("oCon._checkQueue()",
+				   JSJAC_CHECKQUEUEINTERVAL);
+      this._inQto = setInterval("oCon._checkInQ();",
+				JSJAC_CHECKINQUEUEINTERVAL);
     }
 
     return (this._connected === true);
@@ -452,6 +456,10 @@ JSJaCConnection.prototype.suspend = function() {
  */
 JSJaCConnection.prototype._abort = function() {
   clearTimeout(this._timeout); // remove timer
+
+  clearInterval(this._inQto);
+  clearInterval(this._interval);
+
   this._connected = false;
 
   this._setStatus('aborted');
