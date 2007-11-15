@@ -1,6 +1,6 @@
 OUTFILE=./jsjac.js
 PACKFILE=./jsjac.packed.js
-SRC=src/jsextras.js src/crypt.js src/json.js src/xmlextras.js \
+SRC=src/jsextras.js src/crypt.js src/JSJaCJSON.js src/xmlextras.js \
 src/JSJaCBuilder.js src/JSJaCConstants.js src/JSJaCConnection.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
 src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js \
