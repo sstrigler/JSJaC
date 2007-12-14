@@ -337,7 +337,21 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   return true;
 };
 
+/**
+ * Sends an IQ packet. Has default handlers for each reply type. 
+ * Those maybe overriden by passing an appropriate handler.
+ * @param {JSJaCIQPacket} iq - the iq packet to send
+ * @param {Object} handlers - object with properties 'error_handler', 
+ *                            'result_handler' and 'default_handler'
+ *                            with appropriate functions
+ * @param {Object} arg - argument to handlers
+ * @return 'true' if sending was successfull, 'false' otherwise
+ * @type boolean
+ */
 JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
+  if (!iq || iq.pType != 'iq')
+    return false;
+
   handlers = handlers || {};
   var error_handler = handlers.error_handler || function(aIq) {
     oCon.oDbg.log(iq.xml(), 1);
@@ -346,7 +360,7 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
   var result_handler = handlers.result_handler ||  function(aIq) {
     oCon.oDbg.log(aIq.xml(), 2);
   };
-  
+  // unsure, what's the use of this?
   var default_handler = handlers.default_handler || function(aIq) {
     oCon.oDbg.log(aIq.xml(), 2);
   };
@@ -359,11 +373,11 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
       case 'result':
       result_handler(aIq, arg);
       break;
-      default:
+      default: // may it be?
       default_handler(aIq, arg);
     }
   };
-  this.send(iq, iqHandler, arg);
+  return this.send(iq, iqHandler, arg);
 };
 
 /**
