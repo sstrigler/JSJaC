@@ -28,7 +28,9 @@ crunch:
 		rm $(OUTFILE).tmp; \
 	fi
 
-pack: clean build
+pack: clean utils build moo crunch
+
+moo:	
 	@echo "packing..."
 	@if [ -e $(OUTFILE) ]; then \
 		php ./utils/packer/pack.php $(OUTFILE) $(PACKFILE).tmp && \
@@ -46,6 +48,7 @@ utils:
 	@make -C utils
 clean:
 	@rm -f $(OUTFILE) 2>/dev/null
+	@rm -f $(PACKFILE) 2>/dev/null
 	@rm -rf doc/
 	@make -C utils clean
 
