@@ -147,7 +147,7 @@ JSJaCJID.prototype.removeResource = function() {
  */
 JSJaCJID.prototype.clone = function() {
   return new JSJaCJID(this.toString());
-}
+};
 
 /**
  * Compares two jids if they belong to the same entity (i.e. w/o resource)
@@ -157,7 +157,7 @@ JSJaCJID.prototype.clone = function() {
  */
 JSJaCJID.prototype.isEntity = function(jid) {
   if (typeof jid == 'string')
-	  jid = (new JSJaCJID(jid))
+	  jid = (new JSJaCJID(jid));
   jid.removeResource();
   return (this.clone().removeResource().toString() === jid.toString());
 };
