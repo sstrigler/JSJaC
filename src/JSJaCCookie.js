@@ -1,7 +1,15 @@
+/* Copyright 2003-2006 Peter-Paul Koch
+ */
+
 /**
  * @fileoverview OO interface to handle cookies.
  * Taken from {@link http://www.quirksmode.org/js/cookies.html 
  * http://www.quirksmode.org/js/cookies.html}
+ * Regarding licensing of this code the author states:
+ *
+ * "You may copy, tweak, rewrite, sell or lease any code example on
+ * this site, with one single exception."
+ *
  * @author Stefan Strigler
  * @version $Revision$
  */
