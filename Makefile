@@ -21,9 +21,9 @@ build:
 crunch: 
 	@echo "crunching ..."
 	@if [ -e $(OUTFILE) ]; then \
-		utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp \
-		"(c) 2005-2007 Stefan Strigler <steve@zeank.in-berlin.de>" && \
-		cat src/JSJaCConfig.js > $(OUTFILE) && \
+		utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp && \
+		cat src/header.js > $(OUTFILE) && \
+		cat src/JSJaCConfig.js >> $(OUTFILE) && \
 		cat $(OUTFILE).tmp >> $(OUTFILE) && \
 		rm $(OUTFILE).tmp; \
 	fi
@@ -34,7 +34,8 @@ moo:
 	@echo "packing..."
 	@if [ -e $(OUTFILE) ]; then \
 		php ./utils/packer/pack.php $(OUTFILE) $(PACKFILE).tmp && \
-		cat src/JSJaCConfig.js > $(PACKFILE) && \
+		cat src/header.js > $(PACKFILE) && \
+		cat src/JSJaCConfig.js >> $(PACKFILE) && \
 		cat $(PACKFILE).tmp >> $(PACKFILE) && \
 		rm $(PACKFILE).tmp; \
 	else \
