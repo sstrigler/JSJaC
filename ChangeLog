@@ -1,3 +1,14 @@
+JSJaC v1.2.2
+============
+* added mootools packer to generate a packed version of jsjac 
+  (make target 'pack')
+* json routines: don't extend Object
+* fixed internal polling going wild when reconnecting
+* JSJaCJID.prototype.clone and JSJaCJID.prototype.isEntity added
+* Copyright and legelases statements added for code from external 
+  resources
+
+
 JSJaC v1.2.1
 ============
 * fixed handlers for packets with empty childnodes (fixes #17)
