@@ -44,7 +44,7 @@ function JSJaCHttpPollingConnection(oArg) {
       return -1;
   };
   this._getRequestString = JSJaCHPCGetRequestString;
-  this._getStreamID = JSJaCHPCGetStream;
+  this._getStreamID = JSJaCHPCGetStreamID;
   /**
    * @private
    */
@@ -263,9 +263,10 @@ function JSJaCHPCConnect(oArg) {
 /**
  * @private
  */
-function JSJaCHPCGetStream() {
+function JSJaCHPCGetStreamID() {
 
-  if (!this._req[0].r.responseXML || this._req[0].r.responseText == '') {
+  if (this._req[0].r.responseText == '') {
+		this.oDbg.log("waiting for stream id",2);
     oCon = this;
     this._timeout = setTimeout("oCon._sendEmpty()",1000);
     return;
