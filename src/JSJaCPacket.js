@@ -407,12 +407,13 @@ JSJaCPresence.prototype.setStatus = function(status) {
 /** 
  * Sets the online status for this presence packet. 
  * @param {String} show An XMPP complient status indicator. Must
- * be one of 'chat', 'away', 'xa', 'dnd', 'available', 'unavailable'
+ * be one of 'chat', 'away', 'xa', 'dnd'
  * @return this
  * @type JSJaCPacket
  */
 JSJaCPresence.prototype.setShow = function(show) {
-  this._setChildNode("show",show);
+  if (show == 'chat' || show == 'away' || show == 'xa' || show == 'dnd')
+    this._setChildNode("show",show);
   return this; 
 };
 /**
@@ -445,16 +446,17 @@ JSJaCPresence.prototype.setPresence = function(show,status,prio) {
 };
 
 /**
- * Gets the status of this presence
- * @return The status indicator as defined by XMPP
+ * Gets the status message of this presence
+ * @return The (human readable) status message
  * @type String
  */
 JSJaCPresence.prototype.getStatus = function() {
   return this.getChildVal('status');	
 };
 /**
- * Gets the status message of this presence
- * @return The status message
+ * Gets the status of this presence.
+ * Either one of 'chat', 'away', 'xa' or 'dnd' or null.
+ * @return The status indicator as defined by XMPP 
  * @type String
  */
 JSJaCPresence.prototype.getShow = function() { 
