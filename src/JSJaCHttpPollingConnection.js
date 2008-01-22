@@ -22,7 +22,6 @@ function JSJaCHttpPollingConnection(oArg) {
   JSJACPACKET_USE_XMLNS = false;
 
   this.connect = JSJaCHPCConnect;
-  this.disconnect = JSJaCHPCDisconnect;
   /**
    * Tells whether this implementation of JSJaCConnection is polling
    * Useful if it needs to be decided
@@ -85,7 +84,7 @@ function JSJaCHPCSetupRequest(async) {
 /**
  * @private
  */
-function JSJaCHPCGetRequestString(raw) {
+function JSJaCHPCGetRequestString(raw, last) {
   var reqstr = this._sid;
   if (JSJAC_HAVEKEYS) {
     reqstr += ";"+this._keys.getKey();
@@ -101,6 +100,8 @@ function JSJaCHPCGetRequestString(raw) {
     reqstr += this._pQueue[0];
     this._pQueue = this._pQueue.slice(1,this._pQueue.length);
   }
+  if (last)
+    reqstr += '</stream:stream>';
   return reqstr;
 }
 
@@ -304,38 +305,6 @@ function JSJaCHPCGetStreamID() {
 function JSJaCHPCReInitStream(to,cb,arg) {
   oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
 }
-
-/**
- * Disconnect from stream, terminate HTTP Polling session
- */
-function JSJaCHPCDisconnect() {
-  if (!this.connected())
-    return;
-
-  this._checkQueue();
-
-  clearInterval(this._interval);
-  clearInterval(this._inQto);
-
-  if (this._timeout)
-    clearTimeout(this._timeout); // remove timer
-
-  this._req[0] = this._setupRequest(false);
-	
-  if (JSJAC_HAVEKEYS)
-    this._req[0].r.send(this._sid+";"+this._keys.getKey()+",</stream:stream>");
-  else
-    this._req[0].r.send(this._sid+",</stream:stream>");
-
-  try {
-    JSJaCCookie.read('JSJaC_State').erase();
-  } catch (e) {}
-
-  this.oDbg.log("Disconnected: "+this._req[0].r.responseText,2);
-  this._connected = false;
-  this._handleEvent('ondisconnect');
-}
-
 
 /**
  * @private

@@ -52,7 +52,6 @@ function JSJaCHttpBindingConnection(oArg) {
 
   // public methods
   this.connect = JSJaCHBCConnect;
-  this.disconnect = JSJaCHBCDisconnect;
   this.inherit = JSJaCHBCInherit;
   /**
    * whether this session is in polling mode
@@ -400,56 +399,6 @@ function JSJaCHBCReInitStream(to,cb,arg) {
 }
 
 /**
- * Disconnects from stream, terminates HTTP Binding session
- */
-function JSJaCHBCDisconnect() {
-	
-  this._setStatus('disconnecting');
-
-  if (!this.connected())
-    return;
-  this._connected = false;
-
-  clearInterval(this._interval);
-  clearInterval(this._inQto);
-
-  if (this._timeout)
-    clearTimeout(this._timeout); // remove timer
-
-  var slot = this._getFreeSlot();
-  // Intentionally synchronous
-  this._req[slot] = this._setupRequest(false);
-
-  var reqstr = "<body type='terminate' xmlns='http://jabber.org/protocol/httpbind' sid='"+this._sid+"' rid='"+this._rid+"'";
-  if (JSJAC_HAVEKEYS) {
-    reqstr += " key='"+this._keys.getKey()+"'";
-  }
-  reqstr += ">";
-
-  while (this._pQueue.length) {
-    var curNode = this._pQueue[0];
-    reqstr += curNode;
-    this._pQueue = this._pQueue.slice(1,this._pQueue.length);
-  }
-
-  //reqstr += "<presence type='unavailable' xmlns='jabber:client'/>";
-  reqstr += "</body>";
-
-  // Wait for response (for a limited time, 5s)
-  var abortTimerID = setTimeout("oCon._req["+slot+"].r.abort();", 5000);
-  this.oDbg.log("Disconnecting: " + reqstr,4);
-  this._req[slot].r.send(reqstr);	
-  clearTimeout(abortTimerID);
-
-  try {
-    JSJaCCookie.read('JSJaC_State').erase();
-  } catch (e) {}
-
-  oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
-  oCon._handleEvent('ondisconnect');
-}
-
-/**
  * @private
  */
 function JSJaCHBCSetupRequest(async) {
@@ -468,7 +417,7 @@ function JSJaCHBCSetupRequest(async) {
 /**
  * @private
  */
-function JSJaCHBCGetRequestString(raw) {
+function JSJaCHBCGetRequestString(raw, last) {
   raw = raw || '';
   var reqstr = '';
 
@@ -492,7 +441,9 @@ function JSJaCHBCGetRequestString(raw) {
         reqstr += "newkey='"+this._keys.getKey()+"' ";
       }
     }
-    if (this._reinit) {
+    if (last)
+      reqstr += "type='terminate' "; 
+    else if (this._reinit) {
       reqstr += "xmpp:restart='true' ";
       this._reinit = false;
     }

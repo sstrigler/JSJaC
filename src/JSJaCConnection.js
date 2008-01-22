@@ -100,6 +100,39 @@ function JSJaCConnection(oArg) {
  */
 JSJaCConnection.prototype.connected = function() { return this._connected; };
 
+JSJaCConnection.prototype.disconnect = function() {
+  this._setStatus('disconnecting');
+
+  if (!this.connected())
+    return;
+  this._connected = false;
+
+  clearInterval(this._interval);
+  clearInterval(this._inQto);
+
+  if (this._timeout)
+    clearTimeout(this._timeout); // remove timer
+
+  var slot = this._getFreeSlot();
+  // Intentionally synchronous
+  this._req[slot] = this._setupRequest(false);
+
+  request = this._getRequestString(false, true);
+
+  // Wait for response (for a limited time, 5s)
+  var abortTimerID = setTimeout("oCon._req["+slot+"].r.abort();", 5000);
+  this.oDbg.log("Disconnecting: " + request,4);
+  this._req[slot].r.send(request);	
+  clearTimeout(abortTimerID);
+
+  try {
+    JSJaCCookie.read('JSJaC_State').erase();
+  } catch (e) {}
+
+  oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
+  oCon._handleEvent('ondisconnect');
+}
+
 /**
  * Gets current value of polling interval
  * @return Polling interval in milliseconds
