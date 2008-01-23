@@ -131,7 +131,7 @@ JSJaCConnection.prototype.disconnect = function() {
 
   oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
   oCon._handleEvent('ondisconnect');
-}
+};
 
 /**
  * Gets current value of polling interval
