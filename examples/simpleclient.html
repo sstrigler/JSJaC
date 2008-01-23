@@ -171,8 +171,12 @@ function sendMsg(aForm) {
 }
 
 function quit() {
-  if (con && con.connected())
-    con.disconnect();
+	var p = new JSJaCPresence();
+	p.setStatus("bye");
+	p.setType("unavailable");
+	con.send(p);
+	
+	con.disconnect();
 
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
