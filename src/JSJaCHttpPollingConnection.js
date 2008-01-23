@@ -20,71 +20,91 @@ function JSJaCHttpPollingConnection(oArg) {
 
   // give hint to JSJaCPacket that we're using HTTP Polling ...
   JSJACPACKET_USE_XMLNS = false;
-
-  this.connect = JSJaCHPCConnect;
-  /**
-   * Tells whether this implementation of JSJaCConnection is polling
-   * Useful if it needs to be decided
-   * whether it makes sense to allow for adjusting or adjust the
-   * polling interval {@link JSJaCConnection#setPollInterval}
-   * @return <code>true</code> if this is a polling connection, 
-   * <code>false</code> otherwise.
-   * @type boolean
-   */
-  this.isPolling = function() { return true; };
-
-  /**
-   * @private
-   */
-  this._getFreeSlot = function() {
-    if (typeof(this._req[0]) == 'undefined' || typeof(this._req[0].r) == 'undefined' || this._req[0].r.readyState == 4)
-      return 0; 
-    else
-      return -1;
-  };
-  this._getRequestString = JSJaCHPCGetRequestString;
-  this._getStreamID = JSJaCHPCGetStreamID;
-  /**
-   * @private
-   */
-  this._getSuspendVars = function() {
-    return new Array();
-  };
-  this._parseResponse = JSJaCHPCParseResponse;
-  this._reInitStream = JSJaCHPCReInitStream;
-  /**
-   * @private
-   */
-  this._resume = function() { 
-    this._process(this._timerval);
-  };
-  this._setupRequest = JSJaCHPCSetupRequest;
-  /**
-   * @private
-   */
-  this._suspend = function() {};
 }
 JSJaCHttpPollingConnection.prototype = new JSJaCConnection();
 
 /**
- * @private
+ * Actually triggers a connect for this connection
+ * @params {JSON} oArg arguments in JSON as follows:
  */
-function JSJaCHPCSetupRequest(async) {
-  var r = XmlHttp.create();
-  try {
-    r.open("POST",this._httpbase,async);
-    r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-  } catch(e) { this.oDbg.log(e,1); }
+JSJaCHttpPollingConnection.prototype.connect = function(oArg) {
+  // initial request to get sid and streamid
 
-  var req = new Object();
-  req.r = r;
-  return req;
-}
+  this.domain = oArg.domain || 'localhost';
+  this.username = oArg.username;
+  this.resource = oArg.resource || 'jsjac';
+  this.pass = oArg.pass;
+  this.register = oArg.register;
+  this.authtype = oArg.authtype || 'sasl';
+
+  this.jid = this.username + '@' + this.domain;
+  this.fulljid = this.jid + this.resource;
+
+  this.authhost = oArg.authhost || this.domain;
+
+  var reqstr = "0";
+  if (JSJAC_HAVEKEYS) {
+    this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
+    key = this._keys.getKey();
+    reqstr += ";"+key;
+  }
+  var streamto = this.domain;
+  if (this.authhost)
+    streamto = this.authhost;
+  reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
+  this.oDbg.log(reqstr,4);
+
+  this._req[0] = this._setupRequest(false);	
+  this._req[0].r.send(reqstr);
+
+  // extract session ID
+  this.oDbg.log(this._req[0].r.getAllResponseHeaders(),4);
+  var aPList = this._req[0].r.getResponseHeader('Set-Cookie');
+  aPList = aPList.split(";");
+  for (var i=0;i<aPList.length;i++) {
+    aArg = aPList[i].split("=");
+    if (aArg[0] == 'ID')
+      this._sid = aArg[1];
+  }
+  this.oDbg.log("got sid: "+this._sid,2);
+
+  oCon = this;
+  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
+
+  /* wait for initial stream response to extract streamid needed
+   * for digest auth
+   */
+  this._getStreamID();
+};
+
+/**
+ * Tells whether this implementation of JSJaCConnection is polling
+ * Useful if it needs to be decided
+ * whether it makes sense to allow for adjusting or adjust the
+ * polling interval {@link JSJaCConnection#setPollInterval}
+ * @return <code>true</code> if this is a polling connection, 
+ * <code>false</code> otherwise.
+ * @type boolean
+ */
+JSJaCHttpPollingConnection.prototype.isPolling = function() { return true; };
 
 /**
  * @private
  */
-function JSJaCHPCGetRequestString(raw, last) {
+JSJaCHttpPollingConnection.prototype._getFreeSlot = function() {
+  if (typeof(this._req[0]) == 'undefined' || 
+      typeof(this._req[0].r) == 'undefined' || 
+      this._req[0].r.readyState == 4)
+    return 0; 
+  else
+    return -1;
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._getRequestString = function(raw, last) {
   var reqstr = this._sid;
   if (JSJAC_HAVEKEYS) {
     reqstr += ";"+this._keys.getKey();
@@ -103,12 +123,57 @@ function JSJaCHPCGetRequestString(raw, last) {
   if (last)
     reqstr += '</stream:stream>';
   return reqstr;
-}
+};
 
 /**
  * @private
  */
-function JSJaCHPCParseResponse(r) {
+JSJaCHttpPollingConnection.prototype._getStreamID = function() {
+  if (this._req[0].r.responseText == '') {
+		this.oDbg.log("waiting for stream id",2);
+    oCon = this;
+    this._timeout = setTimeout("oCon._sendEmpty()",1000);
+    return;
+  }
+
+  this.oDbg.log(this._req[0].r.responseText,4);
+
+  // extract stream id used for non-SASL authentication
+  if (this._req[0].r.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
+    this.streamid = RegExp.$1;
+  this.oDbg.log("got streamid: "+this.streamid,2);
+
+  var doc;
+
+  try {
+    doc = XmlDocument.create("doc");
+    doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
+    this._parseStreamFeatures(doc);
+  } catch(e) {
+    this.oDbg.log("loadXML: "+e.toString(),1);
+  }
+
+  this._connected = true;
+
+  if (this.register)
+    this._doInBandReg();
+  else 
+    this._doAuth();
+
+  this._process(this._timerval); // start polling
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._getSuspendVars = function() {
+  return new Array();
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
   var req = r.r;
   if (!this.connected())
     return null;
@@ -174,12 +239,12 @@ function JSJaCHPCParseResponse(r) {
 
   try {
 		
-    var doc = JSJaCHttpPollingConnection.parseTree("<body>"+req.responseText+"</body>");
+    var doc = JSJaCHttpPollingConnection._parseTree("<body>"+req.responseText+"</body>");
 
     if (!doc || doc.tagName == 'parsererror') {
       this.oDbg.log("parsererror",1);
 
-      doc = JSJaCHttpPollingConnection.parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
+      doc = JSJaCHttpPollingConnection._parseTree("<stream:stream xmlns:stream='http://etherx.jabber.org/streams'>"+req.responseText);
       if (doc && doc.tagName != 'parsererror') {
         this.oDbg.log("stream closed",1);
 
@@ -204,112 +269,48 @@ function JSJaCHPCParseResponse(r) {
     this.oDbg.log("parse error:"+e.message,1);
   }
   return null;;
-}
-
-/**
- * Actually triggers a connect for this connection
- * @params {JSON} oArg arguments in JSON as follows:
- */
-function JSJaCHPCConnect(oArg) {
-  // initial request to get sid and streamid
-
-  this.domain = oArg.domain || 'localhost';
-  this.username = oArg.username;
-  this.resource = oArg.resource || 'jsjac';
-  this.pass = oArg.pass;
-  this.register = oArg.register;
-  this.authtype = oArg.authtype || 'sasl';
-
-  this.jid = this.username + '@' + this.domain;
-  this.fulljid = this.jid + this.resource;
-
-  this.authhost = oArg.authhost || this.domain;
-
-  var reqstr = "0";
-  if (JSJAC_HAVEKEYS) {
-    this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
-    key = this._keys.getKey();
-    reqstr += ";"+key;
-  }
-  var streamto = this.domain;
-  if (this.authhost)
-    streamto = this.authhost;
-  reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-  this.oDbg.log(reqstr,4);
-
-  this._req[0] = this._setupRequest(false);	
-  this._req[0].r.send(reqstr);
-
-  // extract session ID
-  this.oDbg.log(this._req[0].r.getAllResponseHeaders(),4);
-  var aPList = this._req[0].r.getResponseHeader('Set-Cookie');
-  aPList = aPList.split(";");
-  for (var i=0;i<aPList.length;i++) {
-    aArg = aPList[i].split("=");
-    if (aArg[0] == 'ID')
-      this._sid = aArg[1];
-  }
-  this.oDbg.log("got sid: "+this._sid,2);
-
-  oCon = this;
-  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
-  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
-
-  /* wait for initial stream response to extract streamid needed
-   * for digest auth
-   */
-  this._getStreamID();
-}
+};
 
 /**
  * @private
  */
-function JSJaCHPCGetStreamID() {
-
-  if (this._req[0].r.responseText == '') {
-		this.oDbg.log("waiting for stream id",2);
-    oCon = this;
-    this._timeout = setTimeout("oCon._sendEmpty()",1000);
-    return;
-  }
-
-  this.oDbg.log(this._req[0].r.responseText,4);
-
-  // extract stream id used for non-SASL authentication
-  if (this._req[0].r.responseText.match(/id=[\'\"]([^\'\"]+)[\'\"]/))
-    this.streamid = RegExp.$1;
-  this.oDbg.log("got streamid: "+this.streamid,2);
-
-  var doc;
-
-  try {
-    doc = XmlDocument.create("doc");
-    doc.loadXML(this._req[0].r.responseText+'</stream:stream>');
-    this._parseStreamFeatures(doc);
-  } catch(e) {
-    this.oDbg.log("loadXML: "+e.toString(),1);
-  }
-
-  if (this.register)
-    this._doInBandReg();
-  else 
-    this._doAuth();
-
-  this._connected = true;
-  this._process(this._timerval); // start polling
-}
-
-/**
- * @private
- */
-function JSJaCHPCReInitStream(to,cb,arg) {
+JSJaCHttpPollingConnection.prototype._reInitStream = function(to,cb,arg) {
   oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
-}
+};
 
 /**
  * @private
  */
-JSJaCHttpPollingConnection.parseTree = function(s) {
+JSJaCHttpPollingConnection.prototype._resume = function() { 
+  this._process(this._timerval);
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._setupRequest = function(async) {
+  var r = XmlHttp.create();
+  try {
+    r.open("POST",this._httpbase,async);
+    r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+  } catch(e) { this.oDbg.log(e,1); }
+
+  var req = new Object();
+  req.r = r;
+  return req;
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._suspend = function() {};
+
+/*** [static] ***/
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection._parseTree = function(s) {
   try {
     var r = XmlDocument.create("body","foo");
     if (typeof(r.loadXML) != 'undefined') {
