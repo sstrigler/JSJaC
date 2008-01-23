@@ -24,61 +24,6 @@ function JSJaCHttpPollingConnection(oArg) {
 JSJaCHttpPollingConnection.prototype = new JSJaCConnection();
 
 /**
- * Actually triggers a connect for this connection
- * @params {JSON} oArg arguments in JSON as follows:
- */
-JSJaCHttpPollingConnection.prototype.connect = function(oArg) {
-  // initial request to get sid and streamid
-
-  this.domain = oArg.domain || 'localhost';
-  this.username = oArg.username;
-  this.resource = oArg.resource || 'jsjac';
-  this.pass = oArg.pass;
-  this.register = oArg.register;
-  this.authtype = oArg.authtype || 'sasl';
-
-  this.jid = this.username + '@' + this.domain;
-  this.fulljid = this.jid + this.resource;
-
-  this.authhost = oArg.authhost || this.domain;
-
-  var reqstr = "0";
-  if (JSJAC_HAVEKEYS) {
-    this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
-    key = this._keys.getKey();
-    reqstr += ";"+key;
-  }
-  var streamto = this.domain;
-  if (this.authhost)
-    streamto = this.authhost;
-  reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
-  this.oDbg.log(reqstr,4);
-
-  this._req[0] = this._setupRequest(false);	
-  this._req[0].r.send(reqstr);
-
-  // extract session ID
-  this.oDbg.log(this._req[0].r.getAllResponseHeaders(),4);
-  var aPList = this._req[0].r.getResponseHeader('Set-Cookie');
-  aPList = aPList.split(";");
-  for (var i=0;i<aPList.length;i++) {
-    aArg = aPList[i].split("=");
-    if (aArg[0] == 'ID')
-      this._sid = aArg[1];
-  }
-  this.oDbg.log("got sid: "+this._sid,2);
-
-  oCon = this;
-  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
-  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
-
-  /* wait for initial stream response to extract streamid needed
-   * for digest auth
-   */
-  this._getStreamID();
-};
-
-/**
  * Tells whether this implementation of JSJaCConnection is polling
  * Useful if it needs to be decided
  * whether it makes sense to allow for adjusting or adjust the
@@ -99,6 +44,23 @@ JSJaCHttpPollingConnection.prototype._getFreeSlot = function() {
     return 0; 
   else
     return -1;
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._getInitialRequestString = function() {
+  var reqstr = "0";
+  if (JSJAC_HAVEKEYS) {
+    this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
+    key = this._keys.getKey();
+    reqstr += ";"+key;
+  }
+  var streamto = this.domain;
+  if (this.authhost)
+    streamto = this.authhost;
+  reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>";
+  return reqstr;
 };
 
 /**
@@ -130,7 +92,7 @@ JSJaCHttpPollingConnection.prototype._getRequestString = function(raw, last) {
  */
 JSJaCHttpPollingConnection.prototype._getStreamID = function() {
   if (this._req[0].r.responseText == '') {
-		this.oDbg.log("waiting for stream id",2);
+    this.oDbg.log("waiting for stream id",2);
     oCon = this;
     this._timeout = setTimeout("oCon._sendEmpty()",1000);
     return;
@@ -168,6 +130,34 @@ JSJaCHttpPollingConnection.prototype._getStreamID = function() {
  */
 JSJaCHttpPollingConnection.prototype._getSuspendVars = function() {
   return new Array();
+};
+
+/**
+ * @private
+ */
+JSJaCHttpPollingConnection.prototype._handleInitialResponse = function() {
+  // extract session ID
+  this.oDbg.log(this._req[0].r.getAllResponseHeaders(),4);
+  var aPList = this._req[0].r.getResponseHeader('Set-Cookie');
+  aPList = aPList.split(";");
+  for (var i=0;i<aPList.length;i++) {
+    aArg = aPList[i].split("=");
+    if (aArg[0] == 'ID')
+      this._sid = aArg[1];
+  }
+  this.oDbg.log("got sid: "+this._sid,2);
+
+  /* start sending from queue for not polling connections */
+  this._connected = true;
+
+  oCon = this;
+  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
+
+  /* wait for initial stream response to extract streamid needed
+   * for digest auth
+   */
+  this._getStreamID();
 };
 
 /**

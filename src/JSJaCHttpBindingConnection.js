@@ -53,91 +53,6 @@ function JSJaCHttpBindingConnection(oArg) {
 JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
 
 /**
- * Connects to jabber server, creates an HTTP Binding session, thus
- * creates a stream and handles authentication
- */
-JSJaCHttpBindingConnection.prototype.connect = function(oArg) {
-  // initial request to get sid and streamid
-
-  this._setStatus('connecting');
-
-  this.domain = oArg.domain || 'localhost';
-  this.username = oArg.username;
-  this.resource = oArg.resource;
-  this.pass = oArg.pass;
-  this.register = oArg.register;
-  this.oDbg.log("httpbase: " + this._httpbase + "\domain:" + this.domain,2);
-  this.host = oArg.host || this.domain;
-  this.port = oArg.port || 5222;
-  this.authhost = oArg.authhost || this.domain;
-  this.authtype = oArg.authtype || 'sasl';
-  if (oArg.secure) {
-    this.secure = 'true';
-//     if (!oArg.port)
-//       this.port = 5223;
-  } else 
-    this.secure = 'false';
-
-  this.jid = this.username + '@' + this.domain;
-  this.fulljid = this.jid + '/' + this.resource;
-
-  if (oArg.wait)
-    this._wait = oArg.wait;
-
-  if (oArg.xmllang && oArg.xmllang != '')
-    this._xmllang = oArg.xmllang;
-
-  this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
-
-  // setupRequest must be done after rid is created but before first use in reqstr
-  var slot = this._getFreeSlot();
-  this._req[slot] = this._setupRequest(true); 
-  
-  var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.authhost+"' wait='"+this._wait+"' rid='"+this._rid+"'";
-  if (oArg.host || oArg.port)
-    reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
-  if (oArg.secure)
-    reqstr += " secure='"+this.secure+"'";
-  if (JSJAC_HAVEKEYS) {
-    this._keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
-    key = this._keys.getKey();
-    reqstr += " newkey='"+key+"'";
-  }
-  if (this._xmllang)
-    reqstr += " xml:lang='"+this._xmllang + "'";
-
-  if (JSJACHBC_USE_BOSH_VER) {
-    reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
-    reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
-    reqstr += " xmpp:version='1.0'";
-  }
-
-  reqstr += "/>";
-
-  this.oDbg.log(reqstr,4);
-
-  this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon)
-      return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._handleInitialResponse(slot); // handle response
-    }
-  };
-
-  if (typeof(this._req[slot].r.onerror) != 'undefined') {
-    this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-        return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
-      return false;
-    };
-  }
-
-  this._req[slot].r.send(reqstr);
-};
-
-/**
  * Inherit an instantiated HTTP Binding session
  */
 JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
@@ -259,6 +174,32 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
 /**
  * @private
  */
+JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
+  var reqstr = "<body hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.authhost+"' wait='"+this._wait+"' rid='"+this._rid+"'";
+  if (this.host || this.port)
+    reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
+  if (this.secure)
+    reqstr += " secure='"+this.secure+"'";
+  if (JSJAC_HAVEKEYS) {
+    this._keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
+    key = this._keys.getKey();
+    reqstr += " newkey='"+key+"'";
+  }
+  if (this._xmllang)
+    reqstr += " xml:lang='"+this._xmllang + "'";
+
+  if (JSJACHBC_USE_BOSH_VER) {
+    reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
+    reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
+    reqstr += " xmpp:version='1.0'";
+  }
+  reqstr += "/>";
+  return reqstr;
+};
+
+/**
+ * @private
+ */
 JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
 
   this.oDbg.log(this._req[slot].r.responseText,4);
@@ -358,6 +299,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
   /* start sending from queue for not polling connections */
   this._connected = true;
 
+  oCon = this;
   this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
   this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
 

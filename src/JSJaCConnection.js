@@ -92,6 +92,65 @@ function JSJaCConnection(oArg) {
     this.setPollInterval(oArg.timerval);
 }
 
+JSJaCConnection.prototype.connect = function(oArg) {
+  this._setStatus('connecting');
+
+  this.domain = oArg.domain || 'localhost';
+  this.username = oArg.username;
+  this.resource = oArg.resource;
+  this.pass = oArg.pass;
+  this.register = oArg.register;
+
+  this.authhost = oArg.authhost || this.domain;
+  this.authtype = oArg.authtype || 'sasl';
+
+  if (oArg.xmllang && oArg.xmllang != '')
+    this._xmllang = oArg.xmllang;
+
+  this.host = oArg.host || this.domain;
+  this.port = oArg.port || 5222;
+  if (oArg.secure)
+    this.secure = 'true';
+  else 
+    this.secure = 'false';
+
+  if (oArg.wait)
+    this._wait = oArg.wait;
+
+  this.jid = this.username + '@' + this.domain;
+  this.fulljid = this.jid + '/' + this.resource;
+
+  this._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
+
+  // setupRequest must be done after rid is created but before first use in reqstr
+  var slot = this._getFreeSlot();
+  this._req[slot] = this._setupRequest(true); 
+
+  var reqstr = this._getInitialRequestString();
+
+  this.oDbg.log(reqstr,4);
+
+  this._req[slot].r.onreadystatechange = function() {
+    if (typeof(oCon) == 'undefined' || !oCon)
+      return;
+    if (oCon._req[slot].r.readyState == 4) {
+      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
+      oCon._handleInitialResponse(slot); // handle response
+    }
+  };
+
+  if (typeof(this._req[slot].r.onerror) != 'undefined') {
+    this._req[slot].r.onerror = function(e) {
+      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+        return;
+      oCon.oDbg.log('XmlHttpRequest error',1);
+      return false;
+    };
+  }
+
+  this._req[slot].r.send(reqstr);
+};
+
 /**
  * Tells whether this connection is connected
  * @return <code>true</code> if this connections is connected, 
@@ -100,6 +159,9 @@ function JSJaCConnection(oArg) {
  */
 JSJaCConnection.prototype.connected = function() { return this._connected; };
 
+/**
+ * Disconnects from jabber server and terminates session (if applicable)
+ */
 JSJaCConnection.prototype.disconnect = function() {
   this._setStatus('disconnecting');
 
