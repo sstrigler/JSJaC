@@ -28,7 +28,7 @@ crunch:
 		rm $(OUTFILE).tmp; \
 	fi
 
-pack: clean utils build moo crunch
+pack: clean utils build moo crunch doc
 
 moo:	
 	@echo "packing..."
