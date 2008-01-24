@@ -61,7 +61,7 @@ JSJaCHttpPollingConnection.prototype._getInitialRequestString = function() {
     streamto = this.authhost;
 
   reqstr += ",<stream:stream to='"+streamto+"' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'";
-  if (this.autthype == 'sasl' || this.authtype == 'saslanon')
+  if (this.authtype == 'sasl' || this.authtype == 'saslanon')
     reqstr += " version='1.0'";
   reqstr += ">";
   return reqstr;
