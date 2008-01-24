@@ -194,24 +194,23 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
   name = name || '*';
   ns = ns || '*';
 
-  if (this.getNode().getElementsByTagNameNS)
+  if (this.getNode().getElementsByTagNameNS) {
     return this.getNode().getElementsByTagNameNS(ns, name).item(0);
+  }
 
   // fallback
-  var nodes = this.getNode().childNodes;
-    
-  for (var i=0; i<nodes.length; i++) {
-    if (nodes.item(i).nodeType != 1)
-      continue;
-    if (name != '*' && nodes.item(i).tagName != name)
-      continue;
-    if (ns != '*' && nodes.item(i).namespaceURI != ns) {
-      continue;
+  var nodes = this.getNode().getElementsByTagName(name);
+  if (ns != '*') {
+    for (var i=0; i<nodes.length; i++) {
+      if (nodes.item(i).namespaceURI == ns) {
+        return nodes.item(i);
+      }
     }
-    return nodes.item(i);
+  } else {
+    return nodes.item(0);
   }
-  return null; // fallback
-};
+  return null; // nothing found
+}
 
 /**
  * Gets the node value of a child element of this packet.
