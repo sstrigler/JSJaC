@@ -191,7 +191,8 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
   if (JSJACHBC_USE_BOSH_VER) {
     reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
     reqstr += " xmpp:xmlns='urn:xmpp:xbosh'";
-    reqstr += " xmpp:version='1.0'";
+    if (this.autthype == 'sasl' || this.authtype == 'saslanon')
+      reqstr += " xmpp:version='1.0'";
   }
   reqstr += "/>";
   return reqstr;
