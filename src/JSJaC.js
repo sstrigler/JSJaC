@@ -16,7 +16,6 @@ var JSJaC = {
     ['xmlextras',
      'jsextras',
      'crypt',
-     'json',
      'JSJaCConfig',
      'JSJaCConstants',
      'JSJaCCookie',
