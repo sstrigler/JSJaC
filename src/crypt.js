@@ -163,17 +163,6 @@ function core_hmac_sha1(key, data)
 }
 
 /*
- * Add integers, wrapping at 2^32. This uses 16-bit operations internally
- * to work around bugs in some JS interpreters.
- */
-function safe_add(x, y)
-{
-  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-  return (msw << 16) | (lsw & 0xFFFF);
-}
-
-/*
  * Bitwise rotate a 32-bit number to the left.
  */
 function rol(num, cnt)
@@ -599,8 +588,6 @@ function b64d2t(d) {
       r[r.length] = b64[((d[i]&3)<<4) | (d[i+1]>>4)];
       r[r.length] = b64[((d[i+1]&15)<<2) | (d[i+2]>>6)];
       r[r.length] = b64[d[i+2]&63];
-      if ((i%57)==54)
-        r[r.length] = "\n";
       i+=3;
     }
   // this is again for the padding
