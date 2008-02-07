@@ -242,8 +242,10 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
     return null;
 
   try {
-	
-    var doc = JSJaCHttpPollingConnection._parseTree("<body>"+req.responseText+"</body>");
+    var response = req.responseText.replace(/\<\?xml.+\?\>/,"");
+    if (response.match(/<stream:stream/))
+        response += "</stream:stream>";
+    var doc = JSJaCHttpPollingConnection._parseTree("<body>"+response+"</body>");
 
     if (!doc || doc.tagName == 'parsererror') {
       this.oDbg.log("parsererror",1);
