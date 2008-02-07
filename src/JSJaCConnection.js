@@ -907,8 +907,9 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
  */
 JSJaCConnection.prototype._doSASLAuthDone = function (req) {
   var doc = this._parseResponse(req);
-  if (doc.firstChild.nodeName != 'success') {
+  if (!doc || doc.firstChild.nodeName != 'success') {
     this.oDbg.log("auth failed",1);
+    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else
     this._reInitStream(this.domain,'_doStreamBind');
