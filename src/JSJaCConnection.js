@@ -1147,25 +1147,25 @@ JSJaCConnection.prototype._process = function(timerval) {
   };
 
   try {
-	this._req[slot].r.onerror = function() {
-	  if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-		return;
-	  oCon._errcnt++;
-	  oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
-	  if (oCon._errcnt > JSJAC_ERR_COUNT) {
-		// abort
-		oCon._abort();
-		return false;
-	  }
+    this._req[slot].r.onerror = function() {
+      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
+        return;
+      oCon._errcnt++;
+      oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
+      if (oCon._errcnt > JSJAC_ERR_COUNT) {
+        // abort
+        oCon._abort();
+        return false;
+      }
 
-	  oCon._setStatus('onerror_fallback');
+      oCon._setStatus('onerror_fallback');
 			
-	  // schedule next tick
-	  setTimeout("oCon._resume()",oCon.getPollInterval());
-	  return false;
-	};
+      // schedule next tick
+      setTimeout("oCon._resume()",oCon.getPollInterval());
+      return false;
+    };
   } catch(e) { } // well ... no onerror property available, maybe we
-				 // can catch the error somewhere else ...
+  // can catch the error somewhere else ...
 
   var reqstr = this._getRequestString();
 
