@@ -510,7 +510,7 @@ function utf8t2d(t)
 {
   t = t.replace(/\r\n/g,"\n");
   var d=new Array; var test=String.fromCharCode(237);
-  if (test.charCodeAt(0) < 0) 
+  if (test.charCodeAt(0) < 0)
     for(var n=0; n<t.length; n++)
       {
         var c=t.charCodeAt(n);
@@ -539,7 +539,7 @@ function utf8t2d(t)
       }
   return d;
 }
-		
+	
 // returns plaintext from an array of bytesrepresenting dezimal numbers, which
 // represent an UTF-8 encoded text; browser which does not understand unicode
 // like NN401 will show "?"-signs instead
@@ -626,12 +626,12 @@ if (typeof(atob) == 'undefined' || typeof(btoa) == 'undefined')
 
 if (typeof(atob) == 'undefined') {
   atob = function(s) {
-    return utf8d2t(b64t2d(s)); 
+    return utf8d2t(b64t2d(s));
   }
 }
 
 if (typeof(btoa) == 'undefined') {
-  btoa = function(s) { 
+  btoa = function(s) {
     return b64d2t(utf8t2d(s));
   }
 }

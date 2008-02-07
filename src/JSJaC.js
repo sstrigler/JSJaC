@@ -1,6 +1,6 @@
 /**
  * @fileoverview Magic dependency loading. Taken from script.aculo.us
- * and modified to break it.  
+ * and modified to break it.
  * @author Stefan Strigler steve@zeank.in-berlin.de 
  * @version $Revision$
  */
@@ -12,7 +12,7 @@ var JSJaC = {
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
   },
   load: function() {
-    var includes = 
+    var includes =
     ['xmlextras',
      'jsextras',
      'crypt',

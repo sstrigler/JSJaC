@@ -7,7 +7,7 @@
 /**
  * Instantiates an HTTP Binding session
  * @class Implementation of {@link
- * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH} 
+ * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH}
  * formerly known as HTTP Binding.
  * @extends JSJaCConnection
  * @constructor
@@ -86,7 +86,7 @@ JSJaCHttpBindingConnection.prototype.setPollInterval = function(timerval) {
     this.oDbg.log("Invalid timerval: " + timerval,1);
     return -1;
   }
-  if (!this.isPolling()) 
+  if (!this.isPolling())
     this._timerval = 100;
   else if (this._min_polling && timerval < this._min_polling*1000)
     this._timerval = this._min_polling*1000;
@@ -101,7 +101,7 @@ JSJaCHttpBindingConnection.prototype.setPollInterval = function(timerval) {
  * whether this session is in polling mode
  * @type boolean
  */
-JSJaCHttpBindingConnection.prototype.isPolling = function() { return (this._hold == 0) }; 
+JSJaCHttpBindingConnection.prototype.isPolling = function() { return (this._hold == 0) };
 
 /**
  * @private
@@ -146,7 +146,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
       }
     }
     if (last)
-      reqstr += "type='terminate' "; 
+      reqstr += "type='terminate' ";
     else if (this._reinit) {
       reqstr += "xmpp:restart='true' ";
       this._reinit = false;
@@ -155,7 +155,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
     if (xml != '' || raw != '') {
       reqstr += ">" + raw + xml + "</body>";
     } else {
-      reqstr += "/>"; 
+      reqstr += "/>";
     }
 
     this._last_requests[this._rid] = new Object();
@@ -167,7 +167,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
           i < this._rid-this._hold)
         delete(this._last_requests[i]); // truncate
   }
-	 
+	
   return reqstr;
 };
 
@@ -223,7 +223,7 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
   this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 
   this._parseStreamFeatures(body);
-	
+
   if (this.register)
     this._doInBandReg();
   else
@@ -283,7 +283,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
 
   if (body.getAttribute('inactivity'))
     this._inactivity = body.getAttribute('inactivity');
-	
+
   if (body.getAttribute('requests'))
     this._setHold(body.getAttribute('requests')-1);
   this.oDbg.log("set hold to " + this._getHold(),2);
@@ -338,14 +338,14 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
         return null;
       }
       this.oDbg.log("repeating ("+this._errcnt+")",1);
-      
+     
       this._setStatus('proto_error_fallback');
-      
+     
       // schedule next tick
       setTimeout("oCon._resume()",this.getPollInterval());
-      
+     
       return null;
-    } 
+    }
   } catch (e) {
     this.oDbg.log("XMLHttpRequest error: status not available", 1);
 	this._errcnt++;
@@ -354,17 +354,17 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 	  this._abort();
 	} else {
 	  this.oDbg.log("repeating ("+this._errcnt+")",1);
-      
+     
 	  this._setStatus('proto_error_fallback');
-      
+     
 	  // schedule next tick
-	  setTimeout("oCon._resume()",this.getPollInterval());  
-    } 
+	  setTimeout("oCon._resume()",this.getPollInterval()); 
+    }
     return null;
   }
 
   var body = r.responseXML.documentElement;
-  if (!body || body.tagName != 'body' || 
+  if (!body || body.tagName != 'body' ||
 	  body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
     this.oDbg.log("invalid response:\n" + r.responseText,1);
 
@@ -387,7 +387,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
     if (this._last_requests[req.rid].handled) {
       this.oDbg.log("already handled "+req.rid,2);
       return null;
-    } else 
+    } else
       this._last_requests[req.rid].handled = true;
   }
 
@@ -435,12 +435,12 @@ JSJaCHttpBindingConnection.prototype._reInitStream = function(to,cb,arg) {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._resume = function() { 
+JSJaCHttpBindingConnection.prototype._resume = function() {
   /* make sure to repeat last request as we can be sure that
    * it had failed (only if we're not using the 'pause' attribute
    */
   if (this._pause == 0 && this._rid >= this._last_rid)
-    this._rid = this._last_rid-1; 
+    this._rid = this._last_rid-1;
 
   this._process();
 };
@@ -508,5 +508,5 @@ JSJaCHttpBindingConnection.prototype._suspend = function() {
   var abortTimerID = setTimeout("oCon._req["+slot+"].r.abort();", 5000);
   this.oDbg.log("Disconnecting: " + reqstr,4);
   this._req[slot].r.send(reqstr);
-  clearTimeout(abortTimerID); 
+  clearTimeout(abortTimerID);
 };

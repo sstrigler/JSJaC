@@ -22,7 +22,7 @@ String.prototype.htmlEnc = function() {
 /**
  * Converts from jabber timestamps to JavaScript Date objects
  * @addon
- * @param {String} ts A string representing a jabber datetime timestamp as 
+ * @param {String} ts A string representing a jabber datetime timestamp as
  * defined by {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
  * @return A javascript Date object corresponding to the jabber DateTime given
  * @type Date
@@ -53,8 +53,8 @@ Date.hrTime = function(ts) {
 
 /**
  * somewhat opposit to {@link #hrTime}
- * expects a javascript Date object as parameter and returns a jabber 
- * date string conforming to 
+ * expects a javascript Date object as parameter and returns a jabber
+ * date string conforming to
  * {@link http://www.xmpp.org/extensions/xep-0082.html XEP-0082}
  * @see #hrTime
  * @return The corresponding jabber DateTime string
@@ -80,7 +80,7 @@ Date.prototype.jabberDate = function() {
  * Determines the maximum of two given numbers
  * @addon
  * @param {Number} A a number
- * @param {Number} B another number 
+ * @param {Number} B another number
  * @return the maximum of A and B
  * @type Number
  */

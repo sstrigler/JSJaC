@@ -5,7 +5,7 @@
  * @constructor
  * @param {Function} func The hash function to be used for creating the keys
  * @param {Debugger} oDbg Reference to debugger implementation [optional]
- */									  
+ */									 
 function JSJaCKeys(func,oDbg) {
   var seed = Math.random();
 
@@ -14,7 +14,7 @@ function JSJaCKeys(func,oDbg) {
    */
   this._k = new Array();
   this._k[0] = seed.toString();
-  if (oDbg) 
+  if (oDbg)
     /**
      * Reference to Debugger
      * @type Debugger
@@ -41,8 +41,8 @@ function JSJaCKeys(func,oDbg) {
    * @return New hash key
    * @type String
    */
-  this.getKey = function() { 
-    return this._k[this._indexAt--]; 
+  this.getKey = function() {
+    return this._k[this._indexAt--];
   };
   /**
    * Indicates whether there's only one key left

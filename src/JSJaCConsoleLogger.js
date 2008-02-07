@@ -32,7 +32,7 @@ function JSJaCConsoleLogger(level) {
     level = level || 0;
     if (level > this.level)
       return;
-    if (typeof(console) == 'undefined') 
+    if (typeof(console) == 'undefined')
       return;
     try {
       switch (level) {
@@ -65,7 +65,7 @@ function JSJaCConsoleLogger(level) {
    * @type ConsoleLogger
    */
   this.setLevel = function(level) { this.level = level; return this; };
-  /** 
+  /**
    * Gets verbosity level.
    * @return The level
    * @type int

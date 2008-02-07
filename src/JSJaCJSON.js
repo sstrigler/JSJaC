@@ -84,7 +84,7 @@ JSJaCJSON.toString = function (obj) {
             }
           }
         }
-          
+         
         a[a.length] = '}';
         return a.join('');
       }
@@ -112,7 +112,7 @@ switch (typeof(obj)) {
    return s.object(obj);
  case 'array':
    return s.array(obj);
-    
+   
  }
 };
 

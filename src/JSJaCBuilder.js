@@ -26,14 +26,14 @@
  * This code is taken from {@link
  * http://wiki.script.aculo.us/scriptaculous/show/Builder
  * script.aculo.us' Dom Builder} and has been modified to suit our
- * needs.<br/> 
+ * needs.<br/>
  * The original parts of the code do have the following
- * copyright and license notice:<br/> 
- * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us, 
+ * copyright and license notice:<br/>
+ * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
  * http://mir.acu lo.us) <br/>
  * script.aculo.us is freely distributable under the terms of an
  * MIT-style license.<br>
- * For details, see the script.aculo.us web site: 
+ * For details, see the script.aculo.us web site:
  * http://script.aculo.us/<br>
  */
 var JSJaCBuilder = {
@@ -64,14 +64,14 @@ var JSJaCBuilder = {
             element.setAttribute(attr, arguments[2][attr]);
           }
         }
-            
+           
       }
     else
-      element = doc.createElement(elementName);    
+      element = doc.createElement(elementName);   
     // text, or array of children
     if(arguments[3])
       JSJaCBuilder._children(doc, element, arguments[3]);
-    
+   
     return element;
   },
 
@@ -110,7 +110,7 @@ var JSJaCBuilder = {
       }
     }
   },
-  
+ 
   _attributes: function(attributes) {
     var attrs = [];
     for(attribute in attributes)
@@ -119,7 +119,7 @@ var JSJaCBuilder = {
           '="' + attributes[attribute].toString().htmlEnc() + '"');
     return attrs.join(" ");
   },
-  
+ 
   _isStringOrNumber: function(param) {
     return(typeof param=='string' || typeof param=='number');
   }

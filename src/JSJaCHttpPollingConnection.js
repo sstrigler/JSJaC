@@ -5,7 +5,7 @@
  */
 
 /**
- * Instantiates an HTTP Polling session 
+ * Instantiates an HTTP Polling session
  * @class Implementation of {@link
  * http://www.xmpp.org/extensions/xep-0025.html HTTP Polling}
  * @extends JSJaCConnection
@@ -28,7 +28,7 @@ JSJaCHttpPollingConnection.prototype = new JSJaCConnection();
  * Useful if it needs to be decided
  * whether it makes sense to allow for adjusting or adjust the
  * polling interval {@link JSJaCConnection#setPollInterval}
- * @return <code>true</code> if this is a polling connection, 
+ * @return <code>true</code> if this is a polling connection,
  * <code>false</code> otherwise.
  * @type boolean
  */
@@ -38,10 +38,10 @@ JSJaCHttpPollingConnection.prototype.isPolling = function() { return true; };
  * @private
  */
 JSJaCHttpPollingConnection.prototype._getFreeSlot = function() {
-  if (typeof(this._req[0]) == 'undefined' || 
-      typeof(this._req[0].r) == 'undefined' || 
+  if (typeof(this._req[0]) == 'undefined' ||
+      typeof(this._req[0].r) == 'undefined' ||
       this._req[0].r.readyState == 4)
-    return 0; 
+    return 0;
   else
     return -1;
 };
@@ -123,7 +123,7 @@ JSJaCHttpPollingConnection.prototype._getStreamID = function() {
 
   if (this.register)
     this._doInBandReg();
-  else 
+  else
     this._doAuth();
 
   this._process(this._timerval); // start polling
@@ -187,7 +187,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
     this._handleEvent('ondisconnect');
     this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
     return null;
-  } 
+  }
 
   this.oDbg.log(req.getAllResponseHeaders(),4);
   var aPList = req.getResponseHeader('Set-Cookie');
@@ -232,7 +232,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
     return null;
 
   try {
-		
+	
     var doc = JSJaCHttpPollingConnection._parseTree("<body>"+req.responseText+"</body>");
 
     if (!doc || doc.tagName == 'parsererror') {
@@ -244,7 +244,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
 
         if (doc.getElementsByTagName('conflict').length > 0)
           this._setStatus("session-terminate-conflict");
-				
+			
         clearTimeout(this._timeout); // remove timer
         clearInterval(this._interval);
         clearInterval(this._inQto);
@@ -254,7 +254,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
         this._handleEvent('ondisconnect');
       } else
         this.oDbg.log("parsererror:"+doc,1);
-			
+		
       return doc;
     }
 
@@ -275,7 +275,7 @@ JSJaCHttpPollingConnection.prototype._reInitStream = function(to,cb,arg) {
 /**
  * @private
  */
-JSJaCHttpPollingConnection.prototype._resume = function() { 
+JSJaCHttpPollingConnection.prototype._resume = function() {
   this._process(this._timerval);
 };
 

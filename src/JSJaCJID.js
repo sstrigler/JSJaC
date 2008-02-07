@@ -9,13 +9,13 @@
  * list of forbidden chars for nodenames
  * @private
  */
-var JSJACJID_FORBIDDEN = ['"',' ','&','\'','/',':','<','>','@']; 
+var JSJACJID_FORBIDDEN = ['"',' ','&','\'','/',':','<','>','@'];
 
 /**
  * Creates a new JSJaCJID object
  * @class JSJaCJID models xmpp jid objects
  * @constructor
- * @param {Object} jid jid may be either of type String or a JID represented 
+ * @param {Object} jid jid may be either of type String or a JID represented
  * by JSON with fields 'node', 'domain' and 'resource'
  * @throws JSJaCJIDInvalidException Thrown if jid is not valid
  * @return a new JSJaCJID object
@@ -90,7 +90,7 @@ JSJaCJID.prototype.setNode = function(node) {
 /**
  * Sets the domain part of the jid
  * @param {String} domain Name of the domain
- * @throws JSJaCJIDInvalidException Thrown if domain name contains invalid 
+ * @throws JSJaCJIDInvalidException Thrown if domain name contains invalid
  * chars or is empty
  * @return This object
  * @type JSJaCJID
@@ -100,7 +100,7 @@ JSJaCJID.prototype.setDomain = function(domain) {
     throw new JSJaCJIDInvalidException("domain name missing");
   // chars forbidden for a node are not allowed in domain names
   // anyway, so let's check
-  JSJaCJID._checkNodeName(domain); 
+  JSJaCJID._checkNodeName(domain);
   this._domain = domain;
   return this;
 };
