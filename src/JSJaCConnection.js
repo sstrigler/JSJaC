@@ -311,6 +311,23 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   this.oDbg.log("registered handler for event '"+event+"'",2);
 };
 
+JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
+  event = event.toLowerCase(); // don't be case-sensitive here
+
+  if (!this._events[event])
+    return;
+
+  var arr = this._events[event], res = new Array();
+  for (var i=0; i<arr.length; i++)
+    if (arr[i] != handler)
+      res.push(arr[i]);
+
+  if (arr.length != res.length) {
+    this._events[event] = res;
+    this.oDbg.log("unregistered handler for event '"+event+"'",2);
+  }
+};
+
 /**
  * Register for iq packets of type 'get'.
  * @param {String} childName A childnode's name that must occur within a
