@@ -444,8 +444,9 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
  * @type boolean
  */
 JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
-  if (!iq || iq.pType != 'iq')
+  if (!iq || iq.pType() != 'iq') {
     return false;
+  }
 
   handlers = handlers || {};
   var error_handler = handlers.error_handler || function(aIq) {
