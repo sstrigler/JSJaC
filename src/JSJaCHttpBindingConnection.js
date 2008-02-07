@@ -222,7 +222,8 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
 
   this._timeout = setTimeout("oCon._process()",this.getPollInterval());
 
-  this._parseStreamFeatures(body);
+  if (!this._parseStreamFeatures(body))
+    return;
 
   if (this.register)
     this._doInBandReg();

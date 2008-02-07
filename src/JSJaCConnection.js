@@ -1048,6 +1048,30 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
     return false;
   }
 
+  var errorTag;
+  if (doc.getElementsByTagNameNS)
+    errorTag = doc.getElementsByTagNameNS("http://etherx.jabber.org/streams", "error").item(0);
+  else {
+    var errors = doc.getElementsByTagName("error");
+    for (var i=0; i<errors.length; i++)
+      if (errors.item(i).namespaceURI == "http://etherx.jabber.org/streams") {
+        errorTag = errors.item(i);
+        break;
+      }
+  }
+
+  if (errorTag) {
+    this._setStatus("internal_server_error");
+    clearTimeout(this._timeout); // remove timer
+    clearInterval(this._interval);
+    clearInterval(this._inQto);
+    this._handleEvent('onerror',JSJaCError('503','cancel','session-terminate'));
+    this._connected = false;
+    this.oDbg.log("Disconnected.",1);
+    this._handleEvent('ondisconnect');
+    return false;
+  }
+
   this.mechs = new Object();
   var lMec1 = doc.getElementsByTagName("mechanisms");
   this.has_sasl = false;
@@ -1071,6 +1095,8 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
    * check if in-band registration available
    * check for session and bind features
    */
+
+  return true;
 };
 
 /**
