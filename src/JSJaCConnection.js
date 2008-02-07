@@ -87,6 +87,10 @@ function JSJaCConnection(oArg) {
    * @private
    */
   this._inactivity = JSJAC_INACTIVITY;
+  /**
+   * @private
+   */
+  this._sendRawCallbacks = new Array();
 
   if (oArg && oArg.timerval)
     this.setPollInterval(oArg.timerval);
@@ -751,31 +755,12 @@ JSJaCConnection.prototype._doLegacyAuthDone = function(iq) {
  * @private
  */
 JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
-  var slot = this._getFreeSlot();
-  this._req[slot] = this._setupRequest(true);
+  if (cb)
+    this._sendRawCallbacks.push(new Array(cb, arg));
  
-  this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-      return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      if (typeof(cb) != 'undefined')
-        eval("oCon."+cb+"(oCon._req[slot],"+arg+")");
-    }
-  };
- 
-  if (typeof(this._req[slot].r.onerror) != 'undefined') {
-    this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-        return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
-      return false;
-    };
-  }
- 
-  var reqstr = this._getRequestString(xml);
-  this.oDbg.log("sending: " + reqstr,4);
-  this._req[slot].r.send(reqstr);
+  this._pQueue.push(xml);
+  this._process();
+
   return true;
 };
 
@@ -818,17 +803,13 @@ JSJaCConnection.prototype._doSASLAuth = function() {
 /**
  * @private
  */
-JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(req) {
-  this.oDbg.log(req.r.responseText,2);
-
-  var doc = oCon._parseResponse(req);
-  if (!doc || doc.getElementsByTagName("challenge").length == 0) {
+JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
+  if (el.nodeName != "challenge") {
     this.oDbg.log("challenge missing",1);
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
-    var challenge = atob(doc.getElementsByTagName("challenge")
-                         .item(0).firstChild.nodeValue);
+    var challenge = atob(el.firstChild.nodeValue);
     this.oDbg.log("got challenge: "+challenge,2);
     this._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
     this._nonce = this._nonce.substring(0,this._nonce.indexOf("\""));
@@ -876,14 +857,10 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(req) {
 /**
  * @private
  */
-JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
-  this.oDbg.log(req.r.responseText,2);
-
-  var doc = this._parseResponse(req);
-
-  if (doc.firstChild.nodeName == 'failure') {
-    if (doc.firstChild.xml)
-      this.oDbg.log("auth error: "+doc.firstChild.xml,1);
+JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
+  if (el.nodeName == 'failure') {
+    if (el.xml)
+      this.oDbg.log("auth error: "+el.xml,1);
     else
       this.oDbg.log("auth error",1);
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
@@ -891,7 +868,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
     return;
   }
 
-  var response = atob(doc.firstChild.firstChild.nodeValue);
+  var response = atob(el.firstChild.nodeValue);
   this.oDbg.log("response: "+response,2);
 
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
@@ -912,7 +889,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
     return;
   }
 
-  if (doc.firstChild.nodeName == 'success')
+  if (el.nodeName == 'success')
     this._reInitStream(this.domain,'_doStreamBind');
   else // some extra turn
     this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>",
@@ -922,9 +899,8 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(req) {
 /**
  * @private
  */
-JSJaCConnection.prototype._doSASLAuthDone = function (req) {
-  var doc = this._parseResponse(req);
-  if (!doc || doc.firstChild.nodeName != 'success') {
+JSJaCConnection.prototype._doSASLAuthDone = function (el) {
+  if (el.nodeName != 'success') {
     this.oDbg.log("auth failed",1);
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
@@ -1053,8 +1029,15 @@ JSJaCConnection.prototype._handleResponse = function(req) {
   if (!rootEl)
     return;
 
-  for (var i=0; i<rootEl.childNodes.length; i++)
+  for (var i=0; i<rootEl.childNodes.length; i++) {
+    if (this._sendRawCallbacks.length) {
+      var cb = this._sendRawCallbacks[0];
+      this._sendRawCallbacks = this._sendRawCallbacks.slice(1, this._sendRawCallbacks.length);
+      oCon[cb[0]].call(oCon, rootEl.childNodes.item(i), cb[1]);
+      continue;
+    }
     this._inQ = this._inQ.concat(rootEl.childNodes.item(i));
+  }
 };
 
 /**
