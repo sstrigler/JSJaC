@@ -754,19 +754,6 @@ JSJaCConnection.prototype._doLegacyAuthDone = function(iq) {
 /**
  * @private
  */
-JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
-  if (cb)
-    this._sendRawCallbacks.push(new Array(cb, arg));
- 
-  this._pQueue.push(xml);
-  this._process();
-
-  return true;
-};
-
-/**
- * @private
- */
 JSJaCConnection.prototype._doSASLAuth = function() {
   if (this.authtype == 'nonsasl' || this.authtype == 'anonymous')
     return false;
@@ -1233,6 +1220,19 @@ JSJaCConnection.prototype._sendEmpty = function JSJaCSendEmpty() {
   var reqstr = this._getRequestString();
   this.oDbg.log("sending: " + reqstr,4);
   this._req[slot].r.send(reqstr);
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
+  if (cb)
+    this._sendRawCallbacks.push(new Array(cb, arg));
+ 
+  this._pQueue.push(xml);
+  this._process();
+
+  return true;
 };
 
 /**
