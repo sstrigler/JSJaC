@@ -190,13 +190,18 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
   }
 
   this.oDbg.log(req.getAllResponseHeaders(),4);
-  var aPList = req.getResponseHeader('Set-Cookie');
-  aPList = aPList.split(";");
-  var sid;
-  for (var i=0;i<aPList.length;i++) {
-    var aArg = aPList[i].split("=");
-    if (aArg[0] == 'ID')
-      sid = aArg[1];
+  var sid, aPList = req.getResponseHeader('Set-Cookie');
+
+  if (aPList == null)
+    sid = "-1:0"; // Generate internal server error
+  else {
+    aPList = aPList.split(";");
+    var sid;
+    for (var i=0;i<aPList.length;i++) {
+      var aArg = aPList[i].split("=");
+      if (aArg[0] == 'ID')
+        sid = aArg[1];
+    }
   }
 
   // http polling component error
