@@ -296,6 +296,8 @@ JSJaCHttpPollingConnection.prototype._setupRequest = function(async) {
   var r = XmlHttp.create();
   try {
     r.open("POST",this._httpbase,async);
+    if (r.overrideMimeType)
+      r.overrideMimeType('text/plain; charset=utf-8');
     r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
   } catch(e) { this.oDbg.log(e,1); }
 
