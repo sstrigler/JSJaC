@@ -426,7 +426,7 @@ JSJaCHttpBindingConnection.prototype._reInitStream = function(to,cb,arg) {
 
   // tell http binding to reinit stream with/before next request
   oCon._reinit = true;
-  eval("oCon."+cb+"("+arg+")"); // proceed with next callback
+  cb.call(oCon,arg); // proceed with next callback
 
   /* [TODO] make sure that we're checking for new stream features when
    * 'cb' finishes

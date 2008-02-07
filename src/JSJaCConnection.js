@@ -762,14 +762,14 @@ JSJaCConnection.prototype._doSASLAuth = function() {
     if (this.mechs['ANONYMOUS']) {
       this.oDbg.log("SASL using mechanism 'ANONYMOUS'",2);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>",
-                           '_doSASLAuthDone');
+                           this._doSASLAuthDone);
     }
     this.oDbg.log("SASL ANONYMOUS requested but not supported",1);
   } else {
     if (this.mechs['DIGEST-MD5']) {
       this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",2);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",
-                           '_doSASLAuthDigestMd5S1');
+                           this._doSASLAuthDigestMd5S1);
     } else if (this.allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
       var authStr = this.username+'@'+
@@ -779,7 +779,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
       this.oDbg.log("authenticating with '"+authStr+"'",2);
       authStr = btoa(authStr);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>",
-                           '_doSASLAuthDone');
+                           this._doSASLAuthDone);
     }
     this.oDbg.log("No SASL mechanism applied",1);
     this.authtype = 'nonsasl'; // fallback
@@ -793,7 +793,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
 JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
   if (el.nodeName != "challenge") {
     this.oDbg.log("challenge missing",1);
-    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+    this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
     var challenge = atob(el.firstChild.nodeValue);
@@ -837,7 +837,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
 
     this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"+
                   binb2b64(str2binb(rPlain))+"</response>",
-                  '_doSASLAuthDigestMd5S2');
+                  this._doSASLAuthDigestMd5S2);
   }
 };
 
@@ -877,10 +877,10 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
   }
 
   if (el.nodeName == 'success')
-    this._reInitStream(this.domain,'_doStreamBind');
+    this._reInitStream(this.domain, this._doStreamBind);
   else // some extra turn
     this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>",
-                  '_doSASLAuthDone');
+                  this._doSASLAuthDone);
 };
 
 /**
@@ -892,7 +892,7 @@ JSJaCConnection.prototype._doSASLAuthDone = function (el) {
     oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else
-    this._reInitStream(this.domain,'_doStreamBind');
+    this._reInitStream(this.domain, this._doStreamBind);
 };
 
 /**
@@ -1020,7 +1020,7 @@ JSJaCConnection.prototype._handleResponse = function(req) {
     if (this._sendRawCallbacks.length) {
       var cb = this._sendRawCallbacks[0];
       this._sendRawCallbacks = this._sendRawCallbacks.slice(1, this._sendRawCallbacks.length);
-      oCon[cb[0]].call(oCon, rootEl.childNodes.item(i), cb[1]);
+      cb.fn.call(this, rootEl.childNodes.item(i), cb.arg);
       continue;
     }
     this._inQ = this._inQ.concat(rootEl.childNodes.item(i));
@@ -1227,7 +1227,7 @@ JSJaCConnection.prototype._sendEmpty = function JSJaCSendEmpty() {
  */
 JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
   if (cb)
-    this._sendRawCallbacks.push(new Array(cb, arg));
+    this._sendRawCallbacks.push({fn: cb, arg: arg});
  
   this._pQueue.push(xml);
   this._process();
