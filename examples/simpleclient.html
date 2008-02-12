@@ -171,12 +171,10 @@ function sendMsg(aForm) {
 }
 
 function quit() {
-	var p = new JSJaCPresence();
-	p.setStatus("bye");
-	p.setType("unavailable");
-	con.send(p);
-	
-	con.disconnect();
+  var p = new JSJaCPresence();
+  p.setType("unavailable");
+  con.send(p);
+  con.disconnect();
 
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
@@ -188,10 +186,10 @@ function init() {
     oDbg.start();
   } else {
     // if you're using firebug or safari, use this for debugging
-    oDbg = new JSJaCConsoleLogger(2);
+    //oDbg = new JSJaCConsoleLogger(2);
     // comment in above and remove comments below if you don't need debugging
-//     oDbg = function() {};
-//     oDbg.log = function() {};
+    oDbg = function() {};
+    oDbg.log = function() {};
   }
 
 
@@ -227,14 +225,15 @@ onerror = function(e) {
 };
 
 onunload = function() {
-  if (typeof(con) != 'undefined') {
+  if (typeof con != 'undefined' && con && con.connected()) {
   // save backend type
     if (con._hold) // must be binding
       (new JSJaCCookie('btype','binding')).write();
     else
       (new JSJaCCookie('btype','polling')).write();
-    if (con.suspend) 
+    if (con.suspend) {
       con.suspend(); 
+    }
   }
 };
 
