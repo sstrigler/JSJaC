@@ -85,18 +85,16 @@ JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
  * @param {int} timerval the interval in seconds
  */
 JSJaCHttpBindingConnection.prototype.setPollInterval = function(timerval) {
-  if (!timerval || isNaN(timerval)) {
-    this.oDbg.log("Invalid timerval: " + timerval,1);
-    return -1;
+  if (timerval && !isNaN(timerval)) {
+    if (!this.isPolling())
+      this._timerval = 100;
+    else if (this._min_polling && timerval < this._min_polling*1000)
+      this._timerval = this._min_polling*1000;
+    else if (this._inactivity && timerval > this._inactivity*1000)
+      this._timerval = this._inactivity*1000;
+    else
+      this._timerval = timerval;
   }
-  if (!this.isPolling())
-    this._timerval = 100;
-  else if (this._min_polling && timerval < this._min_polling*1000)
-    this._timerval = this._min_polling*1000;
-  else if (this._inactivity && timerval > this._inactivity*1000)
-    this._timerval = this._inactivity*1000;
-  else
-    this._timerval = timerval;
   return this._timerval;
 };
 
@@ -513,9 +511,6 @@ JSJaCHttpBindingConnection.prototype._suspend = function() {
   //reqstr += "<presence type='unavailable' xmlns='jabber:client'/>";
   reqstr += "</body>";
 
-  // Wait for response (for a limited time, 5s)
-  var abortTimerID = setTimeout(this._req[slot].r.abort, 5000);
   this.oDbg.log("Disconnecting: " + reqstr,4);
   this._req[slot].r.send(reqstr);
-  clearTimeout(abortTimerID);
 };
