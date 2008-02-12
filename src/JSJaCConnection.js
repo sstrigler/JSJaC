@@ -16,7 +16,7 @@
  * * <code>oDbg</code> (optional) a reference to a debugger interface
  */
 function JSJaCConnection(oArg) {
-  oCon = this; // remember reference to ourself
+
   if (oArg && oArg.oDbg && oArg.oDbg.log)
     /**
      * Reference to debugger interface
@@ -134,22 +134,20 @@ JSJaCConnection.prototype.connect = function(oArg) {
 
   this.oDbg.log(reqstr,4);
 
-  this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon)
-      return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._handleInitialResponse(slot); // handle response
-    }
-  };
-
+  this._req[slot].r.onreadystatechange = 
+  JSJaC.bind(function() {
+               if (this._req[slot].r.readyState == 4) {
+                 this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
+                 this._handleInitialResponse(slot); // handle response
+               }
+             }, this);
+  
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
-    this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-        return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
-      return false;
-    };
+    this._req[slot].r.onerror = 
+      JSJaC.bind(function(e) {
+                   this.oDbg.log('XmlHttpRequest error',1);
+                   return false;
+                 }, this);
   }
 
   this._req[slot].r.send(reqstr);
@@ -186,7 +184,7 @@ JSJaCConnection.prototype.disconnect = function() {
   request = this._getRequestString(false, true);
 
   // Wait for response (for a limited time, 5s)
-  var abortTimerID = setTimeout("oCon._req["+slot+"].r.abort();", 5000);
+  var abortTimerID = setTimeout(this._req[slot].r.abort, 5000);
   this.oDbg.log("Disconnecting: " + request,4);
   this._req[slot].r.send(request);
   clearTimeout(abortTimerID);
@@ -195,8 +193,8 @@ JSJaCConnection.prototype.disconnect = function() {
     JSJaCCookie.read('JSJaC_State').erase();
   } catch (e) {}
 
-  oCon.oDbg.log("Disconnected: "+oCon._req[slot].r.responseText,2);
-  oCon._handleEvent('ondisconnect');
+  this.oDbg.log("Disconnected: "+this._req[slot].r.responseText,2);
+  this._handleEvent('ondisconnect');
 };
 
 /**
@@ -396,10 +394,10 @@ JSJaCConnection.prototype.resume = function() {
     if (this._connected) {
       // don't poll too fast!
       this._handleEvent('onresume');
-      setTimeout("oCon._resume()",this.getPollInterval());
-      this._interval = setInterval("oCon._checkQueue()",
+      setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
+      this._interval = setInterval(JSJaC.bind(this._checkQueue, this),
 				   JSJAC_CHECKQUEUEINTERVAL);
-      this._inQto = setInterval("oCon._checkInQ();",
+      this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
 				JSJAC_CHECKINQUEUEINTERVAL);
     }
 
@@ -471,15 +469,15 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
 
   handlers = handlers || {};
   var error_handler = handlers.error_handler || function(aIq) {
-    oCon.oDbg.log(iq.xml(), 1);
+    this.oDbg.log(iq.xml(), 1);
   };
  
   var result_handler = handlers.result_handler ||  function(aIq) {
-    oCon.oDbg.log(aIq.xml(), 2);
+    this.oDbg.log(aIq.xml(), 2);
   };
   // unsure, what's the use of this?
   var default_handler = handlers.default_handler || function(aIq) {
-    oCon.oDbg.log(aIq.xml(), 2);
+    this.oDbg.log(aIq.xml(), 2);
   };
 
   var iqHandler = function(aIq, arg) {
@@ -673,14 +671,14 @@ JSJaCConnection.prototype._doInBandReg = function() {
  */
 JSJaCConnection.prototype._doInBandRegDone = function(iq) {
   if (iq && iq.getType() == 'error') { // we failed to register
-    oCon.oDbg.log("registration failed for "+oCon.username,0);
-    oCon._handleEvent('onerror',iq.getChild('error'));
+    this.oDbg.log("registration failed for "+this.username,0);
+    this._handleEvent('onerror',iq.getChild('error'));
     return;
   }
 
-  oCon.oDbg.log(oCon.username + " registered succesfully",0);
+  this.oDbg.log(this.username + " registered succesfully",0);
 
-  oCon._doAuth();
+  this._doAuth();
 };
 
 /**
@@ -694,9 +692,9 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
    * Non-SASL Authentication as described in JEP-0078
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,'get','auth1');
+  iq.setIQ(this.server,'get','auth1');
   iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
-                [['username', oCon.username]]);
+                [['username', this.username]]);
 
   this.send(iq,this._doLegacyAuth2);
   return true;
@@ -708,8 +706,8 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
 JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
   if (!iq || iq.getType() != 'result') {
     if (iq && iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getChild('error'));
-    oCon.disconnect();
+      this._handleEvent('onerror',iq.getChild('error'));
+    this.disconnect();
     return;
   }
 
@@ -719,24 +717,24 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
    * Send authentication
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(oCon.server,'set','auth2');
+  iq.setIQ(this.server,'set','auth2');
 
   query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
-                        [['username', oCon.username],
-                         ['resource', oCon.resource]]);
+                        [['username', this.username],
+                         ['resource', this.resource]]);
 
   if (use_digest) { // digest login
     query.appendChild(iq.buildNode('digest',
-                                   hex_sha1(oCon.streamid + oCon.pass)));
-  } else if (oCon.allow_plain) { // use plaintext auth
-    query.appendChild(iq.buildNode('password', oCon.pass));
+                                   hex_sha1(this.streamid + this.pass)));
+  } else if (this.allow_plain) { // use plaintext auth
+    query.appendChild(iq.buildNode('password', this.pass));
   } else {
-    oCon.oDbg.log("no valid login mechanism found",1);
-    oCon.disconnect();
+    this.oDbg.log("no valid login mechanism found",1);
+    this.disconnect();
     return false;
   }
 
-  oCon.send(iq,oCon._doLegacyAuthDone);
+  this.send(iq,this._doLegacyAuthDone);
 };
 
 /**
@@ -745,10 +743,10 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
 JSJaCConnection.prototype._doLegacyAuthDone = function(iq) {
   if (iq.getType() != 'result') { // auth' failed
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getChild('error'));
-    oCon.disconnect();
+      this._handleEvent('onerror',iq.getChild('error'));
+    this.disconnect();
   } else
-    oCon._handleEvent('onconnect');
+    this._handleEvent('onconnect');
 };
 
 /**
@@ -850,7 +848,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
       this.oDbg.log("auth error: "+el.xml,1);
     else
       this.oDbg.log("auth error",1);
-    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+    this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
     return;
   }
@@ -889,7 +887,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
 JSJaCConnection.prototype._doSASLAuthDone = function (el) {
   if (el.nodeName != 'success') {
     this.oDbg.log("auth failed",1);
-    oCon._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+    this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else
     this._reInitStream(this.domain, this._doStreamBind);
@@ -912,21 +910,21 @@ JSJaCConnection.prototype._doStreamBind = function() {
  */
 JSJaCConnection.prototype._doXMPPSess = function(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
-    oCon.disconnect();
+    this.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getChild('error'));
+      this._handleEvent('onerror',iq.getChild('error'));
     return;
   }
  
-  oCon.fulljid = iq.getChildVal("jid");
-  oCon.jid = oCon.fulljid.substring(0,oCon.fulljid.lastIndexOf('/'));
+  this.fulljid = iq.getChildVal("jid");
+  this.jid = this.fulljid.substring(0,this.fulljid.lastIndexOf('/'));
  
   iq = new JSJaCIQ();
   iq.setIQ(this.domain,'set','sess_1');
   iq.appendNode("session", {xmlns: "urn:ietf:params:xml:ns:xmpp-session"},
                 []);
-  oCon.oDbg.log(iq.xml());
-  oCon.send(iq,oCon._doXMPPSessDone);
+  this.oDbg.log(iq.xml());
+  this.send(iq,this._doXMPPSessDone);
 };
 
 /**
@@ -934,12 +932,12 @@ JSJaCConnection.prototype._doXMPPSess = function(iq) {
  */
 JSJaCConnection.prototype._doXMPPSessDone = function(iq) {
   if (iq.getType() != 'result' || iq.getType() == 'error') { // failed
-    oCon.disconnect();
+    this.disconnect();
     if (iq.getType() == 'error')
-      oCon._handleEvent('onerror',iq.getChild('error'));
+      this._handleEvent('onerror',iq.getChild('error'));
     return;
   } else
-    oCon._handleEvent('onconnect');
+    this._handleEvent('onconnect');
 };
  
 /**
@@ -966,11 +964,11 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
               continue;
             this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
           }
-          if (aEvent.handler(arg)) // handled!
+          if (aEvent.handler.call(this,arg)) // handled!
             break;
         }
         else
-          if (aEvent.handler()) // handled!
+          if (aEvent.handler.call(this)) // handled!
             break;
       } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1); }
     }
@@ -989,7 +987,7 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
       var pID = aJSJaCPacket.getID();
       this.oDbg.log("handling "+pID,3);
       try {
-        if (this._regIDs[i].cb(aJSJaCPacket,this._regIDs[i].arg) === false) {
+        if (this._regIDs[i].cb.call(this, aJSJaCPacket,this._regIDs[i].arg) === false) {
           // don't unregister
           return false;
         } else {
@@ -1128,42 +1126,44 @@ JSJaCConnection.prototype._process = function(timerval) {
   this._req[slot] = this._setupRequest(true);
 
   /* setup onload handler for async send */
-  this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-      return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon._setStatus('processing');
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._handleResponse(oCon._req[slot]);
-      // schedule next tick
-      if (oCon._pQueue.length) {
-        oCon._timeout = setTimeout("oCon._process()",100);
-      } else {
-        oCon.oDbg.log("scheduling next poll in "+oCon.getPollInterval()+
-                      " msec", 4);
-        oCon._timeout = setTimeout("oCon._process()",oCon.getPollInterval());
-      }
-    }
-  };
+  this._req[slot].r.onreadystatechange = 
+  JSJaC.bind(function() {
+               if (!this.connected())
+                 return;
+               if (this._req[slot].r.readyState == 4) {
+                 this._setStatus('processing');
+                 this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
+                 this._handleResponse(this._req[slot]);
+                 // schedule next tick
+                 if (this._pQueue.length) {
+                   this._timeout = setTimeout(JSJaC.bind(this._process, this),100);
+                 } else {
+                   this.oDbg.log("scheduling next poll in "+this.getPollInterval()+
+                                 " msec", 4);
+                   this._timeout = setTimeout(JSJaC.bind(this._process, this),this.getPollInterval());
+                 }
+               }
+             }, this);
 
   try {
-    this._req[slot].r.onerror = function() {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-        return;
-      oCon._errcnt++;
-      oCon.oDbg.log('XmlHttpRequest error ('+oCon._errcnt+')',1);
-      if (oCon._errcnt > JSJAC_ERR_COUNT) {
-        // abort
-        oCon._abort();
-        return false;
-      }
-
-      oCon._setStatus('onerror_fallback');
+    this._req[slot].r.onerror = 
+      JSJaC.bind(function() {
+                   if (!this.connected())
+                     return;
+                   this._errcnt++;
+                   this.oDbg.log('XmlHttpRequest error ('+this._errcnt+')',1);
+                   if (this._errcnt > JSJAC_ERR_COUNT) {
+                     // abort
+                     this._abort();
+                     return false;
+                   }
+                   
+                   this._setStatus('onerror_fallback');
 			
-      // schedule next tick
-      setTimeout("oCon._resume()",oCon.getPollInterval());
-      return false;
-    };
+                   // schedule next tick
+                   setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
+                   return false;
+                 }, this);
   } catch(e) { } // well ... no onerror property available, maybe we
   // can catch the error somewhere else ...
 
@@ -1199,22 +1199,20 @@ JSJaCConnection.prototype._sendEmpty = function JSJaCSendEmpty() {
   var slot = this._getFreeSlot();
   this._req[slot] = this._setupRequest(true);
 
-  this._req[slot].r.onreadystatechange = function() {
-    if (typeof(oCon) == 'undefined' || !oCon)
-      return;
-    if (oCon._req[slot].r.readyState == 4) {
-      oCon.oDbg.log("async recv: "+oCon._req[slot].r.responseText,4);
-      oCon._getStreamID(slot); // handle response
-    }
-  };
+  this._req[slot].r.onreadystatechange = 
+  JSJaC.bind(function() {
+               if (this._req[slot].r.readyState == 4) {
+                 this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
+                 this._getStreamID(slot); // handle response
+               }
+             },this);
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
-    this._req[slot].r.onerror = function(e) {
-      if (typeof(oCon) == 'undefined' || !oCon || !oCon.connected())
-        return;
-      oCon.oDbg.log('XmlHttpRequest error',1);
-      return false;
-    };
+    this._req[slot].r.onerror = 
+      JSJaC.bind(function(e) {
+                   this.oDbg.log('XmlHttpRequest error',1);
+                   return false;
+                 }, this);
   }
 
   var reqstr = this._getRequestString();
