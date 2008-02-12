@@ -149,7 +149,8 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
     if (last)
       reqstr += "type='terminate' ";
     else if (this._reinit) {
-      reqstr += "xmpp:restart='true' ";
+      if (JSJACHBC_USE_BOSH_VER) 
+        reqstr += "xmpp:restart='true' ";
       this._reinit = false;
     }
 
