@@ -1,0 +1,1 @@
+JSJaCPacket.getChild: check whether flattened version or deep search is compatible with event handling semantics. now that we're doing a deep search on all nodes, check whether that's a good thing or not. esp check getBody and such at all JSJaCPacket types.
