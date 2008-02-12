@@ -40,13 +40,7 @@ var JSJaC = {
     }
     for (var i=0; i<includes.length; i++)
       this.require(path+includes[i]+'.js');
-  },
-  bind: function(fn, obj, arg) {
-    return function() {
-      fn.apply(obj, arg);
-    };
   }
-};
+}
 
-if (typeof JSJaCConnection == 'undefined')
-  JSJaC.load();
+JSJaC.load();

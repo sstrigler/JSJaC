@@ -97,7 +97,8 @@ JSJaCHttpPollingConnection.prototype._getRequestString = function(raw, last) {
 JSJaCHttpPollingConnection.prototype._getStreamID = function() {
   if (this._req[0].r.responseText == '') {
     this.oDbg.log("waiting for stream id",2);
-    this._timeout = setTimeout(JSJaC.bind(this._sendEmpty, this),1000);
+    oCon = this;
+    this._timeout = setTimeout("oCon._sendEmpty()",1000);
     return;
   }
 
@@ -158,10 +159,9 @@ JSJaCHttpPollingConnection.prototype._handleInitialResponse = function() {
   /* start sending from queue for not polling connections */
   this._connected = true;
 
-  this._interval= setInterval(JSJaC.bind(this._checkQueue, this),
-                              JSJAC_CHECKQUEUEINTERVAL);
-  this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
-                            JSJAC_CHECKINQUEUEINTERVAL);
+  oCon = this;
+  this._interval= setInterval("oCon._checkQueue()",JSJAC_CHECKQUEUEINTERVAL);
+  this._inQto = setInterval("oCon._checkInQ();",JSJAC_CHECKINQUEUEINTERVAL);
 
   /* wait for initial stream response to extract streamid needed
    * for digest auth
@@ -281,7 +281,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
  * @private
  */
 JSJaCHttpPollingConnection.prototype._reInitStream = function(to,cb,arg) {
-  this._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
+  oCon._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
 };
 
 /**
