@@ -1,3 +1,10 @@
+JSJaC v1.3
+==========
+* all handlers/callbacks now have their context set to the connection, 
+  thus you can refer to it using 'this'.
+* JSJaCConnection.unregisterHandler added
+* lots of bugfixes
+
 JSJaC v1.2.2
 ============
 * added mootools packer to generate a packed version of jsjac 
