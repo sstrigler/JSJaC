@@ -502,11 +502,8 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
  * @type int
  */
 JSJaCConnection.prototype.setPollInterval = function(timerval) {
-  if (!timerval || isNaN(timerval)) {
-    this.oDbg.log("Invalid timerval: " + timerval,1);
-    throw "Invalid interval";
-  }
-  this._timerval = timerval;
+  if (timerval && !isNaN(timerval))
+    this._timerval = timerval;
   return this._timerval;
 };
 
@@ -1096,8 +1093,7 @@ JSJaCConnection.prototype._process = function(timerval) {
     return;
   }
 
-  if (timerval)
-    this.setPollInterval(timerval);
+  this.setPollInterval(timerval);
 
   if (this._timeout)
     clearTimeout(this._timeout);
