@@ -1,7 +1,3 @@
-if (typeof JSJaC == 'undefined') {
-  JSJaC = {Version: '1.2'};
- }
-
 var NS_DISCO_ITEMS =  "http://jabber.org/protocol/disco#items";
 var NS_DISCO_INFO =   "http://jabber.org/protocol/disco#info";
 var NS_VCARD =        "vcard-temp";

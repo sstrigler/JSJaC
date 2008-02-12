@@ -4,7 +4,8 @@ SRC=src/jsextras.js src/crypt.js src/JSJaCJSON.js src/xmlextras.js \
 src/JSJaCBuilder.js src/JSJaCConstants.js src/JSJaCConnection.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
 src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js \
-src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js 
+src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js \
+src/JSJaC.js
 
 all: clean utils install doc
 
