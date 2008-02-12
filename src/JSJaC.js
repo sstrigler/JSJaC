@@ -6,7 +6,7 @@
  */
 
 var JSJaC = {
-  Version: '$Rev$',
+  Version: '1.3',
   require: function(libraryName) {
     // inserting via DOM fails in Safari 2.0, so brute force approach
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
