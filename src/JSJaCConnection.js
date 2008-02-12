@@ -183,11 +183,8 @@ JSJaCConnection.prototype.disconnect = function() {
 
   request = this._getRequestString(false, true);
 
-  // Wait for response (for a limited time, 5s)
-  var abortTimerID = setTimeout(this._req[slot].r.abort, 5000);
   this.oDbg.log("Disconnecting: " + request,4);
   this._req[slot].r.send(request);
-  clearTimeout(abortTimerID);
 
   try {
     JSJaCCookie.read('JSJaC_State').erase();
