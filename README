@@ -50,13 +50,6 @@ this job for you:
 With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
 
-for in Intrigue
----------------
-
-JSJaC extends the prototypes of the built-in types. This may cause
-problems with for loops. Please have a look at
-http://yuiblog.com/blog/2006/09/26/for-in-intrigue/ for a detailed
-description of what's going on here and how to fix it.
 
 Debug Logger
 ------------
@@ -64,8 +57,8 @@ Debug Logger
 JSJaCConnection supports use of [3]JSDebugger which is available
 separately.
 
-JSJaC also ships with a class 'FirebugLogger' which lets you log to
-Firebug's console.
+JSJaC also ships with a class 'JSJaCConsoleLogger' which lets you log to
+Firebug's and Safari's console.
 
 
 Example
@@ -76,26 +69,16 @@ please have to look at 'examples/simpleclient.html'.
 Supported Browsers and Platforms
 ================================
 
-Windows
--------
-* Internet Explorer 5.5+
-* Mozilla/Firefox 1.5+
-* Netscape 7.0+
-* Opera 9.0+
+The following browsers are known to work. Let me know about others!
 
-Linux/UNI*X
------------
-* Mozilla/Firefox 1.5+
-* Opera 9.0+
-* Netscape 7.0+
-* Konqueror
-
-Macintosh
----------
-* Mozilla/Firefox 1.5+
-* Safari
+Microsoft Internet Explorer 6+7
+Firefox 2.0.x
+Opera 9
+Safari 3
 
 
+References:
+===========
 [1] http://www.jabber.org/jeps/jep-0025.html
 [2] http://www.jabber.org/jeps/jep-0124.html
 [3] http://svn.stefan-strigler.de/JSDebugger/trunk
