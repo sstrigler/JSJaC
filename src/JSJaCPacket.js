@@ -554,7 +554,7 @@ JSJaCIQ.prototype.reply = function(payload) {
   rIQ.setType('result');
   if (payload) {
     if (typeof payload == 'string')
-      rIQ.getChild.appendChild(rIQ.getDoc().loadXML(payload));
+      rIQ.getChild().appendChild(rIQ.getDoc().loadXML(payload));
     else if (payload.constructor == Array) {
       var node = rIQ.getChild();
       for (var i=0; i<payload.length; i++)
