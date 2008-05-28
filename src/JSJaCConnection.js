@@ -318,7 +318,7 @@ JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
 
   var arr = this._events[event], res = new Array();
   for (var i=0; i<arr.length; i++)
-    if (arr[i] != handler)
+    if (arr[i].handler != handler)
       res.push(arr[i]);
 
   if (arr.length != res.length) {
