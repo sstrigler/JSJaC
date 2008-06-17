@@ -1,3 +1,8 @@
+JSJaC v1.3.1
+============
+* changed licensing to Mozilla's tri-license model (MPL, GPL, LGPL)
+* some little bugfixes
+
 JSJaC v1.3
 ==========
 * all handlers/callbacks now have their context set to the connection, 
