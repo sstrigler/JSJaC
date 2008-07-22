@@ -324,8 +324,13 @@ JSJaCPacket.prototype._setChildNode = function(nodeName, nodeValue) {
       aNode.replaceChild(tNode,aNode.firstChild);
     } catch (e) { }
   else {
-    aNode = this.getNode().appendChild(this.getDoc().
-                                       createElement(nodeName));
+    try {
+      aNode = this.getDoc().createElementNS(this.getNode().namespaceURI,
+                                            nodeName);
+    } catch (ex) {
+      aNode = this.getDoc().createElement(nodeName)
+    }
+    this.getNode().appendChild(aNode);
     aNode.appendChild(tNode);
   }
   return aNode;
