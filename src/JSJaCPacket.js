@@ -377,7 +377,9 @@ JSJaCPacket.prototype.appendNode = function(element) {
   } else { // build node
     return this.getNode().appendChild(this.buildNode(element,
                                                      arguments[1],
-                                                     arguments[2]));
+                                                     arguments[2],
+                                                     null,
+                                                     this.getNode().namespaceURI));
   }
 };
 

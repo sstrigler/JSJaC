@@ -42,37 +42,43 @@ var JSJaCBuilder = {
    */
   buildNode: function(doc, elementName) {
 
-    var element;
+    var element, ns = arguments[4];
 
     // attributes (or text)
     if(arguments[2])
       if(JSJaCBuilder._isStringOrNumber(arguments[2]) ||
          (arguments[2] instanceof Array)) {
-        element = doc.createElement(elementName);
+        element = this._createElement(doc, elementName, ns);
         JSJaCBuilder._children(doc, element, arguments[2]);
       } else {
-        if (arguments[2]['xmlns']) {
-          try {
-            element = doc.createElementNS(arguments[2]['xmlns'],elementName);
-          } catch(e) { element = doc.createElement(elementName); }
-        } else
-          element = doc.createElement(elementName);
+        ns = arguments[2]['xmlns'] || ns;
+        element = this._createElement(doc, elementName, ns);
         for(attr in arguments[2]) {
-          if (arguments[2].hasOwnProperty(attr)) {
-            if (attr == 'xmlns' && element.namespaceURI == attr)
-              continue;
+          if (arguments[2].hasOwnProperty(attr) && attr != 'xmlns')
             element.setAttribute(attr, arguments[2][attr]);
-          }
         }
-           
       }
     else
-      element = doc.createElement(elementName);   
+      element = this._createElement(doc, elementName, ns);
     // text, or array of children
     if(arguments[3])
-      JSJaCBuilder._children(doc, element, arguments[3]);
-   
+      JSJaCBuilder._children(doc, element, arguments[3], ns);
+
     return element;
+  },
+
+  _createElement: function(doc, elementName, ns) {
+    try {
+      if (ns)
+        return doc.createElementNS(ns, elementName);
+    } catch (ex) { }
+
+    var el = doc.createElement(elementName);
+
+    if (ns)
+      el.setAttribute("xmlns", ns);
+
+    return el;
   },
 
   /**
@@ -85,14 +91,14 @@ var JSJaCBuilder = {
   /**
    * @private
    */
-  _children: function(doc, element, children) {
+  _children: function(doc, element, children, ns) {
     if(typeof children=='object') { // array can hold nodes and text
       for (var i in children) {
         if (children.hasOwnProperty(i)) {
           var e = children[i];
           if (typeof e=='object') {
             if (e instanceof Array) {
-              var node = JSJaCBuilder.buildNode(doc, e[0], e[1], e[2]);
+              var node = JSJaCBuilder.buildNode(doc, e[0], e[1], e[2], ns);
               element.appendChild(node);
             } else {
               element.appendChild(e);
@@ -110,7 +116,7 @@ var JSJaCBuilder = {
       }
     }
   },
- 
+
   _attributes: function(attributes) {
     var attrs = [];
     for(attribute in attributes)
@@ -119,7 +125,7 @@ var JSJaCBuilder = {
           '="' + attributes[attribute].toString().htmlEnc() + '"');
     return attrs.join(" ");
   },
- 
+
   _isStringOrNumber: function(param) {
     return(typeof param=='string' || typeof param=='number');
   }

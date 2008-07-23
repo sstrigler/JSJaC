@@ -718,10 +718,11 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
                          ['resource', this.resource]]);
 
   if (use_digest) { // digest login
-    query.appendChild(iq.buildNode('digest',
+    query.appendChild(iq.buildNode('digest', {xmlns: 'jabber:iq:auth'},
                                    hex_sha1(this.streamid + this.pass)));
   } else if (this.allow_plain) { // use plaintext auth
-    query.appendChild(iq.buildNode('password', this.pass));
+    query.appendChild(iq.buildNode('password', {xmlns: 'jabber:iq:auth'},
+                                   this.pass));
   } else {
     this.oDbg.log("no valid login mechanism found",1);
     this.disconnect();
