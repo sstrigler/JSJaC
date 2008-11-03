@@ -269,17 +269,17 @@ JSJaCPacket.prototype.errorReply = function(stanza_error) {
  * Returns a string representation of the raw xml content of this packet.
  * @type String
  */
-JSJaCPacket.prototype.xml = function() {
-
-  if (this.getDoc().xml) // IE
-    return this.getDoc().xml;
-
-  var xml = (new XMLSerializer()).serializeToString(this.getNode());
-  if (typeof(xml) != 'undefined')
-    return xml;
-  return (new XMLSerializer()).serializeToString(this.doc); // oldschool
-
+JSJaCPacket.prototype.xml = typeof XMLSerializer != 'undefined' ?
+function() {
+  var r = (new XMLSerializer()).serializeToString(this.getNode());
+  if (typeof(r) == 'undefined')
+    r = (new XMLSerializer()).serializeToString(this.doc); // oldschool
+  return r
+} :
+function() {// IE
+  return this.getDoc().xml
 };
+
 
 // PRIVATE METHODS DOWN HERE
 
