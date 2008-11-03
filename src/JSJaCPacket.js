@@ -221,11 +221,14 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
  */
 JSJaCPacket.prototype.getChildVal = function(name, ns) {
   var node = this.getChild(name, ns);
-  if (node && node.firstChild) {
-    return node.firstChild.nodeValue;
-  } else {
-    return '';
+  var ret = '';
+  if (node && node.hasChildNodes()) {
+    // concatenate all values from childNodes
+    for (var i=0; i<node.childNodes.length; i++)
+      if (node.childNodes.item(i).nodeValue)
+        ret += node.childNodes.item(i).nodeValue;
   }
+  return ret;
 };
 
 /**
