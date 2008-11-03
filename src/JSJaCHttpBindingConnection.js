@@ -147,10 +147,10 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
       }
     }
     if (last)
-      reqstr += "type='terminate' ";
+      reqstr += "type='terminate'";
     else if (this._reinit) {
       if (JSJACHBC_USE_BOSH_VER) 
-        reqstr += "xmpp:restart='true' ";
+        reqstr += "xmpp:restart='true'";
       this._reinit = false;
     }
 
