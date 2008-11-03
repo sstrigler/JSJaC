@@ -43,7 +43,7 @@ function JSJaCCookie(name,value,secs)
    * stored data gets lost when browser is being closed. 
    * @type int
    */
-  this.expires = secs;
+  this.secs = secs;
 
   /**
    * Stores this cookie
