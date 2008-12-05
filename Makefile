@@ -1,5 +1,6 @@
 OUTFILE=./jsjac.js
 PACKFILE=./jsjac.packed.js
+UNCOMPRESSED=./jsjac.uncompressed.js
 SRC=src/jsextras.js src/crypt.js src/JSJaCJSON.js src/xmlextras.js \
 src/JSJaCBuilder.js src/JSJaCConstants.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
@@ -9,7 +10,7 @@ src/JSJaC.js
 
 all: clean utils install doc
 
-install: build crunch  
+install: build uncompressed crunch  
 	@echo "done."
 
 build: 
@@ -53,5 +54,12 @@ clean:
 	@rm -f $(PACKFILE) 2>/dev/null
 	@rm -rf doc/
 	@make -C utils clean
+
+uncompressed: 
+	@if [ -e $(OUTFILE) ]; then \
+		cat src/header.js > $(UNCOMPRESSED) && \
+		cat src/JSJaCConfig.js >> $(UNCOMPRESSED) && \
+		cat $(OUTFILE) >> $(UNCOMPRESSED); \
+	fi
 
 .PHONY: doc utils
