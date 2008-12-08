@@ -52,6 +52,7 @@ utils:
 clean:
 	@rm -f $(OUTFILE) 2>/dev/null
 	@rm -f $(PACKFILE) 2>/dev/null
+	@rm -f $(UNCOMPRESSED) 2>/dev/null
 	@rm -rf doc/
 	@make -C utils clean
 
