@@ -17,31 +17,38 @@
  */
 function JSJaCConnection(oArg) {
 
-  if (oArg && oArg.oDbg && oArg.oDbg.log)
-    /**
-     * Reference to debugger interface
-     *(needs to implement method <code>log</code>)
-     * @type Debugger
-     */
-    this.oDbg = oArg.oDbg;
-  else {
-    this.oDbg = new Object(); // always initialise a debugger
-    this.oDbg.log = function() { };
-  }
+  if (oArg) {
+    if (oArg.oDbg && oArg.oDbg.log) {
+      /**
+       * Reference to debugger interface
+       * (needs to implement method <code>log</code>)
+       * @type Debugger
+       */
+      this.oDbg = oArg.oDbg;
+    } else {
+      this.oDbg = new Object(); // always initialise a debugger
+      this.oDbg.log = function() { };
+    }
 
-  if (oArg && oArg.httpbase)
-    /**
-     * @private
-     */
-    this._httpbase = oArg.httpbase;
+    if (oArg.timerval)
+      this.setPollInterval(oArg.timerval);
+    else 
+      this.setPollInterval(JSJAC_TIMERVAL);
+
+    if (oArg.httpbase)
+      /**
+       * @private
+       */
+      this._httpbase = oArg.httpbase;
  
-  if (oArg && oArg.allow_plain)
-    /**
-     * @private
-     */
-    this.allow_plain = oArg.allow_plain;
-  else
-    this.allow_plain = JSJAC_ALLOW_PLAIN;
+    if (oArg.allow_plain)
+      /**
+       * @private
+       */
+      this.allow_plain = oArg.allow_plain;
+    else
+      this.allow_plain = JSJAC_ALLOW_PLAIN;
+  }
 
   /**
    * @private
@@ -91,9 +98,6 @@ function JSJaCConnection(oArg) {
    * @private
    */
   this._sendRawCallbacks = new Array();
-
-  if (oArg && oArg.timerval)
-    this.setPollInterval(oArg.timerval);
 }
 
 JSJaCConnection.prototype.connect = function(oArg) {
