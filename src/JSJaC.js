@@ -41,12 +41,9 @@ var JSJaC = {
     for (var i=0; i<includes.length; i++)
       this.require(path+includes[i]+'.js');
   },
-  bind: function(fn, obj, arg) {
-    return function() {
-      if (arg)
-        fn.apply(obj, arg);
-      else
-        fn.apply(obj);
+  bind: function(fn, obj, optArg) {
+    return function(arg) {
+      fn.apply(obj, [arg, optArg]);
     };
   }
 };
