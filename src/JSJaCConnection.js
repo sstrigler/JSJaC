@@ -470,7 +470,7 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
 
   handlers = handlers || {};
   var error_handler = handlers.error_handler || function(aIq) {
-    this.oDbg.log(iq.xml(), 1);
+    this.oDbg.log(aIq.xml(), 1);
   };
  
   var result_handler = handlers.result_handler ||  function(aIq) {
