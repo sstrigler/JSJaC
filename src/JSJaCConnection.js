@@ -950,7 +950,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
   this.oDbg.log("handling event '"+event+"'",2);
   for (var i=0;i<this._events[event].length; i++) {
     var aEvent = this._events[event][i];
-    if (aEvent.handler) {
+    if (typeof aEvent.handler == 'function') {
       try {
         if (arg) {
           if (arg.pType) { // it's a packet
@@ -963,12 +963,16 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
               continue;
             this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
           }
-          if (aEvent.handler.call(this,arg)) // handled!
+          if (aEvent.handler(arg)) {
+            // handled!
             break;
+          }
         }
         else
-          if (aEvent.handler.call(this)) // handled!
+          if (aEvent.handler()) {
+            // handled!
             break;
+          }
       } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1); }
     }
   }
