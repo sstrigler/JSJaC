@@ -43,7 +43,7 @@ var JSJaC = {
   },
   bind: function(fn, obj, optArg) {
     return function(arg) {
-      fn.apply(obj, [arg, optArg]);
+      return fn.apply(obj, [arg, optArg]);
     };
   }
 };
