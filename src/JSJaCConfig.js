@@ -3,7 +3,8 @@ var JSJAC_HAVEKEYS = true;          // whether to use keys
 var JSJAC_NKEYS    = 16;            // number of keys to generate
 var JSJAC_INACTIVITY = 300;         // qnd hack to make suspend/resume 
                                     // work more smoothly with polling
-var JSJAC_ERR_COUNT = 10;           // number of retries in case of connection errors
+var JSJAC_ERR_COUNT = 10;           // number of retries in case of connection
+                                    // errors
 
 var JSJAC_ALLOW_PLAIN = true;       // whether to allow plaintext logins
 

@@ -210,7 +210,7 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
     return nodes.item(0);
   }
   return null; // nothing found
-}
+};
 
 /**
  * Gets the node value of a child element of this packet.
