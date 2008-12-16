@@ -828,7 +828,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     var rPlain = 'username="'+this.username+'",realm="'+this.domain+
     '",nonce="'+this._nonce+'",cnonce="'+this._cnonce+'",nc="'+this._nc+
     '",qop=auth,digest-uri="'+this._digest_uri+'",response="'+response+
-    '",charset=utf-8';
+    '",charset="utf-8"';
    
     this.oDbg.log("response: "+rPlain,2);
 
