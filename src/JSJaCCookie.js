@@ -18,11 +18,13 @@
  * Creates a new Cookie
  * @class Class representing browser cookies for storing small amounts of data
  * @constructor
- * @param {String} name  The name of the value to store
- * @param {String} value The value to store
- * @param {int}    secs  Number of seconds until cookie expires (may be empty)
+ * @param {String} name   The name of the value to store
+ * @param {String} value  The value to store
+ * @param {int}    secs   Number of seconds until cookie expires (may be empty)
+ * @param {String} domain The domain for the cookie
+ * @param {String} path   The path of cookie
  */
-function JSJaCCookie(name,value,secs)
+function JSJaCCookie(name,value,secs,domain,path)
 {
   if (window == this)
     return new JSJaCCookie(name, value, secs);
@@ -46,6 +48,18 @@ function JSJaCCookie(name,value,secs)
   this.secs = secs;
 
   /**
+   * The cookie's domain
+   * @type string
+   */
+  this.domain = domain;
+
+  /**
+   * The cookie's path
+   * @type string
+   */
+  this.path = path;
+
+  /**
    * Stores this cookie
    */
   this.write = function() {
@@ -55,7 +69,12 @@ function JSJaCCookie(name,value,secs)
       var expires = "; expires="+date.toGMTString();
     } else
       var expires = "";
-    document.cookie = this.getName()+"="+this.getValue()+expires+"; path=/";
+    var domain = this.domain?"; domain="+this.domain:"";
+    var path = this.path?"; path="+this.path:"; path=/";
+    document.cookie = this.getName()+"="+this.getValue()+
+      expires+
+      domain+
+      path;
   };
   /**
    * Deletes this cookie
@@ -102,6 +121,28 @@ function JSJaCCookie(name,value,secs)
    */
   this.setValue = function(value) {
     this.value = value;
+    return this;
+  };
+
+  /**
+   * Sets the domain of this cookie
+   * @param {String} domain The value for the domain of the cookie
+   * @return This cookie
+   * @type Cookie
+   */
+  this.setDomain = function(domain) {
+    this.domain = domain;
+    return this;
+  };
+
+  /**
+   * Sets the path of this cookie
+   * @param {String} path The value of the path of the cookie
+   * @return This cookie
+   * @type Cookie
+   */
+  this.setPath = function(path) {
+    this.path = path;
     return this;
   };
 }
