@@ -16,39 +16,45 @@
  * * <code>oDbg</code> (optional) a reference to a debugger interface
  */
 function JSJaCConnection(oArg) {
-
-  if (oArg) {
-    if (oArg.oDbg && oArg.oDbg.log) {
+  
+  if (oArg && oArg.oDbg && oArg.oDbg.log) {
       /**
        * Reference to debugger interface
        * (needs to implement method <code>log</code>)
        * @type Debugger
        */
-      this.oDbg = oArg.oDbg;
-    } else {
-      this.oDbg = new Object(); // always initialise a debugger
-      this.oDbg.log = function() { };
-    }
-
-    if (oArg.timerval)
-      this.setPollInterval(oArg.timerval);
-    else 
-      this.setPollInterval(JSJAC_TIMERVAL);
-
-    if (oArg.httpbase)
-      /**
-       * @private
-       */
-      this._httpbase = oArg.httpbase;
- 
-    if (oArg.allow_plain)
-      /**
-       * @private
-       */
-      this.allow_plain = oArg.allow_plain;
-    else
-      this.allow_plain = JSJAC_ALLOW_PLAIN;
+    this.oDbg = oArg.oDbg;
+  } else {
+    this.oDbg = new Object(); // always initialise a debugger
+    this.oDbg.log = function() { };
   }
+  
+  if (oArg && oArg.timerval)
+    this.setPollInterval(oArg.timerval);
+  else 
+    this.setPollInterval(JSJAC_TIMERVAL);
+
+  if (oArg && oArg.httpbase)
+      /**
+       * @private
+       */
+    this._httpbase = oArg.httpbase;
+ 
+  if (oArg &&oArg.allow_plain)
+      /**
+       * @private
+       */
+    this.allow_plain = oArg.allow_plain;
+  else
+    this.allow_plain = JSJAC_ALLOW_PLAIN;
+  
+  if (oArg && oArg.cookie_prefix)
+      /**
+       * @private
+       */
+    this._cookie_prefix = oArg.cookie_prefix;
+  else
+    this._cookie_prefix = "";
 
   /**
    * @private
@@ -191,7 +197,7 @@ JSJaCConnection.prototype.disconnect = function() {
   this._req[slot].r.send(request);
 
   try {
-    JSJaCCookie.read('JSJaC_State').erase();
+    JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
   } catch (e) {}
 
   this.oDbg.log("Disconnected: "+this._req[slot].r.responseText,2);
@@ -369,7 +375,7 @@ JSJaCConnection.prototype.registerIQSet =
 JSJaCConnection.prototype.resume = function() {
   try {
     this._setStatus('resuming');
-    var s = JSJaCCookie.read('JSJaC_State').getValue();
+    var s = JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').getValue();
      
     this.oDbg.log('read cookie: '+s,2);
 
@@ -389,7 +395,7 @@ JSJaCConnection.prototype.resume = function() {
     }
 
     try {
-      JSJaCCookie.read('JSJaC_State').erase();
+      JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
     } catch (e) {}
 
     if (this._connected) {
@@ -556,16 +562,16 @@ JSJaCConnection.prototype.suspend = function() {
     s[u[i]] = o;
   }
 
-  var c = new JSJaCCookie('JSJaC_State', JSJaCJSON.toString(s));
+  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State', JSJaCJSON.toString(s));
   this.oDbg.log("writing cookie: "+c.value+"\n"+
                 "(length:"+c.value.length+")",2);
   c.write();
 
   try {
-    var c2 = JSJaCCookie.read('JSJaC_State');
+    var c2 = JSJaCCookie.read(this._cookie_prefix+'JSJaC_State');
     if (c.value != c2.value) {
       this.oDbg.log("Suspend failed writing cookie.\nRead: "+
-                    JSJaCCookie.read('JSJaC_State'), 1);
+                    JSJaCCookie.read(this._cookie_prefix+'JSJaC_State'), 1);
       c.erase();
     }
 
@@ -573,7 +579,8 @@ JSJaCConnection.prototype.suspend = function() {
 
     this._setStatus('suspending');
   } catch (e) {
-    this.oDbg.log("Failed creating cookie 'JSJaC_State': "+e.message);
+    this.oDbg.log("Failed creating cookie '"+this._cookie_prefix+
+                  "JSJaC_State': "+e.message);
   }
 
 };
