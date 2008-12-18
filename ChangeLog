@@ -1,3 +1,15 @@
+JSJaC v1.3.3
+============
+* allow to set 'cookie_prefix' at Connection constructors
+* fixed event handler bubbling (wasn't able to stop)
+* JSJaCCookie: allow to set domain and path
+* JSJaC.bind: pass args correctly
+
+JSJaC v1.3.2
+============
+* fixed compatibility issues with Firefox3
+* fixed some little bugs
+
 JSJaC v1.3.1
 ============
 * changed licensing to Mozilla's tri-license model (MPL, GPL, LGPL)
