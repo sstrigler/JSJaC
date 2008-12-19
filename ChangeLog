@@ -4,6 +4,7 @@ JSJaC v1.3.3
 * fixed event handler bubbling (wasn't able to stop)
 * JSJaCCookie: allow to set domain and path
 * JSJaC.bind: pass args correctly
+* XmlDocument.create: removed alert in case of error
 
 JSJaC v1.3.2
 ============
