@@ -91,6 +91,7 @@ function XmlDocument() {}
 XmlDocument.create = function (name,ns) {
   name = name || 'foo';
   ns = ns || '';
+
   try {
     var doc;
     // DOM2
@@ -135,7 +136,7 @@ XmlDocument.create = function (name,ns) {
    
     return doc;
   }
-  catch (ex) { alert(ex.name+": "+ex.message); }
+  catch (ex) { }
   throw new Error("Your browser does not support XmlDocument objects");
 };
 
