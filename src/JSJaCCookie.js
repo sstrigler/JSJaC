@@ -1,4 +1,5 @@
 /* Copyright 2003-2006 Peter-Paul Koch
+ *           2006-2008 Stefan Strigler
  */
 
 /**
