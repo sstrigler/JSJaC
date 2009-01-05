@@ -27,7 +27,7 @@
 function JSJaCCookie(name,value,secs,domain,path)
 {
   if (window == this)
-    return new JSJaCCookie(name, value, secs);
+    return new JSJaCCookie(name, value, secs, domain, path);
 
   /**
    * This cookie's name
