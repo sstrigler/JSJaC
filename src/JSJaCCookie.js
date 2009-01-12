@@ -72,7 +72,7 @@ function JSJaCCookie(name,value,secs,domain,path)
       var expires = "";
     var domain = this.domain?"; domain="+this.domain:"";
     var path = this.path?"; path="+this.path:"; path=/";
-    document.cookie = this.getName()+"="+this.getValue()+
+    document.cookie = this.getName()+"="+JSJaCCookie._escape(this.getValue())+
       expires+
       domain+
       path;
@@ -162,7 +162,10 @@ JSJaCCookie.read = function(name) {
   for(var i=0;i < ca.length;i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') c = c.substring(1,c.length);
-    if (c.indexOf(nameEQ) == 0) return new JSJaCCookie(name, c.substring(nameEQ.length,c.length));
+    if (c.indexOf(nameEQ) == 0) 
+      return new JSJaCCookie(
+        name, 
+        JSJaCCookie._unescape(c.substring(nameEQ.length,c.length)));
   }
   throw new JSJaCCookieException("Cookie not found");
 };
@@ -187,6 +190,20 @@ JSJaCCookie.get = function(name) {
 JSJaCCookie.remove = function(name) {
   JSJaCCookie.read(name).erase();
 };
+
+/**
+ * @private
+ */
+JSJaCCookie._escape = function(str) {
+  return str.replace(/;/g, "%3AB");
+}
+
+/**
+ * @private
+ */
+JSJaCCookie._unescape = function(str) {
+  return str.replace(/%3AB/g, ";");
+}
 
 /**
  * Some exception denoted to dealing with cookies
