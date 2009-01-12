@@ -562,16 +562,16 @@ JSJaCConnection.prototype.suspend = function() {
     s[u[i]] = o;
   }
 
-  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State', JSJaCJSON.toString(s));
-  this.oDbg.log("writing cookie: "+c.value+"\n"+
-                "(length:"+c.value.length+")",2);
+  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State');
+  c.setValue(JSJaCJSON.toString(s));
+  this.oDbg.log("writing cookie: "+c.getValue()+"\n"+
+                "(length:"+c.getValue().length+")",2);
   c.write();
 
   try {
-    var c2 = JSJaCCookie.read(this._cookie_prefix+'JSJaC_State');
-    if (c.value != c2.value) {
-      this.oDbg.log("Suspend failed writing cookie.\nRead: "+
-                    JSJaCCookie.read(this._cookie_prefix+'JSJaC_State'), 1);
+    var c2 = JSJaCCookie.get(this._cookie_prefix+'JSJaC_State');
+    if (c.getValue() != c2) {
+      this.oDbg.log("Suspend failed writing cookie.\nread: " + c2, 1);
       c.erase();
     }
 
