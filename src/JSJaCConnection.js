@@ -562,8 +562,7 @@ JSJaCConnection.prototype.suspend = function() {
     s[u[i]] = o;
   }
 
-  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State');
-  c.setValue(JSJaCJSON.toString(s));
+  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State', JSJaCJSON.toString(s));
   this.oDbg.log("writing cookie: "+c.getValue()+"\n"+
                 "(length:"+c.getValue().length+")",2);
   c.write();
@@ -580,9 +579,8 @@ JSJaCConnection.prototype.suspend = function() {
     this._setStatus('suspending');
   } catch (e) {
     this.oDbg.log("Failed creating cookie '"+this._cookie_prefix+
-                  "JSJaC_State': "+e.message);
+                  "JSJaC_State': "+e.message,1);
   }
-
 };
 
 /**
