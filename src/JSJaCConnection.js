@@ -374,16 +374,28 @@ JSJaCConnection.prototype.registerIQSet =
  */
 JSJaCConnection.prototype.resume = function() {
   try {
-    this._setStatus('resuming');
-    var s = JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').getValue();
-     
-    this.oDbg.log('read cookie: '+s,2);
+    var json = JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').getValue(); 
+    this.oDbg.log('read cookie: '+json,2);
+    JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
 
-    var o = JSJaCJSON.parse(s);
-     
-    for (var i in o)
-      if (o.hasOwnProperty(i))
-        this[i] = o[i];
+    return this.resumeFromData(JSJaCJSON.parse(json));
+  } catch (e) {}
+  return false; // sth went wrong
+};
+
+/**
+ * Resumes BOSH connection from data  
+ * @param {Object} serialized jsjac state information
+ * @return Whether resume was successful
+ * @type boolean
+ */
+JSJaCConnection.prototype.resumeFromData = function(data) {
+  try {
+    this._setStatus('resuming');
+
+    for (var i in data)
+      if (data.hasOwnProperty(i))
+        this[i] = data[i];
      
     // copy keys - not being very generic here :-/
     if (this._keys) {
@@ -393,10 +405,6 @@ JSJaCConnection.prototype.resume = function() {
         this._keys2[u[i]] = this._keys[u[i]];
       this._keys = this._keys2;
     }
-
-    try {
-      JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
-    } catch (e) {}
 
     if (this._connected) {
       // don't poll too fast!
@@ -534,9 +542,40 @@ JSJaCConnection.prototype.setPollInterval = function(timerval) {
 JSJaCConnection.prototype.status = function() { return this._status; };
 
 /**
- * Suspsends this connection (saving state for later resume)
+ * Suspends this connection (saving state for later resume)
+ * Saves state to cookie
+ * @return Whether suspend (saving to cookie) was successful
+ * @type boolean
  */
 JSJaCConnection.prototype.suspend = function() {
+  var data = this.suspendToData();
+  
+  try {
+    var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State', JSJaCJSON.toString(data));
+    this.oDbg.log("writing cookie: "+c.getValue()+"\n"+
+                  "(length:"+c.getValue().length+")",2);
+    c.write();
+
+    var c2 = JSJaCCookie.get(this._cookie_prefix+'JSJaC_State');
+    if (c.getValue() != c2) {
+      this.oDbg.log("Suspend failed writing cookie.\nread: " + c2, 1);
+      c.erase();
+      return false;
+    }
+    return true;
+  } catch (e) {
+    this.oDbg.log("Failed creating cookie '"+this._cookie_prefix+
+                  "JSJaC_State': "+e.message,1);
+  }
+  return false;
+};
+
+/**
+ * Suspend connection and return serialized JSJaC connection state
+ * @return JSJaC connection state object
+ * @type Object
+ */
+JSJaCConnection.prototype.suspendToData = function() {
   
   // remove timers
   clearTimeout(this._timeout);
@@ -561,26 +600,9 @@ JSJaCConnection.prototype.suspend = function() {
 
     s[u[i]] = o;
   }
-
-  var c = new JSJaCCookie(this._cookie_prefix+'JSJaC_State', JSJaCJSON.toString(s));
-  this.oDbg.log("writing cookie: "+c.getValue()+"\n"+
-                "(length:"+c.getValue().length+")",2);
-  c.write();
-
-  try {
-    var c2 = JSJaCCookie.get(this._cookie_prefix+'JSJaC_State');
-    if (c.getValue() != c2) {
-      this.oDbg.log("Suspend failed writing cookie.\nread: " + c2, 1);
-      c.erase();
-    }
-
-    this._connected = false;
-
-    this._setStatus('suspending');
-  } catch (e) {
-    this.oDbg.log("Failed creating cookie '"+this._cookie_prefix+
-                  "JSJaC_State': "+e.message,1);
-  }
+  this._connected = false;
+  this._setStatus('suspending');
+  return s;
 };
 
 /**
