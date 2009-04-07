@@ -662,23 +662,23 @@ JSJaCMessage.prototype.getSubject = function() {
  * @type JSJaCPacket
  */
 JSJaCPacket.wrapNode = function(node) {
-  var aNode;
-  switch (node.nodeName.toLowerCase()) {
-  case 'presence':
-    aNode = new JSJaCPresence();
-    break;
-  case 'message':
-    aNode = new JSJaCMessage();
-    break;
-  case 'iq':
-    aNode = new JSJaCIQ();
-    break;
-  default : // unknown
-    return null;
-  }
+  var aNode = null;
 
-  aNode._replaceNode(node);
+  try {
+    switch (node.nodeName.toLowerCase()) {
+    case 'presence':
+      aNode = new JSJaCPresence();
+      break;
+    case 'message':
+      aNode = new JSJaCMessage();
+      break;
+    case 'iq':
+      aNode = new JSJaCIQ();
+      break;
+    }
 
+    aNode._replaceNode(node);
+  } catch(e) { }
   return aNode;
 };
 
