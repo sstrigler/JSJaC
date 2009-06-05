@@ -561,6 +561,7 @@ JSJaCIQ.prototype.getQueryXMLNS = function() {
 JSJaCIQ.prototype.reply = function(payload) {
   var rIQ = this.clone();
   rIQ.setTo(this.getFrom());
+  rIQ.setFrom();
   rIQ.setType('result');
   if (payload) {
     if (typeof payload == 'string')
