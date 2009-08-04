@@ -217,7 +217,9 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
   if (body.getAttribute('authid')) {
     this.streamid = body.getAttribute('authid');
     this.oDbg.log("got streamid: "+this.streamid,2);
-  } else {
+  }
+
+  if (!this._parseStreamFeatures(body) || !this.streamid) {
     this._timeout = setTimeout(JSJaC.bind(this._sendEmpty, this),
                                this.getPollInterval());
     return;
@@ -225,9 +227,6 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
 
   this._timeout = setTimeout(JSJaC.bind(this._process, this),
                              this.getPollInterval());
-
-  if (!this._parseStreamFeatures(body))
-    return;
 
   if (this.register)
     this._doInBandReg();

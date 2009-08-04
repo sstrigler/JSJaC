@@ -117,8 +117,10 @@ JSJaCHttpPollingConnection.prototype._getStreamID = function() {
 
     doc = XmlDocument.create("doc");
     doc.loadXML(response);
-    if (!this._parseStreamFeatures(doc))
+    if (!this._parseStreamFeatures(doc)) {
+      this.authtype = 'nonsasl';
       return;
+    }
   } catch(e) {
     this.oDbg.log("loadXML: "+e.toString(),1);
   }
