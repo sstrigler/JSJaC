@@ -1000,7 +1000,15 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
             // handled!
             break;
           }
-      } catch (e) { this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1); }
+      } catch (e) { 
+
+        if (e.fileName&&e.lineNumber) {
+            this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message+' in '+e.fileName+' line '+e.lineNumber,1);    
+        } else {
+            this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1);             
+        }
+
+      }
     }
   }
 };
