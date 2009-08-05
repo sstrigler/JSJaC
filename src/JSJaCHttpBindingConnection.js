@@ -407,10 +407,13 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
     clearInterval(this._interval);
     clearInterval(this._inQto);
 
-    if (body.getAttribute("condition") == "remote-stream-error")
+    var condition = body.getAttribute('condition');
+    if (condition == "remote-stream-error")
       if (body.getElementsByTagName("conflict").length > 0)
         this._setStatus("session-terminate-conflict");
-    this._handleEvent('onerror',JSJaCError('503','cancel',body.getAttribute('condition')));
+    if (condition == null)
+      condition = 'session-terminate';
+    this._handleEvent('onerror',JSJaCError('503','cancel',condition));
     this._connected = false;
     this.oDbg.log("Disconnected.",1);
     this._handleEvent('ondisconnect');
