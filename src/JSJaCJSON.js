@@ -1,5 +1,4 @@
-/
-Copyright (c) 2005-2007 Sam Stephenson
+/* Copyright (c) 2005-2007 Sam Stephenson
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -50,7 +49,8 @@ JSJaCJSON.toString = function (obj) {
               a[a.length] = v;
               b = true;
             }
-	  } catch(e) {}
+	  } catch(e) { 
+	  }
         }
       }
       a[a.length] = ']';
@@ -85,7 +85,8 @@ JSJaCJSON.toString = function (obj) {
                   a.push(s.string(i), ':', v);
                   b = true;
                 }
-	     } catch(e) {}
+	      } catch(e) {
+	      }
             }
           }
         }
