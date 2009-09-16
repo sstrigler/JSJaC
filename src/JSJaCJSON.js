@@ -1,4 +1,5 @@
-/* Copyright (c) 2005-2007 Sam Stephenson
+/
+Copyright (c) 2005-2007 Sam Stephenson
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,14 +41,16 @@ JSJaCJSON.toString = function (obj) {
         v = x[i];
         f = s[typeof v];
         if (f) {
-          v = f(v);
-          if (typeof v == 'string') {
-            if (b) {
-              a[a.length] = ',';
+	  try {
+            v = f(v);
+            if (typeof v == 'string') {
+              if (b) {
+                a[a.length] = ',';
+              }
+              a[a.length] = v;
+              b = true;
             }
-            a[a.length] = v;
-            b = true;
-          }
+	  } catch(e) {}
         }
       }
       a[a.length] = ']';
@@ -73,14 +76,16 @@ JSJaCJSON.toString = function (obj) {
             v = x[i];
             f = s[typeof v];
             if (f) {
-              v = f(v);
-              if (typeof v == 'string') {
-                if (b) {
-                  a[a.length] = ',';
+	      try {
+                v = f(v);
+                if (typeof v == 'string') {
+                  if (b) {
+                    a[a.length] = ',';
+                  }
+                  a.push(s.string(i), ':', v);
+                  b = true;
                 }
-                a.push(s.string(i), ':', v);
-                b = true;
-              }
+	     } catch(e) {}
             }
           }
         }
