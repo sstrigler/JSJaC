@@ -87,3 +87,7 @@ Date.prototype.jabberDate = function() {
 Number.max = function(A, B) {
   return (A > B)? A : B;
 };
+
+Number.min = function(A, B) {
+  return (A < B)? A : B;
+};
