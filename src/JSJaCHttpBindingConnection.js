@@ -296,7 +296,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
     this._bosh_version = body.getAttribute('ver');
 
   if (body.getAttribute('maxpause'))
-    this._pause = Number.max(body.getAttribute('maxpause'), JSJACHBC_MAXPAUSE);
+    this._pause = Number.min(body.getAttribute('maxpause'), JSJACHBC_MAXPAUSE);
 
   // must be done after response attributes have been collected
   this.setPollInterval(this._timerval);
