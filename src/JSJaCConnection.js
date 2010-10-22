@@ -924,7 +924,7 @@ JSJaCConnection.prototype._doSASLAuthDone = function (el) {
  */
 JSJaCConnection.prototype._doStreamBind = function() {
   var iq = new JSJaCIQ();
-  iq.setIQ(this.domain,'set','bind_1');
+  iq.setIQ(null,'set','bind_1');
   iq.appendNode("bind", {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
                 [["resource", this.resource]]);
   this.oDbg.log(iq.xml());
