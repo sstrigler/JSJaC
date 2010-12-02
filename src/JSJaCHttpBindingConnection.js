@@ -56,9 +56,16 @@ JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
  * Inherit an instantiated HTTP Binding session
  */
 JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
-  this.domain = oArg.domain || 'localhost';
-  this.username = oArg.username;
-  this.resource = oArg.resource;
+  if (oArg.jid) {
+    var oJid = new JSJaCJID(jid);
+    this.domain = oJid.getDomain();
+    this.username = oJid.getNode();
+    this.resource = oJid.getResource();
+  } else {
+    this.domain = oArg.domain || 'localhost';
+    this.username = oArg.username;
+    this.resource = oArg.resource;
+  }
   this._sid = oArg.sid;
   this._rid = oArg.rid;
   this._min_polling = oArg.polling;
