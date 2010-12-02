@@ -57,7 +57,7 @@ JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
  */
 JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
   if (oArg.jid) {
-    var oJid = new JSJaCJID(jid);
+    var oJid = new JSJaCJID(oArg.jid);
     this.domain = oJid.getDomain();
     this.username = oJid.getNode();
     this.resource = oJid.getResource();
