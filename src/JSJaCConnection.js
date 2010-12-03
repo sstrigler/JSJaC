@@ -483,17 +483,13 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
   }
 
   handlers = handlers || {};
-  var error_handler = handlers.error_handler || function(aIq) {
-    this.oDbg.log(aIq.xml(), 1);
-  };
+    var error_handler = handlers.error_handler || JSJaC.bind(function(aIq) {
+        this.oDbg.log(aIq.xml(), 1);
+    }, this);
  
-  var result_handler = handlers.result_handler ||  function(aIq) {
-    this.oDbg.log(aIq.xml(), 2);
-  };
-  // unsure, what's the use of this?
-  var default_handler = handlers.default_handler || function(aIq) {
-    this.oDbg.log(aIq.xml(), 2);
-  };
+    var result_handler = handlers.result_handler ||  JSJaC.bind(function(aIq) {
+        this.oDbg.log(aIq.xml(), 2);
+    }, this);
 
   var iqHandler = function(aIq, arg) {
     switch (aIq.getType()) {
@@ -503,8 +499,6 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
       case 'result':
       result_handler(aIq, arg);
       break;
-      default: // may it be?
-      default_handler(aIq, arg);
     }
   };
   return this.send(iq, iqHandler, arg);
@@ -1025,7 +1019,7 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
       var pID = aJSJaCPacket.getID();
       this.oDbg.log("handling "+pID,3);
       try {
-        if (this._regIDs[i].cb.call(this, aJSJaCPacket,this._regIDs[i].arg) === false) {
+        if (this._regIDs[i].cb.call(this, aJSJaCPacket, this._regIDs[i].arg) === false) {
           // don't unregister
           return false;
         } else {
@@ -1034,7 +1028,7 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
         }
       } catch (e) {
         // broken handler?
-        this.oDbg.log(e.name+": "+ e.message);
+        this.oDbg.log(e.name+": "+ e.message, 1);
         this._unregisterPID(pID);
         return true;
       }
