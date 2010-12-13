@@ -349,30 +349,34 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
         this._abort();
         return null;
       }
-      this.oDbg.log("repeating ("+this._errcnt+")",1);
      
-      this._setStatus('proto_error_fallback');
+      if (this.connected()) {
+        this.oDbg.log("repeating ("+this._errcnt+")",1);
+        this._setStatus('proto_error_fallback');
      
-      // schedule next tick
-      setTimeout(JSJaC.bind(this._resume, this),
-                 this.getPollInterval());
+        // schedule next tick
+        setTimeout(JSJaC.bind(this._resume, this),
+                   this.getPollInterval());
+      }
      
       return null;
     }
   } catch (e) {
     this.oDbg.log("XMLHttpRequest error: status not available", 1);
-	this._errcnt++;
-	if (this._errcnt > JSJAC_ERR_COUNT) {
-	  // abort
-	  this._abort();
-	} else {
-	  this.oDbg.log("repeating ("+this._errcnt+")",1);
+	  this._errcnt++;
+	  if (this._errcnt > JSJAC_ERR_COUNT) {
+	    // abort
+	    this._abort();
+	  } else {
+      if (this.connected()) {
+	      this.oDbg.log("repeating ("+this._errcnt+")",1);
      
-	  this._setStatus('proto_error_fallback');
+	      this._setStatus('proto_error_fallback');
      
-	  // schedule next tick
-	  setTimeout(JSJaC.bind(this._resume, this),
-                     this.getPollInterval()); 
+	      // schedule next tick
+	      setTimeout(JSJaC.bind(this._resume, this),
+                   this.getPollInterval()); 
+      }
     }
     return null;
   }
