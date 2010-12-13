@@ -1192,7 +1192,7 @@ JSJaCConnection.prototype._process = function(timerval) {
                    this._setStatus('onerror_fallback');
 			
                    // schedule next tick
-                   setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
+                   setTimeout(JSJaC.bind(this._resume, this), 1000);
                    return false;
                  }, this);
   } catch(e) { } // well ... no onerror property available, maybe we
