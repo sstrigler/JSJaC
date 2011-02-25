@@ -190,7 +190,7 @@ JSJaCPacket.prototype.getChild = function(name, ns) {
   if (!this.getNode()) {
     return null;
   }
- 
+
   name = name || '*';
   ns = ns || '*';
 
@@ -295,26 +295,40 @@ JSJaCPacket.prototype._getAttribute = function(attr) {
 };
 
 /**
- * Replaces this node with given node
+ * import node into this packets document
  * @private
  */
-JSJaCPacket.prototype._replaceNode = function(aNode) {
-  // copy attribs
-  for (var i=0; i<aNode.attributes.length; i++)
-    if (aNode.attributes.item(i).nodeName != 'xmlns')
-      this.getNode().setAttribute(aNode.attributes.item(i).nodeName,
-                                  aNode.attributes.item(i).nodeValue);
+JSJaCPacket.prototype._importNode = function(node, allChildren) {
+	switch (node.nodeType) {
+	case document.ELEMENT_NODE:
+		var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
+		/* does the node have any attributes to add? */
+		if (node.attributes && node.attributes.length > 0)
+			for (var i = 0, il = node.attributes.length;i < il; i++) {
+				if (node.attributes.item(i).nodeName.indexOf('xmlns') == 0) continue;
+				if (node.attributes.item(i).namespaceURI) {
+					newNode.setAttributeNS(node.attributes.item(i).namespaceURI,
+										   node.attributes.item(i).nodeName,
+										   node.attributes.item(i).nodeValue);
+				} else {
+					newNode.setAttribute(node.attributes.item(i).nodeName,
+										 node.attributes.item(i).nodeValue);
+				}
+			}
+		/* are we going after children too, and does the node have any? */
+		if (allChildren && node.childNodes && node.childNodes.length > 0)
+			for (var i = 0, il = node.childNodes.length; i < il; i++)
+				newNode.appendChild(this._importNode(node.childNodes.item(i), allChildren));
+		return newNode;
+		break;
+	case document.TEXT_NODE:
+	case document.CDATA_SECTION_NODE:
+	case document.COMMENT_NODE:
+		return this.getDoc().createTextNode(node.nodeValue);
+		break;
+	}
+ };
 
-  // copy children
-  for (var i=0; i<aNode.childNodes.length; i++)
-    if (this.getDoc().importNode)
-      this.getNode().appendChild(this.getDoc().importNode(aNode.
-                                                          childNodes.item(i),
-                                                          true));
-    else
-      this.getNode().appendChild(aNode.childNodes.item(i).cloneNode(true));
-};
- 
 /**
  * Set node value of a child node
  * @private
@@ -661,23 +675,22 @@ JSJaCMessage.prototype.getSubject = function() {
  * @type JSJaCPacket
  */
 JSJaCPacket.wrapNode = function(node) {
-  var aNode = null;
+  var oPacket = null;
 
-  try {
-    switch (node.nodeName.toLowerCase()) {
-    case 'presence':
-      aNode = new JSJaCPresence();
+  switch (node.nodeName.toLowerCase()) {
+  case 'presence':
+      oPacket = new JSJaCPresence();
       break;
-    case 'message':
-      aNode = new JSJaCMessage();
+  case 'message':
+      oPacket = new JSJaCMessage();
       break;
-    case 'iq':
-      aNode = new JSJaCIQ();
+  case 'iq':
+      oPacket = new JSJaCIQ();
       break;
-    }
+  }
 
-    aNode._replaceNode(node);
-  } catch(e) { }
-  return aNode;
+  oPacket.getDoc().replaceChild(oPacket._importNode(node, true),
+								oPacket.getNode());
+  return oPacket;
 };
 
