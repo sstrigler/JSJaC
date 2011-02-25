@@ -523,11 +523,9 @@ JSJaCIQ.prototype.setQuery = function(xmlns) {
   try {
     query = this.getDoc().createElementNS(xmlns,'query');
   } catch (e) {
-    // fallback
     query = this.getDoc().createElement('query');
+	query.setAttribute('xmlns',xmlns);
   }
-  if (query && query.getAttribute('xmlns') != xmlns) // fix opera 8.5x
-    query.setAttribute('xmlns',xmlns);
   this.getNode().appendChild(query);
   return query;
 };
