@@ -301,18 +301,26 @@ JSJaCPacket.prototype._getAttribute = function(attr) {
 JSJaCPacket.prototype._importNode = function(node, allChildren) {
 	switch (node.nodeType) {
 	case document.ELEMENT_NODE:
-		var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
+
+		if (document.createElementNS) {
+			var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
+		} else {
+			var newNode = this.getDoc().createElement(node.nodeName);
+			newNode.setAttribute('xmlns', node.namespaceURI)
+		}
+
 		/* does the node have any attributes to add? */
 		if (node.attributes && node.attributes.length > 0)
 			for (var i = 0, il = node.attributes.length;i < il; i++) {
-				if (node.attributes.item(i).nodeName.indexOf('xmlns') == 0) continue;
-				if (node.attributes.item(i).namespaceURI) {
-					newNode.setAttributeNS(node.attributes.item(i).namespaceURI,
-										   node.attributes.item(i).nodeName,
-										   node.attributes.item(i).nodeValue);
+				var attr = node.attributes.item(i);
+				if (attr.nodeName == 'xmlns') continue;
+				if (newNode.setAttributeNS && attr.namespaceURI) {
+					newNode.setAttributeNS(attr.namespaceURI,
+										   attr.nodeName,
+										   attr.nodeValue);
 				} else {
-					newNode.setAttribute(node.attributes.item(i).nodeName,
-										 node.attributes.item(i).nodeValue);
+					newNode.setAttribute(attr.nodeName,
+										 attr.nodeValue);
 				}
 			}
 		/* are we going after children too, and does the node have any? */
