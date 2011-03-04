@@ -696,8 +696,9 @@ JSJaCPacket.wrapNode = function(node) {
       oPacket = new JSJaCIQ();
       break;
   }
-
-  oPacket.getDoc().replaceChild(oPacket._importNode(node, true),
+  
+  if(oPacket)
+	oPacket.getDoc().replaceChild(oPacket._importNode(node, true),
 								oPacket.getNode());
   return oPacket;
 };
