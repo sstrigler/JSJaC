@@ -294,48 +294,64 @@ JSJaCPacket.prototype._getAttribute = function(attr) {
   return this.getNode().getAttribute(attr);
 };
 
+
+if (document.ELEMENT_NODE == null) {
+  document.ELEMENT_NODE = 1;
+  document.ATTRIBUTE_NODE = 2;
+  document.TEXT_NODE = 3;
+  document.CDATA_SECTION_NODE = 4;
+  document.ENTITY_REFERENCE_NODE = 5;
+  document.ENTITY_NODE = 6;
+  document.PROCESSING_INSTRUCTION_NODE = 7;
+  document.COMMENT_NODE = 8;
+  document.DOCUMENT_NODE = 9;
+  document.DOCUMENT_TYPE_NODE = 10;
+  document.DOCUMENT_FRAGMENT_NODE = 11;
+  document.NOTATION_NODE = 12;
+}
+
 /**
  * import node into this packets document
  * @private
  */
 JSJaCPacket.prototype._importNode = function(node, allChildren) {
-	switch (node.nodeType) {
-	case document.ELEMENT_NODE:
+  switch (node.nodeType) {
+  case document.ELEMENT_NODE:
 
-		if (document.createElementNS) {
-			var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
-		} else {
-			var newNode = this.getDoc().createElement(node.nodeName);
-			newNode.setAttribute('xmlns', node.namespaceURI)
-		}
+  if (document.createElementNS) {
+    var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
+  } else {
+    var newNode = this.getDoc().createElement(node.nodeName);
+    newNode.setAttribute('xmlns', node.namespaceURI)
+  }
 
-		/* does the node have any attributes to add? */
-		if (node.attributes && node.attributes.length > 0)
-			for (var i = 0, il = node.attributes.length;i < il; i++) {
-				var attr = node.attributes.item(i);
-				if (attr.nodeName == 'xmlns') continue;
+  /* does the node have any attributes to add? */
+  if (node.attributes && node.attributes.length > 0)
+    for (var i = 0, il = node.attributes.length;i < il; i++) {
+      var attr = node.attributes.item(i);
+      if (attr.nodeName == 'xmlns') continue;
 				if (newNode.setAttributeNS && attr.namespaceURI) {
-					newNode.setAttributeNS(attr.namespaceURI,
-										   attr.nodeName,
-										   attr.nodeValue);
+                                  newNode.setAttributeNS(attr.namespaceURI,
+                                                         attr.nodeName,
+                                                         attr.nodeValue);
 				} else {
-					newNode.setAttribute(attr.nodeName,
-										 attr.nodeValue);
+                                  newNode.setAttribute(attr.nodeName,
+                                                       attr.nodeValue);
 				}
-			}
-		/* are we going after children too, and does the node have any? */
-		if (allChildren && node.childNodes && node.childNodes.length > 0)
-			for (var i = 0, il = node.childNodes.length; i < il; i++)
-				newNode.appendChild(this._importNode(node.childNodes.item(i), allChildren));
-		return newNode;
-		break;
-	case document.TEXT_NODE:
-	case document.CDATA_SECTION_NODE:
-	case document.COMMENT_NODE:
-		return this.getDoc().createTextNode(node.nodeValue);
-		break;
-	}
- };
+    }
+  /* are we going after children too, and does the node have any? */
+  if (allChildren && node.childNodes && node.childNodes.length > 0)
+    for (var i = 0, il = node.childNodes.length; i < il; i++)
+      newNode.appendChild(this._importNode(node.childNodes.item(i), allChildren));
+  return newNode;
+  break;
+  case document.TEXT_NODE:
+  case document.CDATA_SECTION_NODE:
+  case document.COMMENT_NODE:
+  return this.getDoc().createTextNode(node.nodeValue);
+  break;
+  }
+};
 
 /**
  * Set node value of a child node
@@ -696,10 +712,12 @@ JSJaCPacket.wrapNode = function(node) {
       oPacket = new JSJaCIQ();
       break;
   }
-  
-  if(oPacket)
-	oPacket.getDoc().replaceChild(oPacket._importNode(node, true),
-								oPacket.getNode());
+
+  if (oPacket) {
+    oPacket.getDoc().replaceChild(oPacket._importNode(node, true),
+                                  oPacket.getNode());
+  }
+
   return oPacket;
 };
 
