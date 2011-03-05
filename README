@@ -43,7 +43,7 @@ this job for you:
 %<---
 <VirtualHost *>
   Servername example.com
-  DocumentRoot /var/ww
+  DocumentRoot /var/www
   AddDefaultCharset UTF-8
   RewriteEngine On
   RewriteRule ^/http-bind/ http://jabber.example.com:5280/http-bind/ [P]
@@ -74,14 +74,14 @@ Supported Browsers and Platforms
 
 The following browsers are known to work. Let me know about others!
 
-Microsoft Internet Explorer 6+7
-Firefox 2.0.x
-Opera 9
-Safari 3
+Microsoft Internet Explorer 6/7/8/9
+Firefox 2.0.x and newer (and probably most other Gecko based browsers)
+Opera 9 and newer
+Chrome/Safari (and probably mpst other Webkit based browsers)
 
 
 References:
 ===========
 [1] http://www.xmpp.org/extensions/xep-0025.html
 [2] http://www.xmpp.org/extensions/xep-0206.html
-[3] http://svn.stefan-strigler.de/JSDebugger/trunk
+[3] http://blog.jwchat.org/javascript-debug-logger/
