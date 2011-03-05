@@ -350,37 +350,32 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
         return null;
       }
      
-      if (this.connected() && false) {
-
-          // 2010-12-13 - make Firefox fail to correctly handle a
-          // reload. disconnect onunload is broken otherwise thus
-          // disabled
-
+      if (this.connected()) {
         this.oDbg.log("repeating ("+this._errcnt+")",1);
         this._setStatus('proto_error_fallback');
      
         // schedule next tick
         setTimeout(JSJaC.bind(this._resume, this),
-                   1000);
+                   this.getPollInterval());
       }
      
       return null;
     }
   } catch (e) {
     this.oDbg.log("XMLHttpRequest error: status not available", 1);
-    this._errcnt++;
-    if (this._errcnt > JSJAC_ERR_COUNT) {
-      // abort
-      this._abort();
-    } else {
+	  this._errcnt++;
+	  if (this._errcnt > JSJAC_ERR_COUNT) {
+	    // abort
+	    this._abort();
+	  } else {
       if (this.connected()) {
-        this.oDbg.log("repeating ("+this._errcnt+")",1);
-        
-        this._setStatus('proto_error_fallback');
-        
-        // schedule next tick
-        setTimeout(JSJaC.bind(this._resume, this),
-                   1000); 
+	      this.oDbg.log("repeating ("+this._errcnt+")",1);
+     
+	      this._setStatus('proto_error_fallback');
+     
+	      // schedule next tick
+	      setTimeout(JSJaC.bind(this._resume, this),
+                   this.getPollInterval()); 
       }
     }
     return null;
@@ -401,7 +396,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
     this._setStatus('internal_server_error');
     this._handleEvent('onerror',
-		      JSJaCError('500','wait','internal-server-error'));
+					  JSJaCError('500','wait','internal-server-error'));
 
     return null;
   }
