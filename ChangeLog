@@ -1,10 +1,13 @@
 JSJaC v1.3.3
 ============
-* allow to set 'cookie_prefix' at Connection constructors
-* fixed event handler bubbling (wasn't able to stop)
-* JSJaCCookie: allow to set domain and path
-* JSJaC.bind: pass args correctly
-* XmlDocument.create: removed alert in case of error
+	* allow to set 'cookie_prefix' at Connection constructors
+	* fixed event handler bubbling (wasn't able to stop)
+	* JSJaCCookie: allow to set domain and path
+	* JSJaC.bind: pass args correctly
+	* XmlDocument.create: removed alert in case of error*
+	* JSJaCConnection.prototyp.suspendFromData: added
+	* JSJaCConnection.prototyp.resumeFromData: added
+ ... lots more
 
 JSJaC v1.3.2
 ============
