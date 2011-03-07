@@ -330,14 +330,14 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
     for (var i = 0, il = node.attributes.length;i < il; i++) {
       var attr = node.attributes.item(i);
       if (attr.nodeName == 'xmlns') continue;
-				if (newNode.setAttributeNS && attr.namespaceURI) {
-                                  newNode.setAttributeNS(attr.namespaceURI,
-                                                         attr.nodeName,
-                                                         attr.nodeValue);
-				} else {
-                                  newNode.setAttribute(attr.nodeName,
-                                                       attr.nodeValue);
-				}
+      if (newNode.setAttributeNS && attr.namespaceURI) {
+        newNode.setAttributeNS(attr.namespaceURI,
+                               attr.nodeName,
+                               attr.nodeValue);
+      } else {
+        newNode.setAttribute(attr.nodeName,
+                             attr.nodeValue);
+      }
     }
   /* are we going after children too, and does the node have any? */
   if (allChildren && node.childNodes && node.childNodes.length > 0)
