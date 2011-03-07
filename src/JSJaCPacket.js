@@ -318,7 +318,7 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
   switch (node.nodeType) {
   case document.ELEMENT_NODE:
 
-  if (document.createElementNS) {
+  if (this.getDoc().createElementNS) {
     var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
   } else {
     var newNode = this.getDoc().createElement(node.nodeName);
