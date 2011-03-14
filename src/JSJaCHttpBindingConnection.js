@@ -396,7 +396,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
     this._setStatus('internal_server_error');
     this._handleEvent('onerror',
-					  JSJaCError('500','wait','internal-server-error'));
+		      JSJaCError('500','wait','internal-server-error'));
 
     return null;
   }
@@ -418,6 +418,12 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
     clearInterval(this._interval);
     clearInterval(this._inQto);
 
+    try {
+      JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
+    } catch (e) {}
+
+    this._connected = false;
+
     var condition = body.getAttribute('condition');
     if (condition == "remote-stream-error")
       if (body.getElementsByTagName("conflict").length > 0)
@@ -425,9 +431,20 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
     if (condition == null)
       condition = 'session-terminate';
     this._handleEvent('onerror',JSJaCError('503','cancel',condition));
-    this._connected = false;
+
+    this.oDbg.log("Aborting remaining connections",4);
+
+    for (var i=0; i<this._hold+1; i++) {
+      try {
+        this._req[i].r.abort();
+      } catch(e) { this.oDbg.log(e, 1); }
+    }
+
+    this.oDbg.log("parseResponse done with terminating", 3);
+
     this.oDbg.log("Disconnected.",1);
     this._handleEvent('ondisconnect');
+
     return null;
   }
 

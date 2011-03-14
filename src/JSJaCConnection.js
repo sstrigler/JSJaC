@@ -179,29 +179,24 @@ JSJaCConnection.prototype.disconnect = function() {
 
   if (!this.connected())
     return;
-  this._connected = false;
-
-  clearInterval(this._interval);
-  clearInterval(this._inQto);
-
-  if (this._timeout)
-    clearTimeout(this._timeout); // remove timer
 
   var slot = this._getFreeSlot();
-  // Intentionally synchronous
-  this._req[slot] = this._setupRequest(false);
+
+  this._req[slot] = this._setupRequest(true);
+
+  this._req[slot].r.onreadystatechange = JSJaC.bind(function() {
+    try {
+      if (this._req[slot].r.readyState == 4) {
+        this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
+        this._handleResponse(this._req[slot]);
+      }
+    } catch(e) { this.oDbg.log(e, 1);
+  }, this);
 
   request = this._getRequestString(false, true);
 
-  this.oDbg.log("Disconnecting: " + request,4);
+  this.oDbg.log("Disconnecting: " + request, 4);
   this._req[slot].r.send(request);
-
-  try {
-    JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
-  } catch (e) {}
-
-  this.oDbg.log("Disconnected: "+this._req[slot].r.responseText,2);
-  this._handleEvent('ondisconnect');
 };
 
 /**
@@ -347,8 +342,7 @@ JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
  */
-JSJaCConnection.prototype.registerIQGet =
-  function(childName, childNS, handler) {
+JSJaCConnection.prototype.registerIQGet = function(childName, childNS, handler) {
   this.registerHandler('iq', childName, childNS, 'get', handler);
 };
 
@@ -362,8 +356,7 @@ JSJaCConnection.prototype.registerIQGet =
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
  */
-JSJaCConnection.prototype.registerIQSet =
-  function(childName, childNS, handler) {
+JSJaCConnection.prototype.registerIQSet = function(childName, childNS, handler) {
   this.registerHandler('iq', childName, childNS, 'set', handler);
 };
 
@@ -1159,12 +1152,14 @@ JSJaCConnection.prototype._process = function(timerval) {
   /* setup onload handler for async send */
   this._req[slot].r.onreadystatechange = 
   JSJaC.bind(function() {
-               if (!this.connected())
-                 return;
                if (this._req[slot].r.readyState == 4) {
                  this._setStatus('processing');
                  this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
                  this._handleResponse(this._req[slot]);
+
+                 if (!this.connected())
+                   return;
+
                  // schedule next tick
                  if (this._pQueue.length) {
                    this._timeout = setTimeout(JSJaC.bind(this._process, this),100);
