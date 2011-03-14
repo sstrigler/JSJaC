@@ -10,14 +10,14 @@
     <!--script type="text/javascript" src="../src/JSJaC.js"></script-->
 
     <!-- if you want to enable debugging uncomment line below
-         debugger available at 
+         debugger available at
           http://svn.stefan-strigler.de/JSDebugger/trunk -->
     <!--script type="text/javascript" src="Debugger.js"></script-->
 
     <script language="JavaScript" type="text/javascript">
 // <![CDATA[
 function handleIQ(aIQ) {
-  document.getElementById('iResp').innerHTML += 
+  document.getElementById('iResp').innerHTML +=
     "<div class='msg'>IN (raw): " +aIQ.xml().htmlEnc() + '</div>';
   document.getElementById('iResp').lastChild.scrollIntoView();
   con.send(aIQ.errorReply(ERR_FEATURE_NOT_IMPLEMENTED));
@@ -33,7 +33,7 @@ function handleMessage(aJSJaCPacket) {
 
 function handlePresence(aJSJaCPacket) {
   var html = '<div class="msg">';
-  if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow()) 
+  if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow())
     html += '<b>'+aJSJaCPacket.getFromJID()+' has become available.</b>';
   else {
     html += '<b>'+aJSJaCPacket.getFromJID()+' has set his presence to ';
@@ -51,12 +51,12 @@ function handlePresence(aJSJaCPacket) {
 }
 
 function handleError(e) {
-  document.getElementById('err').innerHTML = "An error occured:<br />"+ 
+  document.getElementById('err').innerHTML = "An error occured:<br />"+
     ("Code: "+e.getAttribute('code')+"\nType: "+e.getAttribute('type')+
-    "\nCondition: "+e.firstChild.nodeName).htmlEnc(); 
+    "\nCondition: "+e.firstChild.nodeName).htmlEnc();
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
-  
+
   if (con.connected())
     con.disconnect();
 }
@@ -107,6 +107,8 @@ function doLogin(aForm) {
     oArgs = new Object();
     oArgs.httpbase = aForm.http_base.value;
     oArgs.timerval = 2000;
+
+    oDbg = new JSJaCConsoleLogger(4);
 
     if (typeof(oDbg) != 'undefined')
       oArgs.oDbg = oDbg;
@@ -163,7 +165,7 @@ function sendMsg(aForm) {
 
     return false;
   } catch (e) {
-    html = "<div class='msg error''>Error: "+e.message+"</div>"; 
+    html = "<div class='msg error''>Error: "+e.message+"</div>";
     document.getElementById('iResp').innerHTML += html;
     document.getElementById('iResp').lastChild.scrollIntoView();
     return false;
@@ -213,15 +215,15 @@ function init() {
 }
 onload = init;
 
-onerror = function(e) { 
-  document.getElementById('err').innerHTML = e; 
+onerror = function(e) {
+  document.getElementById('err').innerHTML = e;
 
   document.getElementById('login_pane').style.display = '';
   document.getElementById('sendmsg_pane').style.display = 'none';
 
   if (con && con.connected())
     con.disconnect();
-  return false; 
+  return false;
 };
 
 onunload = function() {
@@ -232,7 +234,7 @@ onunload = function() {
     else
       (new JSJaCCookie('btype','polling')).write();
     if (con.suspend) {
-      con.suspend(); 
+      con.suspend();
     }
   }
 };
