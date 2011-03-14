@@ -190,7 +190,7 @@ JSJaCConnection.prototype.disconnect = function() {
         this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
         this._handleResponse(this._req[slot]);
       }
-    } catch(e) { this.oDbg.log(e, 1);
+    } catch(e) { this.oDbg.log(e, 1); }
   }, this);
 
   request = this._getRequestString(false, true);
