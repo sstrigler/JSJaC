@@ -1228,7 +1228,7 @@ JSJaCConnection.prototype._registerPID = function(pID,cb,arg) {
  * waiting for stream id to be able to proceed with authentication
  * @private
  */
-JSJaCConnection.prototype._sendEmpty = function JSJaCSendEmpty() {
+JSJaCConnection.prototype._sendEmpty = function() {
   var slot = this._getFreeSlot();
   this._req[slot] = this._setupRequest(true);
 
