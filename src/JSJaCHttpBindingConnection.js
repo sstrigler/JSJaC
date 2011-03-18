@@ -225,7 +225,7 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
     this.oDbg.log("got streamid: "+this.streamid,2);
   }
 
-  if (!this._parseStreamFeatures(body) || !this.streamid) {
+  if (!this._parseStreamFeatures(body)) {
     this._timeout = setTimeout(JSJaC.bind(this._sendEmpty, this),
                                this.getPollInterval());
     return;
