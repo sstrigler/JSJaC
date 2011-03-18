@@ -912,7 +912,7 @@ JSJaCConnection.prototype._doSASLAuthDone = function (el) {
     this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else
-    this._reInitStream(this.domain, this._doStreamBind);
+    this._reInitStream(this._doStreamBind);
 };
 
 /**

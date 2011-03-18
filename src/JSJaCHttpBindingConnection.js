@@ -156,8 +156,8 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
     if (last)
       reqstr += "type='terminate'";
     else if (this._reinit) {
-      if (JSJACHBC_USE_BOSH_VER) 
-        reqstr += "xmpp:restart='true' xmlns:xmpp='urn:xmpp:xbosh'";
+      if (JSJACHBC_USE_BOSH_VER)
+        reqstr += "xml:lang='"+this._xmllang+"' xmpp:restart='true' xmlns:xmpp='urn:xmpp:xbosh' to='"+this.domain+"'";
       this._reinit = false;
     }
 
@@ -176,7 +176,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
           i < this._rid-this._hold)
         delete(this._last_requests[i]); // truncate
   }
-	
+
   return reqstr;
 };
 
@@ -348,16 +348,16 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
         this._abort();
         return null;
       }
-     
+
       if (this.connected()) {
         this.oDbg.log("repeating ("+this._errcnt+")",1);
         this._setStatus('proto_error_fallback');
-     
+
         // schedule next tick
         setTimeout(JSJaC.bind(this._resume, this),
                    this.getPollInterval());
       }
-     
+
       return null;
     }
   } catch (e) {
@@ -369,12 +369,12 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 	  } else {
       if (this.connected()) {
 	      this.oDbg.log("repeating ("+this._errcnt+")",1);
-     
+
 	      this._setStatus('proto_error_fallback');
-     
+
 	      // schedule next tick
 	      setTimeout(JSJaC.bind(this._resume, this),
-                   this.getPollInterval()); 
+                   this.getPollInterval());
       }
     }
     return null;
@@ -438,11 +438,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._reInitStream = function(to,cb,arg) {
-  /* [TODO] we can't handle 'to' here as this is not (yet) supported
-   * by the protocol
-   */
-
+JSJaCHttpBindingConnection.prototype._reInitStream = function(cb,arg) {
   // tell http binding to reinit stream with/before next request
   this._reinit = true;
   cb.call(this,arg); // proceed with next callback
