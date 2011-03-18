@@ -209,15 +209,15 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
+JSJaCHttpBindingConnection.prototype._getStreamID = function(req) {
 
-  this.oDbg.log(this._req[slot].r.responseText,4);
+  this.oDbg.log(req.responseText,4);
 
-  if (!this._req[slot].r.responseXML || !this._req[slot].r.responseXML.documentElement) {
+  if (!req.responseXML || !req.responseXML.documentElement) {
     this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
     return;
   }
-  var body = this._req[slot].r.responseXML.documentElement;
+  var body = req.responseXML.documentElement;
 
   // extract stream id used for non-SASL authentication
   if (body.getAttribute('authid')) {
@@ -226,8 +226,8 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(slot) {
   }
 
   if (!this._parseStreamFeatures(body)) {
-    this._timeout = setTimeout(JSJaC.bind(this._sendEmpty, this),
-                               this.getPollInterval());
+      this._timeout = setTimeout(this._prepSendEmpty(this._getStreamID, this),
+                                 this.getPollInterval());
     return;
   }
 
@@ -250,21 +250,21 @@ JSJaCHttpBindingConnection.prototype._getSuspendVars = function() {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
+JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(req) {
   try {
     // This will throw an error on Mozilla when the connection was refused
-    this.oDbg.log(this._req[slot].r.getAllResponseHeaders(),4);
-    this.oDbg.log(this._req[slot].r.responseText,4);
+    this.oDbg.log(req.getAllResponseHeaders(),4);
+    this.oDbg.log(req.responseText,4);
   } catch(ex) {
     this.oDbg.log("No response",4);
   }
 
-  if (this._req[slot].r.status != 200 || !this._req[slot].r.responseXML) {
-    this.oDbg.log("initial response broken (status: "+this._req[slot].r.status+")",1);
+  if (req.status != 200 || !req.responseXML) {
+    this.oDbg.log("initial response broken (status: "+req.status+")",1);
     this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
     return;
   }
-  var body = this._req[slot].r.responseXML.documentElement;
+  var body = req.responseXML.documentElement;
 
   if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
     this.oDbg.log("no body element or incorrect body in initial response",1);
@@ -274,7 +274,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
 
   // Check for errors from the server
   if (body.getAttribute("type") == "terminate") {
-    this.oDbg.log("invalid response:\n" + this._req[slot].r.responseText,1);
+    this.oDbg.log("invalid response:\n" + req.responseText,1);
     clearTimeout(this._timeout); // remove timer
     this._connected = false;
     this.oDbg.log("Disconnected.",1);
@@ -318,7 +318,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(slot) {
   /* wait for initial stream response to extract streamid needed
    * for digest auth
    */
-  this._getStreamID(slot);
+  this._getStreamID(req);
 };
 
 /**
@@ -438,14 +438,14 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._reInitStream = function(cb,arg) {
-  // tell http binding to reinit stream with/before next request
-  this._reinit = true;
-  cb.call(this,arg); // proceed with next callback
+JSJaCHttpBindingConnection.prototype._reInitStream = function(cb) {
+    // tell http binding to reinit stream with/before next request
+    this._reinit = true;
 
-  /* [TODO] make sure that we're checking for new stream features when
-   * 'cb' finishes
-   */
+    /* [TODO] make sure that we're checking for new stream features when
+     * 'cb' finishes
+     */
+    this._sendEmpty(cb);
 };
 
 /**
