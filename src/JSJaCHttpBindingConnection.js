@@ -442,10 +442,27 @@ JSJaCHttpBindingConnection.prototype._reInitStream = function(cb) {
     // tell http binding to reinit stream with/before next request
     this._reinit = true;
 
-    /* [TODO] make sure that we're checking for new stream features when
-     * 'cb' finishes
-     */
-    this._sendEmpty(cb);
+    this._sendEmpty(function(req) {
+        this.oDbg.log("checking for stream features");
+        var doc = req.responseXML.documentElement;
+        if (doc &&
+            doc.getElementsByTagName('stream:features').length > 0) {
+            if (doc.getElementsByTagName('bind').length > 0) {
+                this.oDbg.log("we have a bind feature");
+                cb();
+            } else {
+                this.oDbg.log("no bind feature - giving up",1);
+                this._handleEvent('onerror',JSJaCError('503','cancel',"service-unavailable"));
+                this._connected = false;
+                this.oDbg.log("Disconnected.",1);
+                this._handleEvent('ondisconnect');
+            }
+        } else {
+            // wait
+            this.oDbg.log("waiting for bind feature");
+            this._sendEmpty(cb);
+        }
+    });
 };
 
 /**
