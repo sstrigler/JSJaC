@@ -120,6 +120,8 @@ JSJaCConnection.prototype.connect = function(oArg) {
 
   if (oArg.xmllang && oArg.xmllang != '')
     this._xmllang = oArg.xmllang;
+  else 
+    this._xmllang = 'en';
 
   this.host = oArg.host || this.domain;
   this.port = oArg.port || 5222;

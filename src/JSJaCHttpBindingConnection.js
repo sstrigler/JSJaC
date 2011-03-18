@@ -194,8 +194,7 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
     key = this._keys.getKey();
     reqstr += " newkey='"+key+"'";
   }
-  if (this._xmllang)
-    reqstr += " xml:lang='"+this._xmllang + "'";
+  reqstr += " xml:lang='"+this._xmllang + "'";
 
   if (JSJACHBC_USE_BOSH_VER) {
     reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
