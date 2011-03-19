@@ -442,27 +442,70 @@ JSJaCHttpBindingConnection.prototype._reInitStream = function(cb) {
     // tell http binding to reinit stream with/before next request
     this._reinit = true;
 
-    this._sendEmpty(function(req) {
-        this.oDbg.log("checking for stream features");
-        var doc = req.responseXML.documentElement;
-        if (doc &&
-            doc.getElementsByTagName('stream:features').length > 0) {
-            if (doc.getElementsByTagName('bind').length > 0) {
-                this.oDbg.log("we have a bind feature");
-                cb();
-            } else {
-                this.oDbg.log("no bind feature - giving up",1);
-                this._handleEvent('onerror',JSJaCError('503','cancel',"service-unavailable"));
-                this._connected = false;
-                this.oDbg.log("Disconnected.",1);
-                this._handleEvent('ondisconnect');
-            }
-        } else {
-            // wait
-            this.oDbg.log("waiting for bind feature");
-            this._sendEmpty(cb);
+    this._sendEmpty(this._prepReInitStreamWait(cb));
+};
+
+
+JSJaCHttpBindingConnection.prototype._prepReInitStreamWait = function(cb) {
+    return JSJaC.bind(function(req) {
+        this._reInitStreamWait(req, cb);
+    }, this);
+};
+
+/**
+ * @private
+ */
+JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
+    this.oDbg.log("checking for stream features");
+    var doc = req.responseXML.documentElement;
+    this.oDbg.log(doc);
+    if (doc.getElementsByTagNameNS) {
+        this.oDbg.log("checking with namespace");
+        var features = doc.getElementsByTagNameNS('http://etherx.jabber.org/streams',
+                                                'features').item(0);
+        if (features) {
+            var bind = features.getElementsByTagNameNS('urn:ietf:params:xml:ns:xmpp-bind',
+                                                       'bind').item(0);
         }
-    });
+    } else {
+        var featuresNL = doc.getElementsByTagName('stream:features');
+        for (var i=0, l=featuresNL.length; i<l; i++) {
+            if (featuresNL.item(i).namespaceURI == 'http://etherx.jabber.org/streams' ||
+                featuresNL.item(i).getAttribute('xmlns') == 
+                'http://etherx.jabber.org/streams') {
+                var features = featuresNL.item(i);
+                break;
+            }
+        }
+        if (features) {
+            var bind = features.getElementsByTagName('bind');
+            for (var i=0, l=bind.length; i<l; i++) {
+                if (bind.item(i).namespaceURI == 'urn:ietf:params:xml:ns:xmpp-bind' ||
+                    bind.item(i).getAttribute('xmlns') == 
+                    'urn:ietf:params:xml:ns:xmpp-bind') {
+                    bind = bind.item(i);
+                    break;
+                }
+            }
+        }
+    }
+    this.oDbg.log(features);
+    this.oDbg.log(bind);
+    
+    if (features) {
+        if (bind) {
+            cb();
+        } else {
+            this.oDbg.log("no bind feature - giving up",1);
+            this._handleEvent('onerror',JSJaCError('503','cancel',"service-unavailable"));
+            this._connected = false;
+            this.oDbg.log("Disconnected.",1);
+            this._handleEvent('ondisconnect');
+        }
+    } else {
+        // wait
+        this._sendEmpty(this._prepReInitStreamWait(cb));
+    }
 };
 
 /**
