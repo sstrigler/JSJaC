@@ -226,9 +226,8 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(req) {
   }
 
   if (!this._parseStreamFeatures(body)) {
-      this._timeout = setTimeout(this._prepSendEmpty(this._getStreamID, this),
-                                 this.getPollInterval());
-    return;
+      this._sendEmpty(JSJaC.bind(this._getStreamID, this));
+      return;
   }
 
   this._timeout = setTimeout(JSJaC.bind(this._process, this),
