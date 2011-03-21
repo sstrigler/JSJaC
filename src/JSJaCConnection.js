@@ -1232,9 +1232,9 @@ JSJaCConnection.prototype._registerPID = function(pID,cb,arg) {
  * @private
  */
 JSJaCConnection.prototype._prepSendEmpty = function(cb, ctx) {
-    return JSJaC.bind(function() {
-        this._sendEmpty(JSJaC.bind(cb, this));
-    }, ctx);
+    return function() {
+        ctx._sendEmpty(JSJaC.bind(cb, ctx));
+    };
 };
 
 /**
