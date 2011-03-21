@@ -1066,60 +1066,61 @@ JSJaCConnection.prototype._handleResponse = function(req) {
  * @private
  */
 JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
-  if (!doc) {
-    this.oDbg.log("nothing to parse ... aborting",1);
-    return false;
-  }
-
-  var errorTag;
-  if (doc.getElementsByTagNameNS)
-    errorTag = doc.getElementsByTagNameNS("http://etherx.jabber.org/streams", "error").item(0);
-  else {
-    var errors = doc.getElementsByTagName("error");
-    for (var i=0; i<errors.length; i++)
-      if (errors.item(i).namespaceURI == "http://etherx.jabber.org/streams") {
-        errorTag = errors.item(i);
-        break;
-      }
-  }
-
-  if (errorTag) {
-    this._setStatus("internal_server_error");
-    clearTimeout(this._timeout); // remove timer
-    clearInterval(this._interval);
-    clearInterval(this._inQto);
-    this._handleEvent('onerror',JSJaCError('503','cancel','session-terminate'));
-    this._connected = false;
-    this.oDbg.log("Disconnected.",1);
-    this._handleEvent('ondisconnect');
-    return false;
-  }
-
-  this.mechs = new Object();
-  var lMec1 = doc.getElementsByTagName("mechanisms");
-  this.has_sasl = false;
-  for (var i=0; i<lMec1.length; i++)
-    if (lMec1.item(i).getAttribute("xmlns") ==
-        "urn:ietf:params:xml:ns:xmpp-sasl") {
-      this.has_sasl=true;
-      var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
-      for (var j=0; j<lMec2.length; j++)
-        this.mechs[lMec2.item(j).firstChild.nodeValue] = true;
-      break;
+    if (!doc) {
+        this.oDbg.log("nothing to parse ... aborting",1);
+        return false;
     }
-  if (this.has_sasl)
-    this.oDbg.log("SASL detected",2);
-  else {
-    this.oDbg.log("No support for SASL detected",2);
-    return false;
-  }
 
-  /* [TODO]
-   * check if in-band registration available
-   * check for session and bind features
-   */
+    var errorTag;
+    if (doc.getElementsByTagNameNS) {
+        errorTag = doc.getElementsByTagNameNS("http://etherx.jabber.org/streams", "error").item(0);
+    } else {
+        var errors = doc.getElementsByTagName("error");
+        for (var i=0; i<errors.length; i++)
+            if (errors.item(i).namespaceURI == "http://etherx.jabber.org/streams" ||
+                errors.item(i).getAttribute('xmlns') == "http://etherx.jabber.org/streams") {
+                errorTag = errors.item(i);
+                break;
+            }
+    }
 
-  return true;
+    if (errorTag) {
+        this._setStatus("internal_server_error");
+        clearTimeout(this._timeout); // remove timer
+        clearInterval(this._interval);
+        clearInterval(this._inQto);
+        this._handleEvent('onerror',JSJaCError('503','cancel','session-terminate'));
+        this._connected = false;
+        this.oDbg.log("Disconnected.",1);
+        this._handleEvent('ondisconnect');
+        return false;
+    }
+    
+    this.mechs = new Object();
+    var lMec1 = doc.getElementsByTagName("mechanisms");
+    this.has_sasl = false;
+    for (var i=0; i<lMec1.length; i++)
+        if (lMec1.item(i).getAttribute("xmlns") ==
+            "urn:ietf:params:xml:ns:xmpp-sasl") {
+            this.has_sasl=true;
+            var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
+            for (var j=0; j<lMec2.length; j++)
+                this.mechs[lMec2.item(j).firstChild.nodeValue] = true;
+            break;
+        }
+    if (this.has_sasl)
+        this.oDbg.log("SASL detected",2);
+    else {
+        this.oDbg.log("No support for SASL detected",2);
+        return false;
+    }
+    
+    /* [TODO]
+     * check if in-band registration available
+     * check for session and bind features
+     */
+
+    return true;
 };
 
 /**
