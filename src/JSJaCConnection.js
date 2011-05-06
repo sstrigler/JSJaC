@@ -1105,7 +1105,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         this.oDbg.log("SASL detected",2);
     else {
         this.oDbg.log("No support for SASL detected",2);
-        return false;
+        return true;
     }
     
     /* [TODO]
