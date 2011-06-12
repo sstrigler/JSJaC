@@ -120,6 +120,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
 	  }else{
 
 		  this.domain = 'chat.facebook.com';
+		  this.authtype = oArg.authtype;
 
 		  if(oArg.facebookApp != undefined) {
 
@@ -149,7 +150,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
     else
         this._xmllang = 'en';
 
-    this.host = oArg.host || this.domain;
+    this.authhost = this.host = oArg.host || this.domain;
     this.port = oArg.port || 5222;
     if (oArg.secure)
         this.secure = 'true';
@@ -1024,7 +1025,7 @@ JSJaCConnection.prototype._doFacebookAuthDone = function(el) {
 		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
 		this.disconnect();
 	}else {
-		this._reInitStream(this.domain, this._doStreamBind);
+        this._reInitStream(JSJaC.bind(this._doStreamBind, this));
 	}
 }
 
@@ -1208,6 +1209,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
     
     this.mechs = new Object();
     var lMec1 = doc.getElementsByTagName("mechanisms");
+    if (!lMec1.length) return false;
     this.has_sasl = false;
     for (var i=0; i<lMec1.length; i++)
         if (lMec1.item(i).getAttribute("xmlns") ==
