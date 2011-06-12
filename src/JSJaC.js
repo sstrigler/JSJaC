@@ -29,7 +29,7 @@ var JSJaC = {
      'JSJaCHttpPollingConnection',
      'JSJaCHttpBindingConnection',
      'JSJaCConsoleLogger',
-	 'JSJaCFBApplication'
+	 'JsJaCFBApplication'
      ];
     var scripts = document.getElementsByTagName("script");
     var path = './';
