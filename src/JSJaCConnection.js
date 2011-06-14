@@ -150,8 +150,9 @@ JSJaCConnection.prototype.connect = function(oArg) {
     else
         this._xmllang = 'en';
 
-    this.authhost = this.host = oArg.host || this.domain;
+    this.host = oArg.host;
     this.port = oArg.port || 5222;
+    this.authhost = this.host || this.domain;
     if (oArg.secure)
         this.secure = 'true';
     else
@@ -468,6 +469,9 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   if (!this.connected())
     return false;
 
+  if (this._xmllang && !packet.getXMLLang())
+    packet.setXMLLang(this._xmllang);
+
   // remember id for response if callback present
   if (cb) {
     if (!packet.getID())
@@ -601,7 +605,7 @@ JSJaCConnection.prototype.suspendToData = function() {
 
   this._suspend();
 
-  var u = ('_connected,_keys,_ID,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
+  var u = ('_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
   u = u.concat(this._getSuspendVars());
   var s = new Object();
 
@@ -734,7 +738,7 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
    * Non-SASL Authentication as described in JEP-0078
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(this.server,'get','auth1');
+  iq.setIQ(null,'get','auth1');
   iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
                 [['username', this.username]]);
 
@@ -759,7 +763,7 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
    * Send authentication
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(this.server,'set','auth2');
+  iq.setIQ(null,'set','auth2');
 
   query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
                         [['username', this.username],
@@ -1056,7 +1060,7 @@ JSJaCConnection.prototype._doXMPPSess = function(iq) {
   this.jid = this.fulljid.substring(0,this.fulljid.lastIndexOf('/'));
 
   iq = new JSJaCIQ();
-  iq.setIQ(this.domain,'set','sess_1');
+  iq.setIQ(null,'set','sess_1');
   iq.appendNode("session", {xmlns: "urn:ietf:params:xml:ns:xmpp-session"},
                 []);
   this.oDbg.log(iq.xml());
