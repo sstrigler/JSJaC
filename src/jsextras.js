@@ -11,11 +11,32 @@
  * @type String
  */
 String.prototype.htmlEnc = function() {
+  if(!this)
+    return this;
+  
   var str = this.replace(/&/g,"&amp;");
   str = str.replace(/</g,"&lt;");
   str = str.replace(/>/g,"&gt;");
   str = str.replace(/\"/g,"&quot;");
   str = str.replace(/\n/g,"<br />");
+  return str;
+};
+
+/**
+ * Convert HTML entities to special chars
+ * @addon
+ * @return The normal string
+ * @type String
+ */
+String.prototype.revertHtmlEnc = function() {
+  if(!this)
+    return this;
+  
+  var str = this.replace(/&amp;/gi,'&');
+  str = str.replace(/&lt;/gi,'<');
+  str = str.replace(/&gt;/gi,'>');
+  str = str.replace(/&quot;/gi,'\"');
+  str = str.replace(/<br( )?(\/)?>/gi,'\n');
   return str;
 };
 
