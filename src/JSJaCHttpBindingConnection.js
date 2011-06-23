@@ -219,6 +219,12 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(req) {
   }
   var body = req.responseXML.documentElement;
 
+  // any session error?
+  if(body.getAttribute('type') == 'terminate') {
+    this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+    return;
+  }
+
   // extract stream id used for non-SASL authentication
   if (body.getAttribute('authid')) {
     this.streamid = body.getAttribute('authid');
