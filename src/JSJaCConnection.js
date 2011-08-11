@@ -830,7 +830,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
       this.username+String.fromCharCode(0)+
       this.pass;
       this.oDbg.log("authenticating with '"+authStr+"'",2);
-      authStr = btoa(authStr);
+      authStr = b64encode(authStr);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>",
                            this._doSASLAuthDone);
     }
@@ -849,7 +849,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
-    var challenge = atob(el.firstChild.nodeValue);
+    var challenge = b64decode(el.firstChild.nodeValue);
     this.oDbg.log("got challenge: "+challenge,2);
     this._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
     this._nonce = this._nonce.substring(0,this._nonce.indexOf("\""));
@@ -908,7 +908,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
     return;
   }
 
-  var response = atob(el.firstChild.nodeValue);
+  var response = b64decode(el.firstChild.nodeValue);
   this.oDbg.log("response: "+response,2);
 
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
@@ -960,7 +960,7 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
     this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
-    var challenge = atob(el.firstChild.nodeValue);
+    var challenge = b64decode(el.firstChild.nodeValue);
     this.oDbg.log("got challenge: "+challenge,2);
 	
 	//Let's split all the variables taked back from server side
@@ -1001,7 +1001,7 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
 				   'v=' + response['v'] + '&' +
 				   'sig=' + response['sig'];
 
-		response = btoa(response);
+		response = b64encode(response);
 
 		return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
                            this._doFacebookAuthDone);
