@@ -109,22 +109,50 @@ function JSJaCConnection(oArg) {
 JSJaCConnection.prototype.connect = function(oArg) {
     this._setStatus('connecting');
 
-    this.domain = oArg.domain || 'localhost';
-    this.username = oArg.username;
-    this.resource = oArg.resource;
-    this.pass = oArg.pass;
-    this.register = oArg.register;
+	if(oArg.authtype != 'x-facebook-platform') {
 
-    this.authhost = oArg.authhost || this.domain;
-    this.authtype = oArg.authtype || 'sasl';
+	  	  this.domain = oArg.domain || 'localhost';
+		  this.username = oArg.username;
+		  this.resource = oArg.resource;
+		  this.pass = oArg.pass;
+		  this.register = oArg.register;
+
+	  }else{
+
+		  this.domain = 'chat.facebook.com';
+		  this.authtype = oArg.authtype;
+
+		  if(oArg.facebookApp != undefined) {
+
+			 this._facebookApp = oArg.facebookApp;
+
+			 if(!document.getElementById('fb-root')){
+				fbDiv = document.createElement('div');
+				fbDiv.id = 'fb-root';
+				document.body.appendChild(fbDiv);
+			 }
+
+		  	 if(oArg.facebookApp.getSession() == undefined) {
+				this._facebookApp.Login(this, oArg);
+				return;
+			 }
+			
+		  }else{
+		 	 this.oDbg.log("No Facebook application param specified!",1);
+			 return;
+		  }
+
+	  }
+
 
     if (oArg.xmllang && oArg.xmllang != '')
         this._xmllang = oArg.xmllang;
     else
         this._xmllang = 'en';
 
-    this.host = oArg.host || this.domain;
+    this.host = oArg.host;
     this.port = oArg.port || 5222;
+    this.authhost = this.host || this.domain;
     if (oArg.secure)
         this.secure = 'true';
     else
@@ -441,6 +469,9 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   if (!this.connected())
     return false;
 
+  if (this._xmllang && !packet.getXMLLang())
+    packet.setXMLLang(this._xmllang);
+
   // remember id for response if callback present
   if (cb) {
     if (!packet.getID())
@@ -574,7 +605,7 @@ JSJaCConnection.prototype.suspendToData = function() {
 
   this._suspend();
 
-  var u = ('_connected,_keys,_ID,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
+  var u = ('_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
   u = u.concat(this._getSuspendVars());
   var s = new Object();
 
@@ -707,7 +738,7 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
    * Non-SASL Authentication as described in JEP-0078
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(this.server,'get','auth1');
+  iq.setIQ(null,'get','auth1');
   iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
                 [['username', this.username]]);
 
@@ -732,7 +763,7 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
    * Send authentication
    */
   var iq = new JSJaCIQ();
-  iq.setIQ(this.server,'set','auth2');
+  iq.setIQ(null,'set','auth2');
 
   query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
                         [['username', this.username],
@@ -779,6 +810,14 @@ JSJaCConnection.prototype._doSASLAuth = function() {
                            this._doSASLAuthDone);
     }
     this.oDbg.log("SASL ANONYMOUS requested but not supported",1);
+
+  }else if (this.authtype == 'x-facebook-platform') {
+	if (this.mechs['X-FACEBOOK-PLATFORM']) {
+		return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-FACEBOOK-PLATFORM' />",
+							this._doFacebookAuth);
+	}
+	this.oDbg.log("X-FACEBOOK-PLATFORM requested but not supported",1);
+
   } else {
     if (this.mechs['DIGEST-MD5']) {
       this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",2);
@@ -791,7 +830,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
       this.username+String.fromCharCode(0)+
       this.pass;
       this.oDbg.log("authenticating with '"+authStr+"'",2);
-      authStr = btoa(authStr);
+      authStr = b64encode(authStr);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>",
                            this._doSASLAuthDone);
     }
@@ -810,7 +849,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
-    var challenge = atob(el.firstChild.nodeValue);
+    var challenge = b64decode(el.firstChild.nodeValue);
     this.oDbg.log("got challenge: "+challenge,2);
     this._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
     this._nonce = this._nonce.substring(0,this._nonce.indexOf("\""));
@@ -869,7 +908,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
     return;
   }
 
-  var response = atob(el.firstChild.nodeValue);
+  var response = b64decode(el.firstChild.nodeValue);
   this.oDbg.log("response: "+response,2);
 
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
@@ -914,6 +953,89 @@ JSJaCConnection.prototype._doSASLAuthDone = function (el) {
 /**
  * @private
  */
+JSJaCConnection.prototype._doFacebookAuth = function(el) {
+
+  if (el.nodeName != "challenge") {
+    this.oDbg.log("challenge missing",1);
+    this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+    this.disconnect();
+  } else {
+    var challenge = b64decode(el.firstChild.nodeValue);
+    this.oDbg.log("got challenge: "+challenge,2);
+	
+	//Let's split all the variables taked back from server side
+	var parts = challenge.split('&');
+	var vars = Array();
+	for (var i=0;i<parts.length;i++){
+		var tmp = parts[i].split('=');
+		vars[tmp[0]] = tmp[1];
+	}
+	
+	if(vars['nonce'] != ''){
+
+		var fbSession = this._facebookApp.getSession();
+	
+		var response = {
+			'api_key'     : this._facebookApp.getApiKey(),
+			'call_id'     : new Date().getTime(),
+			'method'      : vars['method'],
+			'nonce'       : vars['nonce'],
+			'session_key' : fbSession['session_key'],
+			'v'           : '1.0'
+		};
+		
+		response['sig'] = 'api_key=' + response['api_key'] +
+						  'call_id=' + response['call_id'] +
+						  'method=' + response['method'] +
+						  'nonce=' + response['nonce'] +
+						  'session_key=' + response['session_key'] +
+						  'v=' + response['v'];
+						  
+		response['sig'] = hex_md5(response['sig'] + this._facebookApp.getApiSecret());
+		
+		response = 'api_key=' + response['api_key'] + '&' +
+				   'call_id=' + response['call_id'] + '&' +
+				   'method=' + response['method'] + '&' +
+				   'nonce=' + response['nonce'] + '&' +
+				   'session_key=' + response['session_key'] + '&' +
+				   'v=' + response['v'] + '&' +
+				   'sig=' + response['sig'];
+
+		response = b64encode(response);
+
+		return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
+                           this._doFacebookAuthDone);
+		
+		
+	}else{
+	
+		this.oDbg.log("nonce missing",1);
+		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+		this.disconnect();
+	
+	}
+	
+  }
+
+}
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doFacebookAuthDone = function(el) {
+
+	if (el.nodeName != 'success') {
+		this.oDbg.log("auth failed",1);
+		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+		this.disconnect();
+	}else {
+        this._reInitStream(JSJaC.bind(this._doStreamBind, this));
+	}
+}
+
+/**
+ * @private
+ */
 JSJaCConnection.prototype._doStreamBind = function() {
   var iq = new JSJaCIQ();
   iq.setIQ(null,'set','bind_1');
@@ -938,7 +1060,7 @@ JSJaCConnection.prototype._doXMPPSess = function(iq) {
   this.jid = this.fulljid.substring(0,this.fulljid.lastIndexOf('/'));
 
   iq = new JSJaCIQ();
-  iq.setIQ(this.domain,'set','sess_1');
+  iq.setIQ(null,'set','sess_1');
   iq.appendNode("session", {xmlns: "urn:ietf:params:xml:ns:xmpp-session"},
                 []);
   this.oDbg.log(iq.xml());
@@ -1091,6 +1213,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
     
     this.mechs = new Object();
     var lMec1 = doc.getElementsByTagName("mechanisms");
+    if (!lMec1.length) return false;
     this.has_sasl = false;
     for (var i=0; i<lMec1.length; i++)
         if (lMec1.item(i).getAttribute("xmlns") ==
@@ -1105,7 +1228,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         this.oDbg.log("SASL detected",2);
     else {
         this.oDbg.log("No support for SASL detected",2);
-        return false;
+        return true;
     }
     
     /* [TODO]

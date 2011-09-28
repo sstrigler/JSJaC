@@ -164,7 +164,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
     if (xml != '' || raw != '') {
       reqstr += ">" + raw + xml + "</body>";
     } else {
-      reqstr += "/>";
+      reqstr += "> </body>";
     }
 
     this._last_requests[this._rid] = new Object();
@@ -185,7 +185,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
  */
 JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
   var reqstr = "<body content='text/xml; charset=utf-8' hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.authhost+"' wait='"+this._wait+"' rid='"+this._rid+"'";
-  if (this.host || this.port)
+  if (this.host && this.port)
     reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
   if (this.secure)
     reqstr += " secure='"+this.secure+"'";
@@ -199,7 +199,7 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
   if (JSJACHBC_USE_BOSH_VER) {
     reqstr += " ver='" + JSJACHBC_BOSH_VERSION + "'";
     reqstr += " xmlns:xmpp='urn:xmpp:xbosh'";
-    if (this.authtype == 'sasl' || this.authtype == 'saslanon')
+    if (this.authtype == 'sasl' || this.authtype == 'saslanon' || this.authtype == 'x-facebook-platform')
       reqstr += " xmpp:version='1.0'";
   }
   reqstr += "/>";
@@ -218,6 +218,12 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(req) {
     return;
   }
   var body = req.responseXML.documentElement;
+
+  // any session error?
+  if(body.getAttribute('type') == 'terminate') {
+    this._handleEvent('onerror',JSJaCError('503','cancel','service-unavailable'));
+    return;
+  }
 
   // extract stream id used for non-SASL authentication
   if (body.getAttribute('authid')) {
@@ -410,39 +416,47 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
   // Check for errors from the server
   if (body.getAttribute("type") == "terminate") {
-    this.oDbg.log("session terminated:\n" + r.responseText,1);
-
-    clearTimeout(this._timeout); // remove timer
-    clearInterval(this._interval);
-    clearInterval(this._inQto);
-
-    try {
-      JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
-    } catch (e) {}
-
-    this._connected = false;
-
+    // read condition
     var condition = body.getAttribute('condition');
-    if (condition == "remote-stream-error")
-      if (body.getElementsByTagName("conflict").length > 0)
-        this._setStatus("session-terminate-conflict");
-    if (condition == null)
-      condition = 'session-terminate';
-    this._handleEvent('onerror',JSJaCError('503','cancel',condition));
 
-    this.oDbg.log("Aborting remaining connections",4);
+    if (condition != "item-not-found") {
+      this.oDbg.log("session terminated:\n" + r.responseText,1);
 
-    for (var i=0; i<this._hold+1; i++) {
+      clearTimeout(this._timeout); // remove timer
+      clearInterval(this._interval);
+      clearInterval(this._inQto);
+
       try {
-        this._req[i].r.abort();
-      } catch(e) { this.oDbg.log(e, 1); }
+        JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
+      } catch (e) {}
+
+      this._connected = false;
+
+      var condition = body.getAttribute('condition');
+      if (condition == "remote-stream-error")
+        if (body.getElementsByTagName("conflict").length > 0)
+          this._setStatus("session-terminate-conflict");
+      if (condition == null)
+        condition = 'session-terminate';
+      this._handleEvent('onerror',JSJaCError('503','cancel',condition));
+
+      this.oDbg.log("Aborting remaining connections",4);
+
+      for (var i=0; i<this._hold+1; i++) {
+        try {
+          this._req[i].r.abort();
+        } catch(e) { this.oDbg.log(e, 1); }
+      }
+
+      this.oDbg.log("parseResponse done with terminating", 3);
+
+      this.oDbg.log("Disconnected.",1);
+      this._handleEvent('ondisconnect');
+    } else {
+      this._errcnt++;
+      if (this._errcnt > JSJAC_ERR_COUNT)
+        this._abort();
     }
-
-    this.oDbg.log("parseResponse done with terminating", 3);
-
-    this.oDbg.log("Disconnected.",1);
-    this._handleEvent('ondisconnect');
-
     return null;
   }
 
