@@ -116,6 +116,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
 		  this.resource = oArg.resource;
 		  this.pass = oArg.pass;
 		  this.register = oArg.register;
+		  this.authtype = oArg.authtype || 'sasl';
 
 	  }else{
 
