@@ -16,33 +16,33 @@
 
     <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-function handleIQ(aIQ) {
+function handleIQ(oIQ) {
   document.getElementById('iResp').innerHTML +=
-    "<div class='msg'>IN (raw): " +aIQ.xml().htmlEnc() + '</div>';
+    "<div class='msg'>IN (raw): " +oIQ.xml().htmlEnc() + '</div>';
   document.getElementById('iResp').lastChild.scrollIntoView();
-  con.send(aIQ.errorReply(ERR_FEATURE_NOT_IMPLEMENTED));
+  con.send(oIQ.errorReply(ERR_FEATURE_NOT_IMPLEMENTED));
 }
 
-function handleMessage(aJSJaCPacket) {
+function handleMessage(oJSJaCPacket) {
   var html = '';
-  html += '<div class="msg"><b>Received Message from '+aJSJaCPacket.getFromJID()+':</b><br/>';
-  html += aJSJaCPacket.getBody().htmlEnc() + '</div>';
+  html += '<div class="msg"><b>Received Message from '+oJSJaCPacket.getFromJID()+':</b><br/>';
+  html += oJSJaCPacket.getBody().htmlEnc() + '</div>';
   document.getElementById('iResp').innerHTML += html;
   document.getElementById('iResp').lastChild.scrollIntoView();
 }
 
-function handlePresence(aJSJaCPacket) {
+function handlePresence(oJSJaCPacket) {
   var html = '<div class="msg">';
-  if (!aJSJaCPacket.getType() && !aJSJaCPacket.getShow())
-    html += '<b>'+aJSJaCPacket.getFromJID()+' has become available.</b>';
+  if (!oJSJaCPacket.getType() && !oJSJaCPacket.getShow())
+    html += '<b>'+oJSJaCPacket.getFromJID()+' has become available.</b>';
   else {
-    html += '<b>'+aJSJaCPacket.getFromJID()+' has set his presence to ';
-    if (aJSJaCPacket.getType())
-      html += aJSJaCPacket.getType() + '.</b>';
+    html += '<b>'+oJSJaCPacket.getFromJID()+' has set his presence to ';
+    if (oJSJaCPacket.getType())
+      html += oJSJaCPacket.getType() + '.</b>';
     else
-      html += aJSJaCPacket.getShow() + '.</b>';
-    if (aJSJaCPacket.getStatus())
-      html += ' ('+aJSJaCPacket.getStatus().htmlEnc()+')';
+      html += oJSJaCPacket.getShow() + '.</b>';
+    if (oJSJaCPacket.getStatus())
+      html += ' ('+oJSJaCPacket.getStatus().htmlEnc()+')';
   }
   html += '</div>';
 
@@ -99,13 +99,13 @@ function handleIqTime(iq) {
   return true;
 }
 
-function doLogin(aForm) {
+function doLogin(oForm) {
   document.getElementById('err').innerHTML = ''; // reset
 
   try {
     // setup args for contructor
     oArgs = new Object();
-    oArgs.httpbase = aForm.http_base.value;
+    oArgs.httpbase = oForm.http_base.value;
     oArgs.timerval = 2000;
 
     oDbg = new JSJaCConsoleLogger(4);
@@ -113,7 +113,7 @@ function doLogin(aForm) {
     if (typeof(oDbg) != 'undefined')
       oArgs.oDbg = oDbg;
 
-    if (aForm.backend[0].checked)
+    if (oForm.backend[0].checked)
       con = new JSJaCHttpBindingConnection(oArgs);
     else
       con = new JSJaCHttpPollingConnection(oArgs);
@@ -122,11 +122,11 @@ function doLogin(aForm) {
 
     // setup args for connect method
     oArgs = new Object();
-    oArgs.domain = aForm.server.value;
-    oArgs.username = aForm.username.value;
+    oArgs.domain = oForm.server.value;
+    oArgs.username = oForm.username.value;
     oArgs.resource = 'jsjac_simpleclient';
-    oArgs.pass = aForm.password.value;
-    oArgs.register = aForm.register.checked;
+    oArgs.pass = oForm.password.value;
+    oArgs.register = oForm.register.checked;
     con.connect(oArgs);
   } catch (e) {
     document.getElementById('err').innerHTML = e.toString();
@@ -135,33 +135,33 @@ function doLogin(aForm) {
   }
 }
 
-function setupCon(con) {
-    con.registerHandler('message',handleMessage);
-    con.registerHandler('presence',handlePresence);
-    con.registerHandler('iq',handleIQ);
-    con.registerHandler('onconnect',handleConnected);
-    con.registerHandler('onerror',handleError);
-    con.registerHandler('status_changed',handleStatusChanged);
-    con.registerHandler('ondisconnect',handleDisconnected);
+function setupCon(oCon) {
+    oCon.registerHandler('message',handleMessage);
+    oCon.registerHandler('presence',handlePresence);
+    oCon.registerHandler('iq',handleIQ);
+    oCon.registerHandler('onconnect',handleConnected);
+    oCon.registerHandler('onerror',handleError);
+    oCon.registerHandler('status_changed',handleStatusChanged);
+    oCon.registerHandler('ondisconnect',handleDisconnected);
 
-    con.registerIQGet('query', NS_VERSION, handleIqVersion);
-    con.registerIQGet('query', NS_TIME, handleIqTime);
+    oCon.registerIQGet('query', NS_VERSION, handleIqVersion);
+    oCon.registerIQGet('query', NS_TIME, handleIqTime);
 }
 
-function sendMsg(aForm) {
-  if (aForm.msg.value == '' || aForm.sendTo.value == '')
+function sendMsg(oForm) {
+  if (oForm.msg.value == '' || oForm.sendTo.value == '')
     return false;
 
-  if (aForm.sendTo.value.indexOf('@') == -1)
-    aForm.sendTo.value += '@' + con.domain;
+  if (oForm.sendTo.value.indexOf('@') == -1)
+    oForm.sendTo.value += '@' + con.domain;
 
   try {
-    var aMsg = new JSJaCMessage();
-    aMsg.setTo(new JSJaCJID(aForm.sendTo.value));
-    aMsg.setBody(aForm.msg.value);
-    con.send(aMsg);
+    var oMsg = new JSJaCMessage();
+    oMsg.setTo(new JSJaCJID(oForm.sendTo.value));
+    oMsg.setBody(oForm.msg.value);
+    con.send(oMsg);
 
-    aForm.msg.value = '';
+    oForm.msg.value = '';
 
     return false;
   } catch (e) {
@@ -188,10 +188,10 @@ function init() {
     oDbg.start();
   } else {
     // if you're using firebug or safari, use this for debugging
-    //oDbg = new JSJaCConsoleLogger(2);
+    oDbg = new JSJaCConsoleLogger(4);
     // comment in above and remove comments below if you don't need debugging
-    oDbg = function() {};
-    oDbg.log = function() {};
+    //oDbg = function() {};
+    //oDbg.log = function() {};
   }
 
 
@@ -215,16 +215,16 @@ function init() {
 }
 onload = init;
 
-onerror = function(e) {
-  document.getElementById('err').innerHTML = e;
-
-  document.getElementById('login_pane').style.display = '';
-  document.getElementById('sendmsg_pane').style.display = 'none';
-
-  if (con && con.connected())
-    con.disconnect();
-  return false;
-};
+//onerror = function(e) {
+//  document.getElementById('err').innerHTML = e;
+//
+//  document.getElementById('login_pane').style.display = '';
+//  document.getElementById('sendmsg_pane').style.display = 'none';
+//
+//  if (con && con.connected())
+//    con.disconnect();
+//  return false;
+//};
 
 onunload = function() {
   if (typeof con != 'undefined' && con && con.connected()) {
