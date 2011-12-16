@@ -5,7 +5,7 @@
  * @constructor
  * @param {Function} func The hash function to be used for creating the keys
  * @param {Debugger} oDbg Reference to debugger implementation [optional]
- */									 
+ */
 function JSJaCKeys(func,oDbg) {
   var seed = Math.random();
 

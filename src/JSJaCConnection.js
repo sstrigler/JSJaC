@@ -136,7 +136,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
 				this._facebookApp.Login(this, oArg);
 				return;
 			 }
-			
+
 		  }else{
 		 	 this.oDbg.log("No Facebook application param specified!",1);
 			 return;
@@ -962,7 +962,7 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
   } else {
     var challenge = b64decode(el.firstChild.nodeValue);
     this.oDbg.log("got challenge: "+challenge,2);
-	
+
 	//Let's split all the variables taked back from server side
 	var parts = challenge.split('&');
 	var vars = Array();
@@ -970,11 +970,11 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
 		var tmp = parts[i].split('=');
 		vars[tmp[0]] = tmp[1];
 	}
-	
+
 	if(vars['nonce'] != ''){
 
 		var fbSession = this._facebookApp.getSession();
-	
+
 		var response = {
 			'api_key'     : this._facebookApp.getApiKey(),
 			'call_id'     : new Date().getTime(),
@@ -983,16 +983,16 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
 			'session_key' : fbSession['session_key'],
 			'v'           : '1.0'
 		};
-		
+
 		response['sig'] = 'api_key=' + response['api_key'] +
 						  'call_id=' + response['call_id'] +
 						  'method=' + response['method'] +
 						  'nonce=' + response['nonce'] +
 						  'session_key=' + response['session_key'] +
 						  'v=' + response['v'];
-						  
+
 		response['sig'] = hex_md5(response['sig'] + this._facebookApp.getApiSecret());
-		
+
 		response = 'api_key=' + response['api_key'] + '&' +
 				   'call_id=' + response['call_id'] + '&' +
 				   'method=' + response['method'] + '&' +
@@ -1005,16 +1005,16 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
 
 		return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
                            this._doFacebookAuthDone);
-		
-		
+
+
 	}else{
-	
+
 		this.oDbg.log("nonce missing",1);
 		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
 		this.disconnect();
-	
+
 	}
-	
+
   }
 
 }
@@ -1210,7 +1210,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         this._handleEvent('ondisconnect');
         return false;
     }
-    
+
     this.mechs = new Object();
     var lMec1 = doc.getElementsByTagName("mechanisms");
     if (!lMec1.length) return false;
@@ -1230,7 +1230,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         this.oDbg.log("No support for SASL detected",2);
         return true;
     }
-    
+
     /* [TODO]
      * check if in-band registration available
      * check for session and bind features

@@ -7,14 +7,14 @@ use Data::Dumper;
 
 =head1 DESCRIPTION
 
-    @packages    
+    @packages
 
         @classes
             $classname
             $classid
             $classuuid
             $classvisibility (public|protected|private)
-           
+
             @specializationids
                 $specializationid
 
@@ -54,18 +54,18 @@ use Data::Dumper;
 
 sub new {
     my ($package, $location) = @_;
-    bless { 
+    bless {
         location        => "${location}JSDoc/",
         idcounter       => 2,
         types           => {},
         classes         => {},
-        generalizations => {} 
+        generalizations => {}
     }, $package;
 }
 
 sub output {
     my ($self, $classes) = @_;
-    
+
     my $template = HTML::Template->new(
         filename    => $self->{location} . 'xmi.tmpl',
         die_on_bad_params => 1);
@@ -73,9 +73,9 @@ sub output {
     my @packages = $self->get_packages($classes);
     my @datatypes = $self->get_datatypes;
     my @generalizations = $self->get_generalizations;
-    
+
     $template->param(
-        packages        => \@packages, 
+        packages        => \@packages,
         datatypes       => \@datatypes,
         generalizations => \@generalizations );
     return $template->output;
@@ -97,13 +97,13 @@ sub get_uuid {
 sub get_packages {
     my ($self, $classes) = @_;
     my %packages;
-    push(@{$packages{$_->{package}}}, $_) 
+    push(@{$packages{$_->{package}}}, $_)
         for $self->get_classes($classes);
-    map { 
-        name        => $_, 
+    map {
+        name        => $_,
         classes     => $packages{$_},
         packageid   => $self->get_id,
-        packageuuid => $self->get_uuid 
+        packageuuid => $self->get_uuid
     }, keys %packages;
 }
 
@@ -115,11 +115,11 @@ sub get_classes {
     $self->add_class($_) for keys %$classes;
 
     for my $cname (keys %$classes){
-        my $class = { 
+        my $class = {
             classname       => $cname,
             classid         => $self->add_class($cname),
             classuuid       => $self->get_uuid,
-            classvisibility => 
+            classvisibility =>
                 defined($classes->{$cname}->{constructor_vars}->{private})
                 ? 'private' : 'public'
         };
@@ -131,16 +131,16 @@ sub get_classes {
             $class->{classid},
             $classes->{$cname});
 
-        $class->{generalizationid} = 
+        $class->{generalizationid} =
             $self->get_generalizationid($classes->{$cname});
 
-        $class->{package} = 
+        $class->{package} =
             defined($classes->{$cname}->{constructor_vars}->{package})
             ? $classes->{$cname}->{constructor_vars}->{package}->[0] : '';
 
         push @classes, $class;
     }
-    
+
     for my $class (@classes){
         $class->{specializationids} = $self->get_specializationids($class);
     }
@@ -160,10 +160,10 @@ sub get_methods {
                 methodid            => $self->get_id,
                 methoduuid          => $self->get_uuid,
                 methodname          => $method->{mapped_name},
-                methodvisibility    => 
+                methodvisibility    =>
                     defined($method->{vars}->{private})
                     ? 'private' : 'public',
-                ownerscope          => 
+                ownerscope          =>
                     $k eq 'class' ? 'classifier' : 'instance',
                 returnid            => $self->get_id,
                 returnuuid          => $self->get_uuid,
@@ -186,8 +186,8 @@ sub get_attributes {
                 attributeid         => $self->get_id,
                 attributeuuid       => $self->get_uuid,
                 attributename       => $field->{field_name},
-                attributevisibility => 
-                    defined($field->{field_vars}->{private}) 
+                attributevisibility =>
+                    defined($field->{field_vars}->{private})
                     ? 'private' : 'public',
                 ownerscope          =>
                     $k eq 'class' ? 'classifier' : 'instance',
@@ -197,7 +197,7 @@ sub get_attributes {
             push @attributes, $attr;
         }
     }
-    \@attributes;  
+    \@attributes;
 }
 
 sub get_generalizationid {
@@ -243,7 +243,7 @@ sub get_datatypes {
 sub get_generalizations {
     my ($self) = @_;
     my @generalizations;
-    
+
     while (my ($id, $generalization) = each(%{$self->{generalizations}})){
         push @generalizations, {
             generalizationid        => $id,
@@ -261,7 +261,7 @@ sub add_type {
         return $self->add_class($type);
     } elsif (defined($self->{types}->{$type})){
         return $self->{types}->{$type};
-    } 
+    }
     $self->{types}->{$type} = $self->get_id;
 }
 

@@ -3,7 +3,7 @@ TODO for JSDoc
 - XML / XMI export
 
 - Improve the --package-naming option so that there are separate namespaces
-  for each package (so that you can have the same class name defined in 
+  for each package (so that you can have the same class name defined in
   different packages)
 
 - Fix some spacing/table issues in the navbar in the templates (use a td

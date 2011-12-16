@@ -25,19 +25,19 @@ JSJaC v1.3.1
 
 JSJaC v1.3
 ==========
-* all handlers/callbacks now have their context set to the connection, 
+* all handlers/callbacks now have their context set to the connection,
   thus you can refer to it using 'this'.
 * JSJaCConnection.unregisterHandler added
 * lots of bugfixes
 
 JSJaC v1.2.2
 ============
-* added mootools packer to generate a packed version of jsjac 
+* added mootools packer to generate a packed version of jsjac
   (make target 'pack')
 * json routines: don't extend Object
 * fixed internal polling going wild when reconnecting
 * JSJaCJID.prototype.clone and JSJaCJID.prototype.isEntity added
-* Copyright and legelases statements added for code from external 
+* Copyright and legelases statements added for code from external
   resources
 
 
@@ -73,7 +73,7 @@ JSJaC v1.1
 * use prototype property to declare member methods
 * static methods for cookie retrieval/erase for convenience
 * moved config vars to own file 'src/JSJaCConfig.js'
-* fixed make process of single include file to not compress config vars 
+* fixed make process of single include file to not compress config vars
   and place them on top of 'jsjac.js'
 
 JSJaC v1.0
@@ -89,18 +89,18 @@ JSJaC v1.0beta1
 * JSJaCPacket.js: setTo and setFrom accept JID object too
 * jsextras.js: extends string with 'htmlEnc', extends Date with 'jabberDate',
   'hrTime' (static)  and 'jab2date' (static)
-* fixed all occurrences of 'for .. in' to be compliant with having prototypes 
+* fixed all occurrences of 'for .. in' to be compliant with having prototypes
   of objects (arrays) extended (like prototype.js does e.g.).
 * buildNode: build nodes using script.aculo.us famous DOM builder
-* appendNode: append nodes to root node, may also be used with DOM builder 
+* appendNode: append nodes to root node, may also be used with DOM builder
   syntax
 * ConsoleLogger: debug logger using firebug's or safari's console
 * getChild(name, ns): get child node with given name (and namespace)
-* getChildVal(name, ns): get value of child node with given name 
+* getChildVal(name, ns): get value of child node with given name
   (and namespace)
 * new API documentation using jsdoc
 * new build system using jsmin to create single minimized file (jsjac.js)
-* new events: onresume, packet_in/out, presence_in/out, message_in/out, 
+* new events: onresume, packet_in/out, presence_in/out, message_in/out,
   iq_in/out
 * new status: resuming
 
@@ -116,8 +116,8 @@ JSJaC v0.6
   JSON objects.
 * New event 'status_changed' to signal if sth going on with the status of
   the connection (like errors, retries and so on)
-* SASL Authentication (PLAIN, DIGEST-MD5, ANONYMOUS) 
-	
+* SASL Authentication (PLAIN, DIGEST-MD5, ANONYMOUS)
+
 JSJaC v0.5
 ==========
 

@@ -42,8 +42,8 @@ sub _preprocess_inherits {
     for my $class (keys %$inherits){
         my $inherit = {
             class   => $class,
-            methods => [map { name => $_ }, 
-                            @{$inherits->{$class}->{instance_methods}}]}; 
+            methods => [map { name => $_ },
+                            @{$inherits->{$class}->{instance_methods}}]};
         push @inherits, $inherit;
     }
     \@inherits;
@@ -51,12 +51,12 @@ sub _preprocess_inherits {
 
 sub _preprocess_vars {
     my ($vars) = @_;
-    return $vars if ref($vars) eq 'ARRAY'; 
+    return $vars if ref($vars) eq 'ARRAY';
     my @vars;
     for my $key (keys %$vars){
         my $var;
         if (ref($vars->{$key}) eq 'ARRAY'){
-            $var = { 
+            $var = {
                 '@name' => $key,
                 values  => [map { val => $_ }, @{$vars->{$key}}] };
         } else {

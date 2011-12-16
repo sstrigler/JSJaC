@@ -5,7 +5,7 @@
  */
 
 /**
- * Creates a new Facebook application object to use if 
+ * Creates a new Facebook application object to use if
  * the JSJaCConnection authtype is set to x-facebook-platform.
  * @class Somewhat abstract base class that keeps all the Facebook auth params.
  * @constructor
@@ -26,9 +26,9 @@ function JsJaCFBApplication(oArg){
 		this._apiSecret = oArg.apiSecret;
 
 	this._perms = '';
-		
+
 	this._session = undefined;
-	
+
 };
 
 /**
@@ -38,15 +38,15 @@ JsJaCFBApplication.prototype.Login = function(conn, oArg) {
 
 	var me = this;
 
-	FB.init({ 
-		appId: this._appID, 
+	FB.init({
+		appId: this._appID,
         status: true
     });
 
 	FB.login(function(response) {
-	
+
 		if (response.session) {
-			
+
 			if (response.perms) {
 
 				me._perms = response.perms;
@@ -56,12 +56,12 @@ JsJaCFBApplication.prototype.Login = function(conn, oArg) {
 
 			}
 		}
-		
+
 	 },{
 		perms:'xmpp_login'
 	 }
 	);
-	
+
 };
 
 /**
@@ -85,7 +85,7 @@ JsJaCFBApplication.prototype.getApiSecret = function(){ return this._apiSecret; 
 /**
  * Get the Facebook Session object.
  * @return object The Facebook Session object retrived after the user
- * has correctly login inside his Facebook account and granted 
+ * has correctly login inside his Facebook account and granted
  * the xmpp_login privileges to the Facebook Application.
  */
 JsJaCFBApplication.prototype.getSession = function(){ return this._session; };

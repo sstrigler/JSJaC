@@ -30,11 +30,11 @@ JSDoc 1.9.9
 ===========
 
 - Added a commandline parameter for supplying a template directory
-    
+
 - Adding sorting of class names on overview-summary-$filename.js
   (sf.net bug #1416564)
-    
-- Fix for broken anchors from the overview-summary-$filename page to static 
+
+- Fix for broken anchors from the overview-summary-$filename page to static
   methods (SF.net bug #1416543)
 
 JSDoc 1.9.8.1
@@ -56,7 +56,7 @@ JSDoc 1.9.8
 JSDoc 1.9.7
 ===========
 
-- Added "--no-lexical-privates" option to ignore locally-defined values 
+- Added "--no-lexical-privates" option to ignore locally-defined values
   from within constructors
 
 - Fixed linking to static fields/methods
@@ -79,7 +79,7 @@ JSDoc 1.9.6.1
 
 - Removed collapsing of string literals; this was originally added for version
   1.9.5.1 to avoid segfaults, but the decision has been made that it is up
-  to the user to use a version of perl that doesn't segfault instead of 
+  to the user to use a version of perl that doesn't segfault instead of
   trying to work around it in perl code.
 
 - Added (experimental) @exec tag for initialization blocks that should be 'run'
@@ -87,7 +87,7 @@ JSDoc 1.9.6.1
 JSDoc 1.9.6
 ===========
 
-- Fix for incorrect return type and parameter types for static method 
+- Fix for incorrect return type and parameter types for static method
   listing in file overview
 
 - Clear out unused nested functions with the preprocessor to avoid problems
@@ -153,7 +153,7 @@ JSDoc 1.9.4.2
 JSDoc 1.9.4.1
 =============
 
-- Only use the first sentence for file and class summary on the 
+- Only use the first sentence for file and class summary on the
   overview pages
 
 - Add a non-breaking space in the overview summary tables when there is no
@@ -184,7 +184,7 @@ JSDoc 1.9.3
 
 - Fixed issue with sub-package nested classes requiring the @addon tag
 
-- Added the implicit "Object" class to the inheritance tree, as well as 
+- Added the implicit "Object" class to the inheritance tree, as well as
   other classes that are referenced but not defined
 
 JSDoc 1.9.2.1
@@ -203,7 +203,7 @@ JSDoc 1.9.2
 
 - Removed unecessary table from overview-summary.tmpl
 
-- Added the @ignore tag to allow total hiding of functions 
+- Added the @ignore tag to allow total hiding of functions
 
 - Fix for incorrect marking of methods as void when the return value is
   enclosed in parentheses
@@ -221,7 +221,7 @@ JSDoc 1.9.1.3
 
 - Fixed issue with <pre> tags and JavaScript code within fileoverview sections
 
-- Made documented versions of a method take precedence over a 
+- Made documented versions of a method take precedence over a
   non-documented version
 
 - Added support for prototype assignment without parentheses
@@ -269,10 +269,10 @@ JSDoc 1.9
   (unless jsdoc has been invoked with the --no-sources flag)
 
 - Added a --no-sources commandline option to not show the sourcecode for
-  the JavaScript files 
+  the JavaScript files
 
-- Added --package-naming commandline option, which specifies that the path 
-  leading to each source file will be preserved. This allows for the same 
+- Added --package-naming commandline option, which specifies that the path
+  leading to each source file will be preserved. This allows for the same
   filename to be used in different directories. Using the same class name
   in different packages is _not_ supported (yet)
 
@@ -291,16 +291,16 @@ JSDoc 1.8.4
 - Only the first @extends marking (or assignment of an instance to a sub-
   class's prototype) will be used in determining the base class of a class.
 
-- Updated test.js to show off more features of JSDoc, as well as a general 
+- Updated test.js to show off more features of JSDoc, as well as a general
   clean-up.
-    
+
 - Changed the parser to consider a method to be a class declaration if its
   documentation contains a @class tag (in addition to the @constructor tag)
 
 JSDoc 1.8.3.1
 =============
 
-- Some general code cleanup and refactoring. 
+- Some general code cleanup and refactoring.
 
 - Properly fixed marking of void/non-void methods, and at the same time
   re-introduced recursive regexes (this time non-dynamic, as dynamic seem
@@ -316,7 +316,7 @@ JSDoc 1.8.3
   to be entered verbatim (instead, the domain of the address was parsed
   as a tag)
 
-- Re-did the @fileoverview parsing, now other tags and inner {@link...} 
+- Re-did the @fileoverview parsing, now other tags and inner {@link...}
   tags are included. Additionally, if only one file is processed and there
   is no project overview file included, the file's overview (if it exists)
   is used as the project overview. Thanks to Robert Flaherty for input
@@ -346,9 +346,9 @@ JSDoc 1.8.1
 - Fixed doubled-up <UL> tags in hierarchy tree code (thanks to Robert Flaherty)
 
 - Fixed bug where a class's base class would not get recorded if
-  there was a forward assignment of a static value to the class 
+  there was a forward assignment of a static value to the class
   (thanks to Robert Flaherty)
-  
+
 
 JSDoc 1.8
 =========
@@ -357,7 +357,7 @@ JSDoc 1.8
 
 - Fixed case-sensitive sort in index
 
-- Added support for comments with long blocks of '*'s in the opening and 
+- Added support for comments with long blocks of '*'s in the opening and
   closing of the doc string
 
 - Added sourcecode view
@@ -376,9 +376,9 @@ JSDoc 1.8
 
 - Don't add 'constructor' as an instance or class property
 
-- Added an @overviewfile tag which can be put in an independent 
+- Added an @overviewfile tag which can be put in an independent
   jsdoc-comment block at the top of each file. This results in a project
-  overview page for each file with an overview, similar to JavaDoc's 
+  overview page for each file with an overview, similar to JavaDoc's
   package pages.
 
 - Added support for Mozilla's __defineGetter__ and __defineSetter__
@@ -474,7 +474,7 @@ JSDoc 1.6.3
 JSDoc 1.6.2.1
 =============
 
-- Fixed splicing error for nested classes, thanks again to jdber 
+- Fixed splicing error for nested classes, thanks again to jdber
 
 
 JSDoc 1.6.2
@@ -483,9 +483,9 @@ JSDoc 1.6.2
 - Carry over overridden method description attributes even if there is
   no text description to carry over
 
-- Improved HTML in main.tmpl 
+- Improved HTML in main.tmpl
 
-- Fixed infinite loop and recognition for when static inner class construct is 
+- Fixed infinite loop and recognition for when static inner class construct is
   used (thanks to jdber for the patch)
 
 - Added a Nested Class Summary section to the output documentation to display
@@ -503,7 +503,7 @@ JSDoc 1.6.1
   not be made to non-existent resources, and parentheses are not placed
   after a field name (as opposed to a method name)
 
-- Carry over method documentation for overridden methods if no new 
+- Carry over method documentation for overridden methods if no new
   documentation has been supplied for the method. This is in following with
   javadoc functionality
 
@@ -530,7 +530,7 @@ JSDoc 1.5.2
 - Changed the name '[default context]' for non-class functions to be
   GLOBALS, also made this name configurable with command-line parameters
 
-- Made jsdoc easily runnable from anywhere on the filesystem, without 
+- Made jsdoc easily runnable from anywhere on the filesystem, without
   requiring installing JSDoc.pm in the @INC
 
 JSDoc 1.5.1
@@ -565,7 +565,7 @@ JSDoc 1.5
 
 - Private class methods are now also supported
 
-- Method parameters details are displayed in the same order as the parameter 
+- Method parameters details are displayed in the same order as the parameter
   list for a method
 
 - Moved more info into the 'vars' member of methods, and away from the parser
@@ -582,7 +582,7 @@ JSDoc 1.4
 
 - Added @attributes: @author, @deprecated, @see, @version, @requires, @throws
 
-- Updated pod (removed documentation for non-existant parse_jsdoc_source, 
+- Updated pod (removed documentation for non-existant parse_jsdoc_source,
 added a small example)
 
 - Added function to reset the parser (reset_parser)
