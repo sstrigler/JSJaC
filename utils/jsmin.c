@@ -156,9 +156,9 @@ action(int d)
     case 3:
         theB = next();
         if (theB == '/' && (theA == '(' || theA == ',' || theA == '=' ||
-                            theA == ':' || theA == '[' || theA == '!' || 
-                            theA == '&' || theA == '|' || theA == '?' || 
-                            theA == '{' || theA == '}' || theA == ';' || 
+                            theA == ':' || theA == '[' || theA == '!' ||
+                            theA == '&' || theA == '|' || theA == '?' ||
+                            theA == '{' || theA == '}' || theA == ';' ||
                             theA == '\n')) {
             putc(theA, stdout);
             putc(theB, stdout);

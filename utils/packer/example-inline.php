@@ -8,18 +8,18 @@ if (isset($_POST['src'])) {
   $encoding = (int)$_POST['ascii_encoding'];
   $fast_decode = isset($_POST['fast_decode']) && $_POST['fast_decode'];
   $special_char = isset($_POST['special_char'])&& $_POST['special_char'];
-  
+
   require 'class.JavaScriptPacker.php';
   $t1 = microtime(true);
   $packer = new JavaScriptPacker($script, $encoding, $fast_decode, $special_char);
   $packed = $packer->pack();
   $t2 = microtime(true);
-  
+
   $originalLength = strlen($script);
   $packedLength = strlen($packed);
   $ratio =  number_format($packedLength / $originalLength, 3);
   $time = sprintf('%.4f', ($t2 - $t1) );
-  
+
   $treat = true;
 }
 ?>
@@ -71,7 +71,7 @@ function decode() {
     </div>
     <!-- </fieldset> -->
   </form>
-  
+
   <?php if ($treat) {?>
   <div id="result">
     <h3>packed result:</h3>

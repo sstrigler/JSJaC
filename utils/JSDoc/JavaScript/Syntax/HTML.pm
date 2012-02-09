@@ -13,7 +13,7 @@ JavaScript::Syntax::HTML - Convert JavaScript sourcecode to HTML
 =head1 DESCRIPTION
 
 JavaScript::Syntax::HTML processes JavaScript code and outputs HTML with
-all reserved words marked up. 
+all reserved words marked up.
 
 The to_html method only outputs an HTML fragment (no <body> or <html> tags),
 and only marks up the reserved words with CSS styles.
@@ -21,7 +21,7 @@ and only marks up the reserved words with CSS styles.
 The to_html_document method outputs a full HTML document, and does include
 style information for the reserved words markup.
 
-The style classes that can be defined for use with to_html are C<comment>, 
+The style classes that can be defined for use with to_html are C<comment>,
 C<literal>, and C<reserved>.
 
 =head1 AUTHOR
@@ -50,7 +50,7 @@ sub to_html {
         ('[^']*'|"[^"]*")
         |
         \b(function|for|if|while|return|else|prototype|this)\b
-        / get_substitution($1, $2, $3) /egsxm; 
+        / get_substitution($1, $2, $3) /egsxm;
     $_;
 }
 

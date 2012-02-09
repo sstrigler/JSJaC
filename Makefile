@@ -11,17 +11,17 @@ src/JSJaC.js
 
 all: clean utils install doc
 
-install: build uncompressed crunch  
+install: build uncompressed crunch
 	@echo "done."
 
-build: 
+build:
 	@echo "building ...";
 	@for i in ${SRC}; do \
 		echo "\t$$i"; \
 		cat "$$i" >> $(OUTFILE); \
 	done
 
-crunch: 
+crunch:
 	@echo "crunching ..."
 	@if [ -e $(OUTFILE) ]; then \
 		utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp && \
@@ -33,7 +33,7 @@ crunch:
 
 pack: clean utils build moo crunch doc
 
-moo:	
+moo:
 	@echo "packing..."
 	@if [ -e $(OUTFILE) ]; then \
 		php ./utils/packer/pack.php $(OUTFILE) $(PACKFILE).tmp && \
@@ -45,7 +45,7 @@ moo:
 		echo "$(OUTFILE) not found. build failed?"; \
 	fi
 
-doc: 
+doc:
 	@utils/JSDoc/jsdoc.pl --project-name JSJaC -d doc src/
 
 utils:
@@ -57,7 +57,7 @@ clean:
 	@rm -rf doc/
 	@make -C utils clean
 
-uncompressed: 
+uncompressed:
 	@if [ -e $(OUTFILE) ]; then \
 		cat src/header.js > $(UNCOMPRESSED) && \
 		cat src/JSJaCConfig.js >> $(UNCOMPRESSED) && \

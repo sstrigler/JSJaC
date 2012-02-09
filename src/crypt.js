@@ -539,7 +539,7 @@ function utf8t2d(t)
       }
   return d;
 }
-	
+
 // returns plaintext from an array of bytesrepresenting dezimal numbers, which
 // represent an UTF-8 encoded text; browser which does not understand unicode
 // like NN401 will show "?"-signs instead

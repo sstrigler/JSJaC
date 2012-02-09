@@ -501,7 +501,7 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
         var featuresNL = doc.getElementsByTagName('stream:features');
         for (var i=0, l=featuresNL.length; i<l; i++) {
             if (featuresNL.item(i).namespaceURI == 'http://etherx.jabber.org/streams' ||
-                featuresNL.item(i).getAttribute('xmlns') == 
+                featuresNL.item(i).getAttribute('xmlns') ==
                 'http://etherx.jabber.org/streams') {
                 var features = featuresNL.item(i);
                 break;
@@ -511,7 +511,7 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
             var bind = features.getElementsByTagName('bind');
             for (var i=0, l=bind.length; i<l; i++) {
                 if (bind.item(i).namespaceURI == 'urn:ietf:params:xml:ns:xmpp-bind' ||
-                    bind.item(i).getAttribute('xmlns') == 
+                    bind.item(i).getAttribute('xmlns') ==
                     'urn:ietf:params:xml:ns:xmpp-bind') {
                     bind = bind.item(i);
                     break;
@@ -521,7 +521,7 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
     }
     this.oDbg.log(features);
     this.oDbg.log(bind);
-    
+
     if (features) {
         if (bind) {
             cb();

@@ -13,7 +13,7 @@
 String.prototype.htmlEnc = function() {
   if(!this)
     return this;
-  
+
   var str = this.replace(/&/g,"&amp;");
   str = str.replace(/</g,"&lt;");
   str = str.replace(/>/g,"&gt;");
@@ -31,7 +31,7 @@ String.prototype.htmlEnc = function() {
 String.prototype.revertHtmlEnc = function() {
   if(!this)
     return this;
-  
+
   var str = this.replace(/&amp;/gi,'&');
   str = str.replace(/&lt;/gi,'<');
   str = str.replace(/&gt;/gi,'>');

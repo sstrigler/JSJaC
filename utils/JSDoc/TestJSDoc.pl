@@ -20,7 +20,7 @@ $|++;
 
 # parse_jsdoc_comment
 diag("Testing parse_jsdoc_comment");
-is_deeply(parse_jsdoc_comment(''), {summary => ''}, 
+is_deeply(parse_jsdoc_comment(''), {summary => ''},
     "Ensure only summary is filled in");
 
 is(parse_jsdoc_comment('')->{summary}, '', 'Empty comment value');
@@ -34,21 +34,21 @@ is(parse_jsdoc_comment(
 # annotate_comment
 diag("Testing annotate_comment");
 is(annotate_comment, "\n/** \@private */", 'annotate_comment w/o arg');
-like(annotate_comment("/** This is a test */"), 
-        qr#^/\s*\*\*\s*This is a test\s+\@private\s*\*/\s*$#, 
+like(annotate_comment("/** This is a test */"),
+        qr#^/\s*\*\*\s*This is a test\s+\@private\s*\*/\s*$#,
         'annotate_comment w/ arg');
 like(annotate_comment("/** This is a test */", '@testtag value'),
-        qr#^/\s*\*\*\s*This is a test\s+\@testtag\svalue\s*\*/\s*$#, 
+        qr#^/\s*\*\*\s*This is a test\s+\@testtag\svalue\s*\*/\s*$#,
         'annotate_comment w/ tag argument');
 
 # find_balanced_block
 diag("Testing find_balanced_block");
 my @blocks = (
         # basic simple input
-        ['{', '}', '{ this is in the braces } {this is after}{{', 
+        ['{', '}', '{ this is in the braces } {this is after}{{',
             ['{ this is in the braces }', ' {this is after}{{'] ,
             'basic input'],
-        
+
         # discard leading chars before opening char
         ['{', '}', 'discard {inner} after',
             ['{inner}', ' after'], 'discard leading chars'],
@@ -58,7 +58,7 @@ my @blocks = (
             ['', ''], 'empty input string'],
 
         # nothing to match at all
-        ['{', '}', 'there is nothing to match', 
+        ['{', '}', 'there is nothing to match',
             ['', 'there is nothing to match'], 'nothing to match'],
     );
 for my $test (@blocks){
@@ -81,9 +81,9 @@ function Foo(){
 function myfunc(){return null;}
 #;
 my $classes = parse_code_tree(\$src);
-my %method_names = map { $_->{mapped_name} => 1 } 
+my %method_names = map { $_->{mapped_name} => 1 }
             @{$classes->{Foo}->{instance_methods}};
-ok(not(defined($method_names{myfunc})), 
+ok(not(defined($method_names{myfunc})),
     'Unrelated method is not added to class without @member tag');
 reset_parser();
 $src = q#
@@ -91,19 +91,19 @@ $src = q#
 function Foo(){
     this.x = function(){return null;};
 }
-/** 
+/**
  * @member Foo
  */
 function myfunc(){return null;}
 #;
 $classes = parse_code_tree(\$src);
-%method_names = map { $_->{mapped_name} => 1 } 
+%method_names = map { $_->{mapped_name} => 1 }
             @{$classes->{Foo}->{instance_methods}};
-ok(defined($method_names{myfunc}), 
+ok(defined($method_names{myfunc}),
     'Add method marked with @member to class');
 reset_parser();
 
-# 
+#
 # preprocess_source
 #
 
@@ -111,10 +111,10 @@ diag("Testing preprocess_source");
 
 # Make sure that:
 #
-#  Foo.prototype = { 
+#  Foo.prototype = {
 #     bar: function(){ return "Eep!"; },
 #     baz: "Ha!"
-#  } 
+#  }
 #
 #  becomes:
 #
@@ -122,7 +122,7 @@ diag("Testing preprocess_source");
 #  Foo.prototype.baz = "Ha!";
 
 my $before = q/
-  Foo.prototype = { 
+  Foo.prototype = {
      bar: function(){ return "Eep!"; },
      baz: "Ha!"
   } /;
@@ -132,10 +132,10 @@ my $after_re = qr/^\s*(?:$JSDOC_COMMENT)?\s*Foo.prototype.bar
                             function\(\s*\)\s*\{[^\}]*}\s*;\s*
                             Foo\.prototype\.baz\s*=\s*"[^"]+"\s*;\s*$/x;
 
-like(preprocess_source($before), $after_re, 
+like(preprocess_source($before), $after_re,
     'Unpack prototype block assignment');
 
-# 
+#
 # Make sure that:
 #
 #     /** @constructor */
@@ -143,7 +143,7 @@ like(preprocess_source($before), $after_re,
 # becomes:
 #     /** @constructor */
 #     Foo.Bar = function(){};
-#     
+#
 #     /** @constructor */
 #     function Foo.Bar(){}
 #
@@ -160,7 +160,7 @@ $after_re = qr{
      Foo\.Bar\s*=\s*function\s*\(\s*\)\s*\{\s*\}\s*;\s*
      /\*\*\s*\@constructor\s*\*/\s*
      function\s+Foo\.Bar\s*\(\s*\)\s*\{\s*\}
-     \s* 
+     \s*
      Foo\.Bar\.prototype\.x\s*=\s*2\s*;\s*
      /\*\*\s*\@private\s*\*/\s*
      Foo\.Bar\.prototype\.y\s*=\s*3\s*;\s*$
@@ -173,7 +173,7 @@ like(preprocess_source($before), $after_re,
 #       MySingleton = new function(){this.x=function(){}}
 #   and
 #       var MySingleton = new function(){this.x=function(){}}
-# become:     
+# become:
 #       function MySingleton(){}
 #       MySingleton.prototype.x = function(){};
 #
@@ -192,14 +192,14 @@ like(preprocess_source($before), $after_re,
         "Unpack var'd singleton");
 
 
-# 
-# Test unpacking a constructor into a bunch of 
+#
+# Test unpacking a constructor into a bunch of
 # prototype-based declarations
 #
 
 $before = q#
     /**
-     * @constructor 
+     * @constructor
      */
     function MyClass(){
         /** Private variable 'x' */
@@ -222,16 +222,16 @@ $after_re = qr{
      \*\s*\@constructor\s*
      \*/\s*
     function\s+MyClass\s*\(\s*\)\s*\{\s*\}\s*
-    
+
     /\*\*\s*Private\svariable\s'x'\s*
     \@private\s*\*/\s*
     MyClass\.prototype\.x\s*=\s*3\s*;\s*
 
     /\*\*\s*
     \*\s*This\sis\smy\sfunction\s*\*/\s*
-    MyClass\.prototype\.myFunction\s*=\s*function\s*\(\s*\)\s*\{ 
+    MyClass\.prototype\.myFunction\s*=\s*function\s*\(\s*\)\s*\{
         [^\}]*\}\s*;\s*
-        
+
     /\*\*\s*
      \*\s*This\sis\sa\sprivate\sfunction\s*
       \@private\s*\*/\s*
@@ -239,7 +239,7 @@ $after_re = qr{
     \{[^\}]*\}\s*$
 }x;
 
-like(preprocess_source($before), $after_re, 
+like(preprocess_source($before), $after_re,
     'Testing unpacking a constructor into prototype-based assignments');
 
 
@@ -307,7 +307,7 @@ ok(eq_set(
             @{$classes->{MyClass}->{instance_methods}}],
         ['af', 'bf', 'cf', 'afunc', 'bfunc', 'cfunc']),
     "Ensure instance methods in constructor are correctly assigned");
-   
+
 
 
 reset_parser();
@@ -432,15 +432,15 @@ $src = "
     MyClass.prototype.f = function(){};
 ";
 $classes = parse_code_tree(\$src);
-ok(not(defined($classes->{theclass})), 
+ok(not(defined($classes->{theclass})),
     "Ensure that dynamic prototyping doesn't add classes");
-ok(defined($classes->{MyClass}), 
+ok(defined($classes->{MyClass}),
     "Ensure that normal classes are added with static prototyping");
 
 
 # Test @singleton handling
 reset_parser();
-$src = q# 
+$src = q#
     /** @singleton */
     var SingletonClass = {
         funcA: function(){},
@@ -448,7 +448,7 @@ $src = q#
 #;
 $classes = parse_code_tree(\$src);
 ok(defined($classes->{SingletonClass}));
-my @fnames = sort map { $_->{mapped_name}}  
+my @fnames = sort map { $_->{mapped_name}}
     @{$classes->{SingletonClass}->{instance_methods}};
 is(scalar(@fnames), 2);
 ok(eq_array(\@fnames, ["funcA", "funcB"]));
@@ -456,7 +456,7 @@ ok(eq_array(\@fnames, ["funcA", "funcB"]));
 
 #
 # miscellaneous tests
-# 
+#
 diag("Miscellaneous tests");
 reset_parser();
 $src = "
@@ -471,14 +471,14 @@ $src = "
     B.prototype = new C();";
 
 $classes = parse_code_tree(\$src);
-is($classes->{B}->{extends}, 'A', 
+is($classes->{B}->{extends}, 'A',
     "Test that the first extends marking is the good one, others are ignored");
 
 reset_parser();
 $src = "function A(){ this.n = function(){return 2};}
         var a = new A(); ";
 $classes = parse_code_tree(\$src);
-ok(defined($classes->{A}), 
+ok(defined($classes->{A}),
     "Functions are later used with 'new' must be treated as a constructor");
 
 ok(!defined($classes->{this}), "'this' cannot be added as a class");
@@ -492,7 +492,7 @@ reset_parser();
 $src = '/** @base SomeOtherClass */
 function MyClass(){}';
 $classes = parse_code_tree(\$src);
-ok(defined($classes->{MyClass}), 
+ok(defined($classes->{MyClass}),
     'A function must be upgraded to a class if the @base tag is used');
 
 #
@@ -521,7 +521,7 @@ function AddCallback(obj){
     obj.callback = function(){ return null; };
 }';
 $classes = parse_code_tree(\$src);
-ok(!defined($classes->{obj}), 
+ok(!defined($classes->{obj}),
     "Don't add passed-in objects as classes when doing dynamic binding");
 
 reset_parser();
@@ -620,7 +620,7 @@ $src = '
 /** @constructor */
 function x(){}
 
-/** more doc 
+/** more doc
 function y(){}
 */
 
@@ -654,7 +654,7 @@ ok(!defined $fnames{Hidden}, 'An @ignored method is not picked up');
 #
 reset_parser();
 $src = '
-/** 
+/**
  * Should be ignored
  */
 ClassOne.funcOne = function(){};
@@ -668,7 +668,7 @@ ClassTwo.funcOne = function(){};
 ClassThree.prototype = new Object();
 ClassThree.funcThree = function(){}';
 $classes = parse_code_tree(\$src);
-ok(!defined($classes->{ClassOne}), 
+ok(!defined($classes->{ClassOne}),
     'Extensions to undefined classes/objects without @addon are ignored');
 ok(defined($classes->{ClassTwo}),
     'Extensions to undefined classes/objects with @addon are not ignored');
@@ -677,7 +677,7 @@ ok($classes->{ClassThree}->{class_methods}->[0]->{mapped_name} eq 'funcThree',
 
 #
 # Ensure enclosing package-classes are still recognized without using @addon
-# 
+#
 reset_parser();
 $src = '
 /**
@@ -688,7 +688,7 @@ package.MyClass = function MyClass(){}
 package.MyClass.prototype.foo = function foo(){}
 ';
 $classes = parse_code_tree(\$src);
-ok(defined($classes->{package}), 
+ok(defined($classes->{package}),
     'Super-package-classes must be recognized without the @addon tag');
 ok(defined($classes->{'package.MyClass'}),
     'Sub-package-classes must be recognized without the @addon tag');

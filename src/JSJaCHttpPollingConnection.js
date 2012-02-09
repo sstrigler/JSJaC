@@ -258,7 +258,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
 
         if (doc.getElementsByTagName('conflict').length > 0)
           this._setStatus("session-terminate-conflict");
-			
+
         clearTimeout(this._timeout); // remove timer
         clearInterval(this._interval);
         clearInterval(this._inQto);
@@ -268,7 +268,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
         this._handleEvent('ondisconnect');
       } else
         this.oDbg.log("parsererror:"+doc,1);
-		
+
       return doc;
     }
 
