@@ -625,14 +625,22 @@ if (typeof(atob) == 'undefined' || typeof(btoa) == 'undefined')
   b64arrays();
 
 if (typeof(atob) == 'undefined') {
-  atob = function(s) {
+  b64decode = function(s) {
     return utf8d2t(b64t2d(s));
+  }
+} else {
+  b64decode = function(s) {
+    return btoa(unescape(encodeURIComponent(s)));
   }
 }
 
 if (typeof(btoa) == 'undefined') {
-  btoa = function(s) {
+  b64encode = function(s) {
     return b64d2t(utf8t2d(s));
+  }
+} else {
+  b64encode = function(s) {
+    return decodeURIComponent(escape(atob(s)));
   }
 }
 

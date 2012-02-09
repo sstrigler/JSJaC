@@ -51,6 +51,14 @@ function JSJaCJID(jid) {
   }
 }
 
+/**
+ * Gets the bare jid (i.e. the JID without resource)
+ * @return A string representing the bare jid
+ * @type String
+ */
+JSJaCJID.prototype.getBareJID = function() {
+    return this.getNode()+'@'+this.getDomain();
+};
 
 /**
  * Gets the node part of the jid
