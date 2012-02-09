@@ -630,7 +630,7 @@ if (typeof(atob) == 'undefined') {
   }
 } else {
   b64decode = function(s) {
-    return btoa(unescape(encodeURIComponent(s)));
+    return decodeURIComponent(escape(atob(s)));
   }
 }
 
@@ -640,7 +640,7 @@ if (typeof(btoa) == 'undefined') {
   }
 } else {
   b64encode = function(s) {
-    return decodeURIComponent(escape(atob(s)));
+    return btoa(unescape(encodeURIComponent(s)));
   }
 }
 
