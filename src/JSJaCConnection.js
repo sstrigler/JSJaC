@@ -469,8 +469,8 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
   if (!this.connected())
     return false;
 
-  if (this._xmllang && !packet.getXMLLang())
-    packet.setXMLLang(this._xmllang);
+  // if (this._xmllang && !packet.getXMLLang())
+  //   packet.setXMLLang(this._xmllang);
 
   // remember id for response if callback present
   if (cb) {
