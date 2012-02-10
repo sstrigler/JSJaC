@@ -329,9 +329,11 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
     for (var i = 0, il = node.attributes.length;i < il; i++) {
       var attr = node.attributes.item(i);
       if (attr.nodeName == 'xmlns' && 
-          (newNode.getAttribute('xmlns') != null || newNode.namespaceURI != null)) {
+          (newNode.getAttribute('xmlns') != null || newNode.namespaceURI)) {
           // skip setting an xmlns attribute as it has been set
           // before already by createElementNS
+
+          // namespaceURI is '' for IE<9
           continue;
       }
       if (newNode.setAttributeNS && attr.namespaceURI) {
