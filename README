@@ -2,7 +2,7 @@ JSJaC - JavaScript Jabber Client Library
 ========================================
 
 JSJaC is a Jabber/XMPP client library written in JavaScript to ease
-implementation of web based jabber/XMPP clients. For communication
+implementation of web based Jabber/XMPP clients. For communication
 with a jabber server it needs to support either [1]HTTP Polling or
 [2]XMPP Over BOSH (formerl known as HTTP Binding).
 JSJaC has an object oriented interface which should be quite easy to
