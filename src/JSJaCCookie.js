@@ -43,7 +43,7 @@ function JSJaCCookie(name,value,secs,domain,path)
   /**
    * Time in seconds when cookie expires (thus being delete by
    * browser). A value of -1 denotes a session cookie which means that
-   * stored data gets lost when browser is being closed. 
+   * stored data gets lost when browser is being closed.
    * @type int
    */
   this.secs = secs;
@@ -64,12 +64,13 @@ function JSJaCCookie(name,value,secs,domain,path)
    * Stores this cookie
    */
   this.write = function() {
+    var expires;
     if (this.secs) {
       var date = new Date();
       date.setTime(date.getTime()+(this.secs*1000));
-      var expires = "; expires="+date.toGMTString();
+      expires = "; expires="+date.toGMTString();
     } else
-      var expires = "";
+      expires = "";
     var domain = this.domain?"; domain="+this.domain:"";
     var path = this.path?"; path="+this.path:"; path=/";
     document.cookie = this.getName()+"="+JSJaCCookie._escape(this.getValue())+
@@ -93,7 +94,7 @@ function JSJaCCookie(name,value,secs,domain,path)
   this.getName = function() {
     return this.name;
   };
- 
+
   /**
    * Sets the name of this cookie
    * @param {String} name The name for this cookie
@@ -113,7 +114,7 @@ function JSJaCCookie(name,value,secs,domain,path)
   this.getValue = function() {
     return this.value;
   };
- 
+
   /**
    * Sets the value of this cookie
    * @param {String} value The value for this cookie
@@ -162,9 +163,9 @@ JSJaCCookie.read = function(name) {
   for(var i=0;i < ca.length;i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') c = c.substring(1,c.length);
-    if (c.indexOf(nameEQ) == 0) 
+    if (c.indexOf(nameEQ) == 0)
       return new JSJaCCookie(
-        name, 
+        name,
         JSJaCCookie._unescape(c.substring(nameEQ.length,c.length)));
   }
   throw new JSJaCCookieException("Cookie not found");
