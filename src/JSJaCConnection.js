@@ -188,7 +188,6 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this._req[slot].r.onerror =
             JSJaC.bind(function(e) {
                 this.oDbg.log('XmlHttpRequest error',1);
-                return false;
             }, this);
     }
 
@@ -1377,7 +1376,6 @@ JSJaCConnection.prototype._sendEmpty = function(cb) {
     this._req[slot].r.onerror =
       JSJaC.bind(function(e) {
                    this.oDbg.log('XmlHttpRequest error',1);
-                   return false;
                  }, this);
   }
 
