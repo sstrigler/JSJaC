@@ -491,18 +491,16 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
     this.oDbg.log(doc);
     if (doc.getElementsByTagNameNS) {
         this.oDbg.log("checking with namespace");
-        features = doc.getElementsByTagNameNS('http://etherx.jabber.org/streams',
-                                                'features').item(0);
+
+        features = doc.getElementsByTagNameNS(NS_STREAM, 'features').item(0);
         if (features) {
-            bind = features.getElementsByTagNameNS('urn:ietf:params:xml:ns:xmpp-bind',
-                                                       'bind').item(0);
+            bind = features.getElementsByTagNameNS(NS_BIND, 'bind').item(0);
         }
     } else {
         var featuresNL = doc.getElementsByTagName('stream:features'), i, l;
         for (i=0, l=featuresNL.length; i<l; i++) {
-            if (featuresNL.item(i).namespaceURI == 'http://etherx.jabber.org/streams' ||
-                featuresNL.item(i).getAttribute('xmlns') ==
-                'http://etherx.jabber.org/streams') {
+            if (featuresNL.item(i).namespaceURI == NS_STREAM ||
+                featuresNL.item(i).getAttribute('xmlns') == NS_STREAM) {
                 features = featuresNL.item(i);
                 break;
             }
@@ -510,9 +508,8 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
         if (features) {
             bind = features.getElementsByTagName('bind');
             for (i=0, l=bind.length; i<l; i++) {
-                if (bind.item(i).namespaceURI == 'urn:ietf:params:xml:ns:xmpp-bind' ||
-                    bind.item(i).getAttribute('xmlns') ==
-                    'urn:ietf:params:xml:ns:xmpp-bind') {
+                if (bind.item(i).namespaceURI == NS_BIND ||
+                    bind.item(i).getAttribute('xmlns') == NS_BIND) {
                     bind = bind.item(i);
                     break;
                 }
