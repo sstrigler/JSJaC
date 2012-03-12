@@ -130,7 +130,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
             this._facebookApp = oArg.facebookApp;
 
             if(!document.getElementById('fb-root')){
-                fbDiv = document.createElement('div');
+                var fbDiv = document.createElement('div');
                 fbDiv.id = 'fb-root';
                 document.body.appendChild(fbDiv);
             }
@@ -188,7 +188,6 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this._req[slot].r.onerror =
             JSJaC.bind(function(e) {
                 this.oDbg.log('XmlHttpRequest error',1);
-                return false;
             }, this);
     }
 
@@ -225,7 +224,7 @@ JSJaCConnection.prototype.disconnect = function() {
     } catch(e) { this.oDbg.log(e, 1); }
   }, this);
 
-  request = this._getRequestString(false, true);
+  var request = this._getRequestString(false, true);
 
   this.oDbg.log("Disconnecting: " + request, 4);
   this._req[slot].r.send(request);
@@ -766,9 +765,9 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
   var iq = new JSJaCIQ();
   iq.setIQ(null,'set','auth2');
 
-  query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
-                        [['username', this.username],
-                         ['resource', this.resource]]);
+  var query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
+                            [['username', this.username],
+                             ['resource', this.resource]]);
 
   if (use_digest) { // digest login
     query.appendChild(iq.buildNode('digest', {xmlns: 'jabber:iq:auth'},
@@ -779,7 +778,7 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
   } else {
     this.oDbg.log("no valid login mechanism found",1);
     this.disconnect();
-    return false;
+    return;
   }
 
   this.send(iq,this._doLegacyAuthDone);
@@ -1311,14 +1310,14 @@ JSJaCConnection.prototype._process = function(timerval) {
                    if (this._errcnt > JSJAC_ERR_COUNT) {
                      // abort
                      this._abort();
-                     return false;
+                     return;
                    }
 
                    this._setStatus('onerror_fallback');
 
                    // schedule next tick
                    setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
-                   return false;
+                   return;
                  }, this);
   } catch(e) { } // well ... no onerror property available, maybe we
   // can catch the error somewhere else ...
@@ -1377,7 +1376,6 @@ JSJaCConnection.prototype._sendEmpty = function(cb) {
     this._req[slot].r.onerror =
       JSJaC.bind(function(e) {
                    this.oDbg.log('XmlHttpRequest error',1);
-                   return false;
                  }, this);
   }
 

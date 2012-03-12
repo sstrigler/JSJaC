@@ -53,7 +53,7 @@ var JSJaCBuilder = {
       } else {
         ns = arguments[2]['xmlns'] || ns;
         element = this._createElement(doc, elementName, ns);
-        for(attr in arguments[2]) {
+        for(var attr in arguments[2]) {
           if (arguments[2].hasOwnProperty(attr) && attr != 'xmlns')
             element.setAttribute(attr, arguments[2][attr]);
         }
@@ -119,7 +119,7 @@ var JSJaCBuilder = {
 
   _attributes: function(attributes) {
     var attrs = [];
-    for(attribute in attributes)
+    for(var attribute in attributes)
       if (attributes.hasOwnProperty(attribute))
         attrs.push(attribute +
           '="' + attributes[attribute].toString().htmlEnc() + '"');

@@ -277,10 +277,10 @@ function() {
   var r = (new XMLSerializer()).serializeToString(this.getNode());
   if (typeof(r) == 'undefined')
     r = (new XMLSerializer()).serializeToString(this.doc); // oldschool
-  return r
+  return r;
 } :
 function() {// IE
-  return this.getDoc().xml
+  return this.getDoc().xml;
 };
 
 
@@ -318,17 +318,19 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
   switch (node.nodeType) {
   case document.ELEMENT_NODE:
 
+  var newNode;
   if (this.getDoc().createElementNS) {
-    var newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
+    newNode = this.getDoc().createElementNS(node.namespaceURI, node.nodeName);
   } else {
-    var newNode = this.getDoc().createElement(node.nodeName);
+    newNode = this.getDoc().createElement(node.nodeName);
   }
 
+  var i, il;
   /* does the node have any attributes to add? */
   if (node.attributes && node.attributes.length > 0)
-    for (var i = 0, il = node.attributes.length;i < il; i++) {
+    for (i = 0, il = node.attributes.length;i < il; i++) {
       var attr = node.attributes.item(i);
-      if (attr.nodeName == 'xmlns' && 
+      if (attr.nodeName == 'xmlns' &&
           (newNode.getAttribute('xmlns') != null || newNode.namespaceURI)) {
           // skip setting an xmlns attribute as it has been set
           // before already by createElementNS
@@ -347,7 +349,7 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
     }
   /* are we going after children too, and does the node have any? */
   if (allChildren && node.childNodes && node.childNodes.length > 0) {
-    for (var i = 0, il = node.childNodes.length; i < il; i++) {
+    for (i = 0, il = node.childNodes.length; i < il; i++) {
       newNode.appendChild(this._importNode(node.childNodes.item(i), allChildren));
     }
   }
@@ -377,7 +379,7 @@ JSJaCPacket.prototype._setChildNode = function(nodeName, nodeValue) {
       aNode = this.getDoc().createElementNS(this.getNode().namespaceURI,
                                             nodeName);
     } catch (ex) {
-      aNode = this.getDoc().createElement(nodeName)
+      aNode = this.getDoc().createElement(nodeName);
     }
     this.getNode().appendChild(aNode);
     aNode.appendChild(tNode);
@@ -422,7 +424,7 @@ JSJaCPacket.prototype.buildNode = function(elementName) {
  */
 JSJaCPacket.prototype.appendNode = function(element) {
   if (typeof element=='object') { // seems to be a prebuilt node
-    return this.getNode().appendChild(element)
+    return this.getNode().appendChild(element);
   } else { // build node
     return this.getNode().appendChild(this.buildNode(element,
                                                      arguments[1],
@@ -692,7 +694,7 @@ JSJaCMessage.prototype.getBody = function() {
  * @type String
  */
 JSJaCMessage.prototype.getSubject = function() {
-  return this.getChildVal('subject')
+  return this.getChildVal('subject');
 };
 
 
@@ -729,4 +731,3 @@ JSJaCPacket.wrapNode = function(node) {
 
   return oPacket;
 };
-
