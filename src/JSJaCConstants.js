@@ -32,6 +32,7 @@ var NS_PUBSUB_OWNER = "http://jabber.org/protocol/pubsub#owner";
 var NS_PUBSUB_NMI =   "http://jabber.org/protocol/pubsub#node-meta-info";
 var NS_COMMANDS =     "http://jabber.org/protocol/commands";
 var NS_STREAM =       "http://etherx.jabber.org/streams";
+var NS_CLIENT =       "jabber:client";
 
 var NS_STANZAS =      "urn:ietf:params:xml:ns:xmpp-stanzas";
 var NS_STREAMS =      "urn:ietf:params:xml:ns:xmpp-streams";

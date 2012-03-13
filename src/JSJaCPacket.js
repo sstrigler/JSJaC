@@ -22,7 +22,7 @@ function JSJaCPacket(name) {
     /**
      * @private
      */
-    this.doc = XmlDocument.create(name,'jabber:client');
+    this.doc = XmlDocument.create(name, NS_CLIENT);
   else
     /**
      * @private
