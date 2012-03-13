@@ -53,7 +53,7 @@ JSJaCHttpPollingConnection.prototype._getInitialRequestString = function() {
   var reqstr = "0";
   if (JSJAC_HAVEKEYS) {
     this._keys = new JSJaCKeys(b64_sha1,this.oDbg); // generate first set of keys
-    key = this._keys.getKey();
+    var key = this._keys.getKey();
     reqstr += ";"+key;
   }
   var streamto = this.domain;
@@ -151,7 +151,7 @@ JSJaCHttpPollingConnection.prototype._handleInitialResponse = function() {
   var aPList = this._req[0].r.getResponseHeader('Set-Cookie');
   aPList = aPList.split(";");
   for (var i=0;i<aPList.length;i++) {
-    aArg = aPList[i].split("=");
+    var aArg = aPList[i].split("=");
     if (aArg[0] == 'ID')
       this._sid = aArg[1];
   }
@@ -203,7 +203,6 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
     sid = "-1:0"; // Generate internal server error
   else {
     aPList = aPList.split(";");
-    var sid;
     for (var i=0;i<aPList.length;i++) {
       var aArg = aPList[i].split("=");
       if (aArg[0] == 'ID')
@@ -258,7 +257,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
 
         if (doc.getElementsByTagName('conflict').length > 0)
           this._setStatus("session-terminate-conflict");
-			
+
         clearTimeout(this._timeout); // remove timer
         clearInterval(this._interval);
         clearInterval(this._inQto);
@@ -268,7 +267,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
         this._handleEvent('ondisconnect');
       } else
         this.oDbg.log("parsererror:"+doc,1);
-		
+
       return doc;
     }
 

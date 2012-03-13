@@ -6,7 +6,7 @@ src/JSJaCBuilder.js src/JSJaCConstants.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
 src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js src/JSJaCConnection.js \
 src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js \
-src/JsJaCFBApplication.js \
+src/JSJaCFBApplication.js \
 src/JSJaC.js
 
 all: clean utils install doc

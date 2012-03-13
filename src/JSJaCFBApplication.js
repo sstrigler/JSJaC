@@ -14,7 +14,7 @@
  * * <code>apiKey</code> The Facebook Application Key
  * * <code>apiKey</code> The Facebook Secret Key
  */
-function JsJaCFBApplication(oArg){
+function JSJaCFBApplication(oArg){
 
 	if (oArg && oArg.appID)
 		this._appID = oArg.appID;
@@ -34,7 +34,7 @@ function JsJaCFBApplication(oArg){
 /**
  * @private
  */
-JsJaCFBApplication.prototype.Login = function(conn, oArg) {
+JSJaCFBApplication.prototype.Login = function(conn, oArg) {
 
 	var me = this;
 
@@ -68,19 +68,19 @@ JsJaCFBApplication.prototype.Login = function(conn, oArg) {
  * Get the Facebook Application ID.
  * @return string The Facebook Application ID.
  */
-JsJaCFBApplication.prototype.getAppID = function(){ return this._appID; };
+JSJaCFBApplication.prototype.getAppID = function(){ return this._appID; };
 
 /**
  * Get the Facebook Api Key.
  * @return string The Facebook Api Key.
  */
-JsJaCFBApplication.prototype.getApiKey = function(){ return this._apiKey; };
+JSJaCFBApplication.prototype.getApiKey = function(){ return this._apiKey; };
 
 /**
  * Get the Facebook Api Secret.
  * @return string The Facebook Api Secret.
  */
-JsJaCFBApplication.prototype.getApiSecret = function(){ return this._apiSecret; };
+JSJaCFBApplication.prototype.getApiSecret = function(){ return this._apiSecret; };
 
 /**
  * Get the Facebook Session object.
@@ -88,4 +88,4 @@ JsJaCFBApplication.prototype.getApiSecret = function(){ return this._apiSecret; 
  * has correctly login inside his Facebook account and granted 
  * the xmpp_login privileges to the Facebook Application.
  */
-JsJaCFBApplication.prototype.getSession = function(){ return this._session; };
+JSJaCFBApplication.prototype.getSession = function(){ return this._session; };
