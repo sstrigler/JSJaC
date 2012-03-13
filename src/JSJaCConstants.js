@@ -34,6 +34,9 @@ var NS_COMMANDS =     "http://jabber.org/protocol/commands";
 var NS_STREAM =       "http://etherx.jabber.org/streams";
 var NS_CLIENT =       "jabber:client";
 
+var NS_BOSH =         "http://jabber.org/protocol/httpbind";
+var NS_XBOSH =        "urn:xmpp:xbosh";
+
 var NS_STANZAS =      "urn:ietf:params:xml:ns:xmpp-stanzas";
 var NS_STREAMS =      "urn:ietf:params:xml:ns:xmpp-streams";
 

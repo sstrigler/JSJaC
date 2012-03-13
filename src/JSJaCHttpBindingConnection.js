@@ -271,7 +271,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(req) {
   }
   var body = req.responseXML.documentElement;
 
-  if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+  if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
     this.oDbg.log("no body element or incorrect body in initial response",1);
     this._handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
     return;
@@ -386,8 +386,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
   }
 
   var body = r.responseXML.documentElement;
-  if (!body || body.tagName != 'body' ||
-	  body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+  if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
     this.oDbg.log("invalid response:\n" + r.responseText,1);
 
     clearTimeout(this._timeout); // remove timer
