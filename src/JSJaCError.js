@@ -11,6 +11,6 @@ function JSJaCError(code,type,condition) {
   xmldoc.documentElement.setAttribute('type',type);
   if (condition)
     xmldoc.documentElement.appendChild(xmldoc.createElement(condition)).
-      setAttribute('xmlns','urn:ietf:params:xml:ns:xmpp-stanzas');
+      setAttribute('xmlns', NS_STANZAS);
   return xmldoc.documentElement;
 }
