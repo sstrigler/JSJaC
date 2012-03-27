@@ -263,7 +263,7 @@ JSJaCPacket.prototype.errorReply = function(stanza_error) {
 
   rPacket.appendNode('error',
                      {code: stanza_error.code, type: stanza_error.type},
-                     [[stanza_error.cond]]);
+                     [[stanza_error.cond, {xmlns: NS_STANZAS}]]);
 
   return rPacket;
 };
@@ -411,7 +411,8 @@ JSJaCPacket.prototype.buildNode = function(elementName) {
   return JSJaCBuilder.buildNode(this.getDoc(),
                                 elementName,
                                 arguments[1],
-                                arguments[2]);
+                                arguments[2],
+                                arguments[3]);
 };
 
 /**
@@ -429,7 +430,6 @@ JSJaCPacket.prototype.appendNode = function(element) {
     return this.getNode().appendChild(this.buildNode(element,
                                                      arguments[1],
                                                      arguments[2],
-                                                     null,
                                                      this.getNode().namespaceURI));
   }
 };
