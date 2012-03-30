@@ -11,6 +11,7 @@ JSJAC_ALLOW_PLAIN = true;       // whether to allow plaintext logins
 JSJAC_CHECKQUEUEINTERVAL = 1;   // msecs to poll send queue
 JSJAC_CHECKINQUEUEINTERVAL = 1; // msecs to poll incoming queue
 JSJAC_TIMERVAL = 2000;          // default polling interval
+JSJAC_RETRYDELAY = 5000;        // msecs to wait before trying next request after error
 
 // Options specific to HTTP Binding (BOSH)
 JSJACHBC_MAX_HOLD = 1;          // default for number of connctions held by 
