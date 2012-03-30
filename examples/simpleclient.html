@@ -4,10 +4,10 @@
   <head>
     <title>JSJaC Simple Client</title>
 
-    <script type="text/javascript" src="../jsjac.js"></script>
+    <!--script type="text/javascript" src="../jsjac.js"></script-->
     <!-- comment in above and uncomment below if you want to modify/hack
          on jsjac -->
-    <!--script type="text/javascript" src="../src/JSJaC.js"></script-->
+    <script type="text/javascript" src="../src/JSJaC.js"></script>
 
     <!-- if you want to enable debugging uncomment line below
          debugger available at
@@ -103,20 +103,9 @@ function doLogin(oForm) {
   document.getElementById('err').innerHTML = ''; // reset
 
   try {
-    // setup args for contructor
-    oArgs = new Object();
-    oArgs.httpbase = oForm.http_base.value;
-    oArgs.timerval = 2000;
 
-    oDbg = new JSJaCConsoleLogger(4);
-
-    if (typeof(oDbg) != 'undefined')
-      oArgs.oDbg = oDbg;
-
-    if (oForm.backend[0].checked)
-      con = new JSJaCHttpBindingConnection(oArgs);
-    else
-      con = new JSJaCHttpPollingConnection(oArgs);
+    con = new JSJaCHttpBindingConnection({httpbase: oForm.http_base.value,
+                                          oDbg: new JSJaCConsoleLogger(4)});
 
     setupCon(con);
 
@@ -183,23 +172,8 @@ function quit() {
 }
 
 function init() {
-  if (typeof(Debugger) == 'function') {
-    oDbg = new Debugger(2,'simpleclient');
-    oDbg.start();
-  } else {
-    // if you're using firebug or safari, use this for debugging
-    oDbg = new JSJaCConsoleLogger(4);
-    // comment in above and remove comments below if you don't need debugging
-    //oDbg = function() {};
-    //oDbg.log = function() {};
-  }
-
-
   try { // try to resume a session
-    if (JSJaCCookie.read('btype').getValue() == 'binding')
-      con = new JSJaCHttpBindingConnection({'oDbg':oDbg});
-    else
-      con = new JSJaCHttpPollingConnection({'oDbg':oDbg});
+    con = new JSJaCHttpBindingConnection({'oDbg': new JSJaCConsoleLogger(4)});
 
     setupCon(con);
 
@@ -290,10 +264,10 @@ color: red;
     <h2>Login</h2>
     <form name="loginForm" onSubmit="return doLogin(this);" action="#">
       <table>
-	<tr><th>Backend Type</th><td><input type="radio" name="backend" value="binding" id="backend1" tabindex="1"/> <label for="backend1">HTTP Binding</label><br /> <input type="radio" name="backend" value="polling" id="backend2" tabindex="2"/> <label for="backend2">HTTP Polling</label></td></tr>
-	<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3"/></td></tr>
+	<tr><th><label for="http_base">HTTP Base</label></th><td><input type="text" name="http_base" id="http_base" tabindex="3" value="/http-bind/"/></td></tr>
+    <tr><td colspan="2"><small>(this probably won't be user editable in your real world application)</small></td></tr>
         <tr><th colspan="2"><hr noshade size="1"/></th></tr>
-	<tr><th><label for="server">Jabber Server</label></th><td><input type="text" name="server" id="server" tabindex="4"/></td></tr>
+	<tr><th><label for="server">Jabber Server</label></th><td><input type="text" name="server" id="server" tabindex="4" value="localhost"/></td></tr>
 	<tr><th><label for="username">Username</label></th><td><input type="text" name="username" id="username" tabindex="5"/></td></tr>
 	<tr><th><label for="password">Password</label></th><td><input type="password" name="password" id="password" tabindex="6" /></td></tr>
 	<tr><th></th><td><input type="checkbox" name="register" id="register_checkbox" /> <label for="register_checkbox">Register new account</label></td></tr>
