@@ -400,7 +400,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
     this._setStatus('internal_server_error');
     this._handleEvent('onerror',
-		      JSJaCError('500','wait','internal-server-error'));
+					  JSJaCError('500','wait','internal-server-error'));
 
     return null;
   }
