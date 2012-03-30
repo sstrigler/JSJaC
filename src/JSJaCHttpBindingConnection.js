@@ -191,7 +191,7 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
     reqstr += " secure='"+this.secure+"'";
   if (JSJAC_HAVEKEYS) {
     this._keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
-    key = this._keys.getKey();
+    var key = this._keys.getKey();
     reqstr += " newkey='"+key+"'";
   }
   reqstr += " xml:lang='"+this._xmllang + "'";
@@ -271,7 +271,7 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(req) {
   }
   var body = req.responseXML.documentElement;
 
-  if (!body || body.tagName != 'body' || body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+  if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
     this.oDbg.log("no body element or incorrect body in initial response",1);
     this._handleEvent("onerror",JSJaCError("500","wait","internal-service-error"));
     return;
@@ -386,8 +386,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
   }
 
   var body = r.responseXML.documentElement;
-  if (!body || body.tagName != 'body' ||
-	  body.namespaceURI != 'http://jabber.org/protocol/httpbind') {
+  if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
     this.oDbg.log("invalid response:\n" + r.responseText,1);
 
     clearTimeout(this._timeout); // remove timer
@@ -432,7 +431,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
       this._connected = false;
 
-      var condition = body.getAttribute('condition');
+      condition = body.getAttribute('condition');
       if (condition == "remote-stream-error")
         if (body.getElementsByTagName("conflict").length > 0)
           this._setStatus("session-terminate-conflict");
@@ -487,32 +486,29 @@ JSJaCHttpBindingConnection.prototype._prepReInitStreamWait = function(cb) {
  */
 JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
     this.oDbg.log("checking for stream features");
-    var doc = req.responseXML.documentElement;
+    var doc = req.responseXML.documentElement, features, bind;
     this.oDbg.log(doc);
     if (doc.getElementsByTagNameNS) {
         this.oDbg.log("checking with namespace");
-        var features = doc.getElementsByTagNameNS('http://etherx.jabber.org/streams',
-                                                'features').item(0);
+
+        features = doc.getElementsByTagNameNS(NS_STREAM, 'features').item(0);
         if (features) {
-            var bind = features.getElementsByTagNameNS('urn:ietf:params:xml:ns:xmpp-bind',
-                                                       'bind').item(0);
+            bind = features.getElementsByTagNameNS(NS_BIND, 'bind').item(0);
         }
     } else {
-        var featuresNL = doc.getElementsByTagName('stream:features');
-        for (var i=0, l=featuresNL.length; i<l; i++) {
-            if (featuresNL.item(i).namespaceURI == 'http://etherx.jabber.org/streams' ||
-                featuresNL.item(i).getAttribute('xmlns') == 
-                'http://etherx.jabber.org/streams') {
-                var features = featuresNL.item(i);
+        var featuresNL = doc.getElementsByTagName('stream:features'), i, l;
+        for (i=0, l=featuresNL.length; i<l; i++) {
+            if (featuresNL.item(i).namespaceURI == NS_STREAM ||
+                featuresNL.item(i).getAttribute('xmlns') == NS_STREAM) {
+                features = featuresNL.item(i);
                 break;
             }
         }
         if (features) {
-            var bind = features.getElementsByTagName('bind');
-            for (var i=0, l=bind.length; i<l; i++) {
-                if (bind.item(i).namespaceURI == 'urn:ietf:params:xml:ns:xmpp-bind' ||
-                    bind.item(i).getAttribute('xmlns') == 
-                    'urn:ietf:params:xml:ns:xmpp-bind') {
+            bind = features.getElementsByTagName('bind');
+            for (i=0, l=bind.length; i<l; i++) {
+                if (bind.item(i).namespaceURI == NS_BIND ||
+                    bind.item(i).getAttribute('xmlns') == NS_BIND) {
                     bind = bind.item(i);
                     break;
                 }
@@ -521,7 +517,7 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
     }
     this.oDbg.log(features);
     this.oDbg.log(bind);
-    
+
     if (features) {
         if (bind) {
             cb();

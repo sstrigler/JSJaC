@@ -130,7 +130,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
             this._facebookApp = oArg.facebookApp;
 
             if(!document.getElementById('fb-root')){
-                fbDiv = document.createElement('div');
+                var fbDiv = document.createElement('div');
                 fbDiv.id = 'fb-root';
                 document.body.appendChild(fbDiv);
             }
@@ -188,7 +188,6 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this._req[slot].r.onerror =
             JSJaC.bind(function(e) {
                 this.oDbg.log('XmlHttpRequest error',1);
-                return false;
             }, this);
     }
 
@@ -223,7 +222,7 @@ JSJaCConnection.prototype.disconnect = function() {
   // Intentionally synchronous
   this._req[slot] = this._setupRequest(false);
 
-  request = this._getRequestString(false, true);
+  var request = this._getRequestString(false, true);
 
   this.oDbg.log("Disconnecting: " + request,4);
   this._req[slot].r.send(request);
@@ -713,7 +712,7 @@ JSJaCConnection.prototype._doInBandReg = function() {
   var iq = new JSJaCIQ();
   iq.setType('set');
   iq.setID('reg1');
-  iq.appendNode("query", {xmlns: "jabber:iq:register"},
+  iq.appendNode("query", {xmlns: NS_REGISTER},
                 [["username", this.username],
                  ["password", this.pass]]);
 
@@ -747,7 +746,7 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
    */
   var iq = new JSJaCIQ();
   iq.setIQ(null,'get','auth1');
-  iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
+  iq.appendNode('query', {xmlns: NS_AUTH},
                 [['username', this.username]]);
 
   this.send(iq,this._doLegacyAuth2);
@@ -773,20 +772,20 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
   var iq = new JSJaCIQ();
   iq.setIQ(null,'set','auth2');
 
-  query = iq.appendNode('query', {xmlns: 'jabber:iq:auth'},
-                        [['username', this.username],
-                         ['resource', this.resource]]);
+  var query = iq.appendNode('query', {xmlns: NS_AUTH},
+                            [['username', this.username],
+                             ['resource', this.resource]]);
 
   if (use_digest) { // digest login
-    query.appendChild(iq.buildNode('digest', {xmlns: 'jabber:iq:auth'},
+    query.appendChild(iq.buildNode('digest', {xmlns: NS_AUTH},
                                    hex_sha1(this.streamid + this.pass)));
   } else if (this.allow_plain) { // use plaintext auth
-    query.appendChild(iq.buildNode('password', {xmlns: 'jabber:iq:auth'},
+    query.appendChild(iq.buildNode('password', {xmlns: NS_AUTH},
                                    this.pass));
   } else {
     this.oDbg.log("no valid login mechanism found",1);
     this.disconnect();
-    return false;
+    return;
   }
 
   this.send(iq,this._doLegacyAuthDone);
@@ -1047,8 +1046,7 @@ JSJaCConnection.prototype._doFacebookAuthDone = function(el) {
 JSJaCConnection.prototype._doStreamBind = function() {
   var iq = new JSJaCIQ();
   iq.setIQ(null,'set','bind_1');
-  iq.appendNode("bind", {xmlns: "urn:ietf:params:xml:ns:xmpp-bind"},
-                [["resource", this.resource]]);
+  iq.appendNode("bind", {xmlns: NS_BIND}, [["resource", this.resource]]);
   this.oDbg.log(iq.xml());
   this.send(iq,this._doXMPPSess);
 };
@@ -1069,8 +1067,7 @@ JSJaCConnection.prototype._doXMPPSess = function(iq) {
 
   iq = new JSJaCIQ();
   iq.setIQ(null,'set','sess_1');
-  iq.appendNode("session", {xmlns: "urn:ietf:params:xml:ns:xmpp-session"},
-                []);
+  iq.appendNode("session", {xmlns: NS_SESSION}, []);
   this.oDbg.log(iq.xml());
   this.send(iq,this._doXMPPSessDone);
 };
@@ -1196,12 +1193,12 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
 
     var errorTag;
     if (doc.getElementsByTagNameNS) {
-        errorTag = doc.getElementsByTagNameNS("http://etherx.jabber.org/streams", "error").item(0);
+        errorTag = doc.getElementsByTagNameNS(NS_STREAM, "error").item(0);
     } else {
         var errors = doc.getElementsByTagName("error");
         for (var i=0; i<errors.length; i++)
-            if (errors.item(i).namespaceURI == "http://etherx.jabber.org/streams" ||
-                errors.item(i).getAttribute('xmlns') == "http://etherx.jabber.org/streams") {
+            if (errors.item(i).namespaceURI == NS_STREAM ||
+                errors.item(i).getAttribute('xmlns') == NS_STREAM) {
                 errorTag = errors.item(i);
                 break;
             }
@@ -1224,8 +1221,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
     if (!lMec1.length) return false;
     this.has_sasl = false;
     for (var i=0; i<lMec1.length; i++)
-        if (lMec1.item(i).getAttribute("xmlns") ==
-            "urn:ietf:params:xml:ns:xmpp-sasl") {
+        if (lMec1.item(i).getAttribute("xmlns") == NS_SASL) {
             this.has_sasl=true;
             var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
             for (var j=0; j<lMec2.length; j++)
@@ -1316,14 +1312,14 @@ JSJaCConnection.prototype._process = function(timerval) {
                    if (this._errcnt > JSJAC_ERR_COUNT) {
                      // abort
                      this._abort();
-                     return false;
+                     return;
                    }
 
                    this._setStatus('onerror_fallback');
 
                    // schedule next tick
                    setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
-                   return false;
+                   return;
                  }, this);
   } catch(e) { } // well ... no onerror property available, maybe we
   // can catch the error somewhere else ...
@@ -1382,7 +1378,6 @@ JSJaCConnection.prototype._sendEmpty = function(cb) {
     this._req[slot].r.onerror =
       JSJaC.bind(function(e) {
                    this.oDbg.log('XmlHttpRequest error',1);
-                   return false;
                  }, this);
   }
 
