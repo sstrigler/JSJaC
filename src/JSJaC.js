@@ -29,7 +29,8 @@ var JSJaC = {
      'JSJaCHttpPollingConnection',
      'JSJaCHttpBindingConnection',
      'JSJaCConsoleLogger',
-     'JSJaCFBApplication'
+     'JSJaCFBApplication',
+     'JSJaCWebSocketConnection'
      ];
     var scripts = document.getElementsByTagName("script");
     var path = './', i;
