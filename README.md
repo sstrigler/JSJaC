@@ -68,10 +68,10 @@ Supported Browsers and Platforms
 
 The following browsers are known to work. Let me know about others!
 
-Microsoft Internet Explorer 6/7/8/9
-Firefox 2.0.x and newer (and probably most other Gecko based browsers)
-Opera 9 and newer
-Chrome/Safari (and probably mpst other Webkit based browsers)
+ * Microsoft Internet Explorer 6/7/8/9
+ * Firefox 2.0.x and newer (and probably most other Gecko based browsers)
+ * Opera 9 and newer
+ * Chrome/Safari (and probably most other Webkit based browsers)
 
 Documentation
 -------------
