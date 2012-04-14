@@ -1,0 +1,1598 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+<title>
+JSJaC Overview
+</title>
+<link rel ="stylesheet" type="text/css" href="stylesheet.css" title="Style">
+<script>
+function asd() {
+	
+		parent.document.title="JSJaCConnection.js Overview";
+	
+}
+</script>
+</head>
+<body bgcolor="white" onload="asd();">
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> 	<font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top">
+<em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<center>
+	
+	   <h2>JSJaCConnection.js</h2>
+	
+</center>
+
+	
+
+
+<h4>Summary</h4>
+<p>
+	
+		Contains all things in common for all subtypes of connections
+ supported.
+ <BR/><BR/><B>Version: </B>$Revision$<BR/><BR/><B>Author:</B> Stefan Strigler steve@zeank.in-berlin.de
+ <BR/>
+	
+</p>
+
+<hr>
+
+
+    <table border="1" cellpadding="3" cellspacing="0" width="100%">
+    <tr bgcolor="#CCCCFF" class="TableHeadingColor">
+    <td colspan=2><font size="+2">
+    
+        <b>Class Summary</b>
+    
+    </font></td>
+    </tr>
+    
+    <tr bgcolor="white" class="TableRowColor">
+    <td width="15%"><b><a href="JSJaCConnection.html">JSJaCConnection</a></b></td>
+    <td>Somewhat abstract base class for jabber connections.</td>
+    </tr>
+    
+    </table>
+    <hr/> 
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+
+<!-- ========== END METHOD SUMMARY =========== -->
+
+
+        <pre class="sourceview"><span class="comment">/**
+ * <span class="attrib">@fileoverview</span> Contains all things in common for all subtypes of connections
+ * supported.
+ * <span class="attrib">@author</span> Stefan Strigler steve<span class="attrib">@zeank</span>.in-berlin.de
+ * <span class="attrib">@version</span> $Revision$
+ */</span>
+
+<span class="comment">/**
+ * Creates a new Jabber connection (a connection to a jabber server)
+ * <span class="attrib">@class</span> Somewhat abstract base class for jabber connections. Contains all
+ * of the code in common for all jabber connections
+ * <span class="attrib">@constructor</span>
+ * <span class="attrib">@param</span> {JSON http://www.json.org/index} oArg JSON with properties: &lt;br&gt;
+ * * &lt;code&gt;httpbase&lt;/code&gt; the http base address of the service to be used for
+ * connecting to jabber&lt;br&gt;
+ * * &lt;code&gt;oDbg&lt;/code&gt; (optional) a reference to a debugger interface
+ */</span>
+<span class="reserved">function</span> JSJaCConnection(oArg) {
+
+  <span class="reserved">if</span> (oArg &amp;&amp; oArg.oDbg &amp;&amp; oArg.oDbg.log) {
+      <span class="comment">/**
+       * Reference to debugger interface
+       * (needs to implement method &lt;code&gt;log&lt;/code&gt;)
+       * <span class="attrib">@type</span> Debugger
+       */</span>
+    <span class="reserved">this</span>.oDbg = oArg.oDbg;
+  } <span class="reserved">else</span> {
+    <span class="reserved">this</span>.oDbg = new Object(); <span class="comment">// always initialise a debugger</span>
+    <span class="reserved">this</span>.oDbg.log = <span class="reserved">function</span>() { };
+  }
+
+  <span class="reserved">if</span> (oArg &amp;&amp; oArg.timerval)
+    <span class="reserved">this</span>.setPollInterval(oArg.timerval);
+  <span class="reserved">else</span>
+    <span class="reserved">this</span>.setPollInterval(JSJAC_TIMERVAL);
+
+  <span class="reserved">if</span> (oArg &amp;&amp; oArg.httpbase)
+      <span class="comment">/**
+       * <span class="attrib">@private</span>
+       */</span>
+    <span class="reserved">this</span>._httpbase = oArg.httpbase;
+
+  <span class="reserved">if</span> (oArg &amp;&amp;oArg.allow_plain)
+      <span class="comment">/**
+       * <span class="attrib">@private</span>
+       */</span>
+    <span class="reserved">this</span>.allow_plain = oArg.allow_plain;
+  <span class="reserved">else</span>
+    <span class="reserved">this</span>.allow_plain = JSJAC_ALLOW_PLAIN;
+
+  <span class="reserved">if</span> (oArg &amp;&amp; oArg.cookie_prefix)
+      <span class="comment">/**
+       * <span class="attrib">@private</span>
+       */</span>
+    <span class="reserved">this</span>._cookie_prefix = oArg.cookie_prefix;
+  <span class="reserved">else</span>
+    <span class="reserved">this</span>._cookie_prefix = <span class="literal">""</span>;
+
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._connected = false;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._events = new Array();
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._keys = null;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._ID = 0;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._inQ = new Array();
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._pQueue = new Array();
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._regIDs = new Array();
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._req = new Array();
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._status = <span class="literal">'intialized'</span>;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._errcnt = 0;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._inactivity = JSJAC_INACTIVITY;
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="reserved">this</span>._sendRawCallbacks = new Array();
+}
+
+JSJaCConnection.<span class="reserved">prototype</span>.connect = <span class="reserved">function</span>(oArg) {
+    <span class="reserved">this</span>._setStatus(<span class="literal">'connecting'</span>);
+
+    <span class="reserved">if</span> (oArg.authtype != <span class="literal">'x-facebook-platform'</span>) {
+
+        <span class="reserved">this</span>.domain = oArg.domain || <span class="literal">'localhost'</span>;
+        <span class="reserved">this</span>.username = oArg.username;
+        <span class="reserved">this</span>.resource = oArg.resource;
+        <span class="reserved">this</span>.pass = oArg.pass;
+        <span class="reserved">this</span>.register = oArg.register;
+
+        <span class="reserved">this</span>.authhost = oArg.authhost || oArg.host || oArg.domain;
+        <span class="reserved">this</span>.authtype = oArg.authtype || <span class="literal">'sasl'</span>;
+
+    } <span class="reserved">else</span> {
+
+        <span class="reserved">this</span>.domain = <span class="literal">'chat.facebook.com'</span>;
+        <span class="reserved">this</span>.authtype = oArg.authtype;
+
+        <span class="reserved">if</span> (oArg.facebookApp != undefined) {
+
+            <span class="reserved">this</span>._facebookApp = oArg.facebookApp;
+
+            <span class="reserved">if</span>(!document.getElementById(<span class="literal">'fb-root'</span>)){
+                var fbDiv = document.createElement(<span class="literal">'div'</span>);
+                fbDiv.id = <span class="literal">'fb-root'</span>;
+                document.body.appendChild(fbDiv);
+            }
+
+              <span class="reserved">if</span> (oArg.facebookApp.getSession() == undefined) {
+                <span class="reserved">this</span>._facebookApp.Login(<span class="reserved">this</span>, oArg);
+                <span class="reserved">return</span>;
+            }
+
+        } <span class="reserved">else</span> {
+             <span class="reserved">this</span>.oDbg.log(<span class="literal">"No Facebook application param specified!"</span>,1);
+            <span class="reserved">return</span>;
+        }
+
+    }
+
+    <span class="reserved">if</span> (oArg.xmllang &amp;&amp; oArg.xmllang != <span class="literal">''</span>)
+        <span class="reserved">this</span>._xmllang = oArg.xmllang;
+    <span class="reserved">else</span>
+        <span class="reserved">this</span>._xmllang = <span class="literal">'en'</span>;
+
+    <span class="reserved">this</span>.host = oArg.host;
+    <span class="reserved">this</span>.port = oArg.port || 5222;
+    <span class="reserved">if</span> (oArg.secure)
+        <span class="reserved">this</span>.secure = <span class="literal">'true'</span>;
+    <span class="reserved">else</span>
+        <span class="reserved">this</span>.secure = <span class="literal">'false'</span>;
+
+    <span class="reserved">if</span> (oArg.wait)
+        <span class="reserved">this</span>._wait = oArg.wait;
+
+    <span class="reserved">this</span>.jid = <span class="reserved">this</span>.username + <span class="literal">'@'</span> + <span class="reserved">this</span>.domain;
+    <span class="reserved">this</span>.fulljid = <span class="reserved">this</span>.jid + <span class="literal">'/'</span> + <span class="reserved">this</span>.resource;
+
+    <span class="reserved">this</span>._rid  = Math.round( 100000.5 + ( ( (900000.49999) - (100000.5) ) * Math.random() ) );
+
+    <span class="comment">// setupRequest must be done after rid is created but before first use in reqstr</span>
+    var slot = <span class="reserved">this</span>._getFreeSlot();
+    <span class="reserved">this</span>._req[slot] = <span class="reserved">this</span>._setupRequest(true);
+
+    var reqstr = <span class="reserved">this</span>._getInitialRequestString();
+
+    <span class="reserved">this</span>.oDbg.log(reqstr,4);
+
+    <span class="reserved">this</span>._req[slot].r.onreadystatechange =
+        JSJaC.bind(<span class="reserved">function</span>() {
+            var r = <span class="reserved">this</span>._req[slot].r;
+            <span class="reserved">if</span> (r.readyState == 4) {
+                <span class="reserved">this</span>.oDbg.log(<span class="literal">"async recv: "</span>+r.responseText,4);
+                <span class="reserved">this</span>._handleInitialResponse(r); <span class="comment">// handle response</span>
+            }
+        }, <span class="reserved">this</span>);
+
+    <span class="reserved">if</span> (typeof(<span class="reserved">this</span>._req[slot].r.onerror) != <span class="literal">'undefined'</span>) {
+        <span class="reserved">this</span>._req[slot].r.onerror =
+            JSJaC.bind(<span class="reserved">function</span>(e) {
+                <span class="reserved">this</span>.oDbg.log(<span class="literal">'XmlHttpRequest error'</span>,1);
+            }, <span class="reserved">this</span>);
+    }
+
+    <span class="reserved">this</span>._req[slot].r.send(reqstr);
+};
+
+<span class="comment">/**
+ * Tells whether this connection is connected
+ * <span class="attrib">@return</span> &lt;code&gt;true&lt;/code&gt; if this connections is connected,
+ * &lt;code&gt;false&lt;/code&gt; otherwise
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.connected = <span class="reserved">function</span>() { <span class="reserved">return</span> <span class="reserved">this</span>._connected; };
+
+<span class="comment">/**
+ * Disconnects from jabber server and terminates session (if applicable)
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.disconnect = <span class="reserved">function</span>() {
+  <span class="reserved">this</span>._setStatus(<span class="literal">'disconnecting'</span>);
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>.connected())
+    <span class="reserved">return</span>;
+  <span class="reserved">this</span>._connected = false;
+
+  clearInterval(<span class="reserved">this</span>._interval);
+  clearInterval(<span class="reserved">this</span>._inQto);
+
+  <span class="reserved">if</span> (<span class="reserved">this</span>._timeout)
+    clearTimeout(<span class="reserved">this</span>._timeout); <span class="comment">// remove timer</span>
+
+  var slot = <span class="reserved">this</span>._getFreeSlot();
+  <span class="comment">// Intentionally synchronous</span>
+  <span class="reserved">this</span>._req[slot] = <span class="reserved">this</span>._setupRequest(false);
+
+  var request = <span class="reserved">this</span>._getRequestString(false, true);
+
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"Disconnecting: "</span> + request,4);
+  <span class="reserved">this</span>._req[slot].r.send(request);
+
+  try {
+    JSJaCCookie.read(<span class="reserved">this</span>._cookie_prefix+<span class="literal">'JSJaC_State'</span>).erase();
+  } catch (e) {}
+
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"Disconnected: "</span>+<span class="reserved">this</span>._req[slot].r.responseText,2);
+  <span class="reserved">this</span>._handleEvent(<span class="literal">'ondisconnect'</span>);
+};
+
+<span class="comment">/**
+ * Gets current value of polling interval
+ * <span class="attrib">@return</span> Polling interval in milliseconds
+ * <span class="attrib">@type</span> int
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.getPollInterval = <span class="reserved">function</span>() {
+  <span class="reserved">return</span> <span class="reserved">this</span>._timerval;
+};
+
+<span class="comment">/**
+ * Registers an event handler (callback) for this connection.
+
+ * &lt;p&gt;Note: All of the packet handlers for specific packets (like
+ * message_in, presence_in and iq_in) fire only if there's no
+ * callback associated with the id.&lt;br&gt;
+
+ * &lt;p&gt;Example:&lt;br/&gt;
+ * &lt;code&gt;con.registerHandler('iq', 'query', 'jabber:iq:version', handleIqVersion);&lt;/code&gt;
+
+
+ * <span class="attrib">@param</span> {String} event One of
+
+ * &lt;ul&gt;
+ * &lt;li&gt;onConnect - connection has been established and authenticated&lt;/li&gt;
+ * &lt;li&gt;onDisconnect - connection has been disconnected&lt;/li&gt;
+ * &lt;li&gt;onResume - connection has been resumed&lt;/li&gt;
+
+ * &lt;li&gt;onStatusChanged - connection status has changed, current
+ * status as being passed argument to handler. See {<span class="attrib">@link</span> #status}.&lt;/li&gt;
+
+ * &lt;li&gt;onError - an error has occured, error node is supplied as
+ * argument, like this:&lt;br&gt;&lt;code&gt;&amp;lt;error code='404' type='cancel'&amp;gt;&lt;br&gt;
+ * &amp;lt;item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/&amp;gt;&lt;br&gt;
+ * &amp;lt;/error&amp;gt;&lt;/code&gt;&lt;/li&gt;
+
+ * &lt;li&gt;packet_in - a packet has been received (argument: the
+ * packet)&lt;/li&gt;
+
+ * &lt;li&gt;packet_out - a packet is to be sent(argument: the
+ * packet)&lt;/li&gt;
+
+ * &lt;li&gt;message_in | message - a message has been received (argument:
+ * the packet)&lt;/li&gt;
+
+ * &lt;li&gt;message_out - a message packet is to be sent (argument: the
+ * packet)&lt;/li&gt;
+
+ * &lt;li&gt;presence_in | presence - a presence has been received
+ * (argument: the packet)&lt;/li&gt;
+
+ * &lt;li&gt;presence_out - a presence packet is to be sent (argument: the
+ * packet)&lt;/li&gt;
+
+ * &lt;li&gt;iq_in | iq - an iq has been received (argument: the packet)&lt;/li&gt;
+ * &lt;li&gt;iq_out - an iq is to be sent (argument: the packet)&lt;/li&gt;
+ * &lt;/ul&gt;
+
+ * <span class="attrib">@param</span> {String} childName A childnode's name that must occur within a
+ * retrieved packet [optional]
+
+ * <span class="attrib">@param</span> {String} childNS A childnode's namespace that must occure within
+ * a retrieved packet (works only if childName is given) [optional]
+
+ * <span class="attrib">@param</span> {String} type The type of the packet to handle (works only if childName and chidNS are given (both may be set to '*' in order to get skipped) [optional]
+
+ * <span class="attrib">@param</span> {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.registerHandler = <span class="reserved">function</span>(event) {
+  event = event.toLowerCase(); <span class="comment">// don't be case-sensitive here</span>
+  var eArg = {handler: arguments[arguments.length-1],
+              childName: <span class="literal">'*'</span>,
+              childNS: <span class="literal">'*'</span>,
+              type: <span class="literal">'*'</span>};
+  <span class="reserved">if</span> (arguments.length &gt; 2)
+    eArg.childName = arguments[1];
+  <span class="reserved">if</span> (arguments.length &gt; 3)
+    eArg.childNS = arguments[2];
+  <span class="reserved">if</span> (arguments.length &gt; 4)
+    eArg.type = arguments[3];
+  <span class="reserved">if</span> (!<span class="reserved">this</span>._events[event])
+    <span class="reserved">this</span>._events[event] = new Array(eArg);
+  <span class="reserved">else</span>
+    <span class="reserved">this</span>._events[event] = <span class="reserved">this</span>._events[event].concat(eArg);
+
+  <span class="comment">// sort events in order how specific they match criterias thus using</span>
+  <span class="comment">// wildcard patterns puts them back in queue when it comes to</span>
+  <span class="comment">// bubbling the event</span>
+  <span class="reserved">this</span>._events[event] =
+  <span class="reserved">this</span>._events[event].sort(<span class="reserved">function</span>(a,b) {
+    var aRank = 0;
+    var bRank = 0;
+    with (a) {
+      <span class="reserved">if</span> (type == <span class="literal">'*'</span>)
+        aRank++;
+      <span class="reserved">if</span> (childNS == <span class="literal">'*'</span>)
+        aRank++;
+      <span class="reserved">if</span> (childName == <span class="literal">'*'</span>)
+        aRank++;
+    }
+    with (b) {
+      <span class="reserved">if</span> (type == <span class="literal">'*'</span>)
+        bRank++;
+      <span class="reserved">if</span> (childNS == <span class="literal">'*'</span>)
+        bRank++;
+      <span class="reserved">if</span> (childName == <span class="literal">'*'</span>)
+        bRank++;
+    }
+    <span class="reserved">if</span> (aRank &gt; bRank)
+      <span class="reserved">return</span> 1;
+    <span class="reserved">if</span> (aRank &lt; bRank)
+      <span class="reserved">return</span> -1;
+    <span class="reserved">return</span> 0;
+  });
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"registered handler for event '"</span>+event+<span class="literal">"'"</span>,2);
+};
+
+JSJaCConnection.<span class="reserved">prototype</span>.unregisterHandler = <span class="reserved">function</span>(event,handler) {
+  event = event.toLowerCase(); <span class="comment">// don't be case-sensitive here</span>
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>._events[event])
+    <span class="reserved">return</span>;
+
+  var arr = <span class="reserved">this</span>._events[event], res = new Array();
+  <span class="reserved">for</span> (var i=0; i&lt;arr.length; i++)
+    <span class="reserved">if</span> (arr[i].handler != handler)
+      res.push(arr[i]);
+
+  <span class="reserved">if</span> (arr.length != res.length) {
+    <span class="reserved">this</span>._events[event] = res;
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"unregistered handler for event '"</span>+event+<span class="literal">"'"</span>,2);
+  }
+};
+
+<span class="comment">/**
+ * Register for iq packets of type 'get'.
+ * <span class="attrib">@param</span> {String} childName A childnode's name that must occur within a
+ * retrieved packet
+
+ * <span class="attrib">@param</span> {String} childNS A childnode's namespace that must occure within
+ * a retrieved packet (works only if childName is given)
+
+ * <span class="attrib">@param</span> {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.registerIQGet =
+  <span class="reserved">function</span>(childName, childNS, handler) {
+  <span class="reserved">this</span>.registerHandler(<span class="literal">'iq'</span>, childName, childNS, <span class="literal">'get'</span>, handler);
+};
+
+<span class="comment">/**
+ * Register for iq packets of type 'set'.
+ * <span class="attrib">@param</span> {String} childName A childnode's name that must occur within a
+ * retrieved packet
+
+ * <span class="attrib">@param</span> {String} childNS A childnode's namespace that must occure within
+ * a retrieved packet (works only if childName is given)
+
+ * <span class="attrib">@param</span> {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.registerIQSet =
+  <span class="reserved">function</span>(childName, childNS, handler) {
+  <span class="reserved">this</span>.registerHandler(<span class="literal">'iq'</span>, childName, childNS, <span class="literal">'set'</span>, handler);
+};
+
+<span class="comment">/**
+ * Resumes this connection from saved state (cookie)
+ * <span class="attrib">@return</span> Whether resume was successful
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.resume = <span class="reserved">function</span>() {
+  try {
+    var json = JSJaCCookie.read(<span class="reserved">this</span>._cookie_prefix+<span class="literal">'JSJaC_State'</span>).getValue();
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">'read cookie: '</span>+json,2);
+    JSJaCCookie.read(<span class="reserved">this</span>._cookie_prefix+<span class="literal">'JSJaC_State'</span>).erase();
+
+    <span class="reserved">return</span> <span class="reserved">this</span>.resumeFromData(JSJaCJSON.parse(json));
+  } catch (e) {}
+  <span class="reserved">return</span> false; <span class="comment">// sth went wrong</span>
+};
+
+<span class="comment">/**
+ * Resumes BOSH connection from data
+ * <span class="attrib">@param</span> {Object} serialized jsjac state information
+ * <span class="attrib">@return</span> Whether resume was successful
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.resumeFromData = <span class="reserved">function</span>(data) {
+  try {
+    <span class="reserved">this</span>._setStatus(<span class="literal">'resuming'</span>);
+
+    <span class="reserved">for</span> (var i in data)
+      <span class="reserved">if</span> (data.hasOwnProperty(i))
+        <span class="reserved">this</span>[i] = data[i];
+
+    <span class="comment">// copy keys - not being very generic here :-/</span>
+    <span class="reserved">if</span> (<span class="reserved">this</span>._keys) {
+      <span class="reserved">this</span>._keys2 = new JSJaCKeys();
+      var u = <span class="reserved">this</span>._keys2._getSuspendVars();
+      <span class="reserved">for</span> (var i=0; i&lt;u.length; i++)
+        <span class="reserved">this</span>._keys2[u[i]] = <span class="reserved">this</span>._keys[u[i]];
+      <span class="reserved">this</span>._keys = <span class="reserved">this</span>._keys2;
+    }
+
+    <span class="reserved">if</span> (<span class="reserved">this</span>._connected) {
+      <span class="comment">// don't poll too fast!</span>
+      <span class="reserved">this</span>._handleEvent(<span class="literal">'onresume'</span>);
+      setTimeout(JSJaC.bind(<span class="reserved">this</span>._resume, <span class="reserved">this</span>),<span class="reserved">this</span>.getPollInterval());
+      <span class="reserved">this</span>._interval = setInterval(JSJaC.bind(<span class="reserved">this</span>._checkQueue, <span class="reserved">this</span>),
+				   JSJAC_CHECKQUEUEINTERVAL);
+      <span class="reserved">this</span>._inQto = setInterval(JSJaC.bind(<span class="reserved">this</span>._checkInQ, <span class="reserved">this</span>),
+				JSJAC_CHECKINQUEUEINTERVAL);
+    }
+
+    <span class="reserved">return</span> (<span class="reserved">this</span>._connected === true);
+  } catch (e) {
+    <span class="reserved">if</span> (e.message)
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"Resume failed: "</span>+e.message, 1);
+    <span class="reserved">else</span>
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"Resume failed: "</span>+e, 1);
+    <span class="reserved">return</span> false;
+  }
+};
+
+<span class="comment">/**
+ * Sends a JSJaCPacket
+ * <span class="attrib">@param</span> {JSJaCPacket} packet  The packet to send
+ * <span class="attrib">@param</span> {Function}    cb      The callback to be called if there's a reply
+ * to this packet (identified by id) [optional]
+ * <span class="attrib">@param</span> {Object}      arg     Arguments passed to the callback
+ * (additionally to the packet received) [optional]
+ * <span class="attrib">@return</span> 'true' if sending was successfull, 'false' otherwise
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.send = <span class="reserved">function</span>(packet,cb,arg) {
+  <span class="reserved">if</span> (!packet || !packet.pType) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"no packet: "</span>+packet, 1);
+    <span class="reserved">return</span> false;
+  }
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>.connected())
+    <span class="reserved">return</span> false;
+
+  <span class="comment">// if (this._xmllang &amp;&amp; !packet.getXMLLang())</span>
+  <span class="comment">//   packet.setXMLLang(this._xmllang);</span>
+
+  <span class="comment">// remember id for response if callback present</span>
+  <span class="reserved">if</span> (cb) {
+    <span class="reserved">if</span> (!packet.getID())
+      packet.setID(<span class="literal">'JSJaCID_'</span>+<span class="reserved">this</span>._ID++); <span class="comment">// generate an ID</span>
+
+    <span class="comment">// register callback with id</span>
+    <span class="reserved">this</span>._registerPID(packet.getID(),cb,arg);
+  }
+
+  try {
+    <span class="reserved">this</span>._handleEvent(packet.pType()+<span class="literal">'_out'</span>, packet);
+    <span class="reserved">this</span>._handleEvent(<span class="literal">"packet_out"</span>, packet);
+    <span class="reserved">this</span>._pQueue = <span class="reserved">this</span>._pQueue.concat(packet.xml());
+  } catch (e) {
+    <span class="reserved">this</span>.oDbg.log(e.toString(),1);
+    <span class="reserved">return</span> false;
+  }
+
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * Sends an IQ packet. Has default handlers for each reply type.
+ * Those maybe overriden by passing an appropriate handler.
+ * <span class="attrib">@param</span> {JSJaCIQPacket} iq - the iq packet to send
+ * <span class="attrib">@param</span> {Object} handlers - object with properties 'error_handler',
+ *                            'result_handler' and 'default_handler'
+ *                            with appropriate functions
+ * <span class="attrib">@param</span> {Object} arg - argument to handlers
+ * <span class="attrib">@return</span> 'true' if sending was successfull, 'false' otherwise
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.sendIQ = <span class="reserved">function</span>(iq, handlers, arg) {
+  <span class="reserved">if</span> (!iq || iq.pType() != <span class="literal">'iq'</span>) {
+    <span class="reserved">return</span> false;
+  }
+
+  handlers = handlers || {};
+    var error_handler = handlers.error_handler || JSJaC.bind(<span class="reserved">function</span>(aIq) {
+        <span class="reserved">this</span>.oDbg.log(aIq.xml(), 1);
+    }, <span class="reserved">this</span>);
+
+    var result_handler = handlers.result_handler ||  JSJaC.bind(<span class="reserved">function</span>(aIq) {
+        <span class="reserved">this</span>.oDbg.log(aIq.xml(), 2);
+    }, <span class="reserved">this</span>);
+
+  var iqHandler = <span class="reserved">function</span>(aIq, arg) {
+    switch (aIq.getType()) {
+      case <span class="literal">'error'</span>:
+      error_handler(aIq);
+      break;
+      case <span class="literal">'result'</span>:
+      result_handler(aIq, arg);
+      break;
+    }
+  };
+  <span class="reserved">return</span> <span class="reserved">this</span>.send(iq, iqHandler, arg);
+};
+
+<span class="comment">/**
+ * Sets polling interval for this connection
+ * <span class="attrib">@param</span> {int} millisecs Milliseconds to set timer to
+ * <span class="attrib">@return</span> effective interval this connection has been set to
+ * <span class="attrib">@type</span> int
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.setPollInterval = <span class="reserved">function</span>(timerval) {
+  <span class="reserved">if</span> (timerval &amp;&amp; !isNaN(timerval))
+    <span class="reserved">this</span>._timerval = timerval;
+  <span class="reserved">return</span> <span class="reserved">this</span>._timerval;
+};
+
+<span class="comment">/**
+ * Returns current status of this connection
+ * <span class="attrib">@return</span> String to denote current state. One of
+ * &lt;ul&gt;
+ * &lt;li&gt;'initializing' ... well
+ * &lt;li&gt;'connecting' if connect() was called
+ * &lt;li&gt;'resuming' if resume() was called
+ * &lt;li&gt;'processing' if it's about to operate as normal
+ * &lt;li&gt;'onerror_fallback' if there was an error with the request object
+ * &lt;li&gt;'protoerror_fallback' if there was an error at the http binding protocol flow (most likely that's where you interested in)
+ * &lt;li&gt;'internal_server_error' in case of an internal server error
+ * &lt;li&gt;'suspending' if suspend() is being called
+ * &lt;li&gt;'aborted' if abort() was called
+ * &lt;li&gt;'disconnecting' if disconnect() has been called
+ * &lt;/ul&gt;
+ * <span class="attrib">@type</span> String
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.status = <span class="reserved">function</span>() { <span class="reserved">return</span> <span class="reserved">this</span>._status; };
+
+<span class="comment">/**
+ * Suspends this connection (saving state for later resume)
+ * Saves state to cookie
+ * <span class="attrib">@return</span> Whether suspend (saving to cookie) was successful
+ * <span class="attrib">@type</span> boolean
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.suspend = <span class="reserved">function</span>() {
+  var data = <span class="reserved">this</span>.suspendToData();
+
+  try {
+    var c = new JSJaCCookie(<span class="reserved">this</span>._cookie_prefix+<span class="literal">'JSJaC_State'</span>, JSJaCJSON.toString(data));
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"writing cookie: "</span>+c.getValue()+<span class="literal">"\n"</span>+
+                  <span class="literal">"(length:"</span>+c.getValue().length+<span class="literal">")"</span>,2);
+    c.write();
+
+    var c2 = JSJaCCookie.get(<span class="reserved">this</span>._cookie_prefix+<span class="literal">'JSJaC_State'</span>);
+    <span class="reserved">if</span> (c.getValue() != c2) {
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"Suspend failed writing cookie.\nread: "</span> + c2, 1);
+      c.erase();
+      <span class="reserved">return</span> false;
+    }
+    <span class="reserved">return</span> true;
+  } catch (e) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Failed creating cookie '"</span>+<span class="reserved">this</span>._cookie_prefix+
+                  <span class="literal">"JSJaC_State': "</span>+e.message,1);
+  }
+  <span class="reserved">return</span> false;
+};
+
+<span class="comment">/**
+ * Suspend connection and return serialized JSJaC connection state
+ * <span class="attrib">@return</span> JSJaC connection state object
+ * <span class="attrib">@type</span> Object
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>.suspendToData = <span class="reserved">function</span>() {
+
+  <span class="comment">// remove timers</span>
+  clearTimeout(<span class="reserved">this</span>._timeout);
+  clearInterval(<span class="reserved">this</span>._interval);
+  clearInterval(<span class="reserved">this</span>._inQto);
+
+  <span class="reserved">this</span>._suspend();
+
+  var u = (<span class="literal">'_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling'</span>).split(<span class="literal">','</span>);
+  u = u.concat(<span class="reserved">this</span>._getSuspendVars());
+  var s = new Object();
+
+  <span class="reserved">for</span> (var i=0; i&lt;u.length; i++) {
+    <span class="reserved">if</span> (!<span class="reserved">this</span>[u[i]]) continue; <span class="comment">// hu? skip these!</span>
+    <span class="reserved">if</span> (<span class="reserved">this</span>[u[i]]._getSuspendVars) {
+      var uo = <span class="reserved">this</span>[u[i]]._getSuspendVars();
+      var o = new Object();
+      <span class="reserved">for</span> (var j=0; j&lt;uo.length; j++)
+        o[uo[j]] = <span class="reserved">this</span>[u[i]][uo[j]];
+    } <span class="reserved">else</span>
+      var o = <span class="reserved">this</span>[u[i]];
+
+    s[u[i]] = o;
+  }
+  <span class="reserved">this</span>._connected = false;
+  <span class="reserved">this</span>._setStatus(<span class="literal">'suspending'</span>);
+  <span class="reserved">return</span> s;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._abort = <span class="reserved">function</span>() {
+  clearTimeout(<span class="reserved">this</span>._timeout); <span class="comment">// remove timer</span>
+
+  clearInterval(<span class="reserved">this</span>._inQto);
+  clearInterval(<span class="reserved">this</span>._interval);
+
+  <span class="reserved">this</span>._connected = false;
+
+  <span class="reserved">this</span>._setStatus(<span class="literal">'aborted'</span>);
+
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"Disconnected."</span>,1);
+  <span class="reserved">this</span>._handleEvent(<span class="literal">'ondisconnect'</span>);
+  <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,
+                    JSJaCError(<span class="literal">'500'</span>,<span class="literal">'cancel'</span>,<span class="literal">'service-unavailable'</span>));
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._checkInQ = <span class="reserved">function</span>() {
+  <span class="reserved">for</span> (var i=0; i&lt;<span class="reserved">this</span>._inQ.length &amp;&amp; i&lt;10; i++) {
+    var item = <span class="reserved">this</span>._inQ[0];
+    <span class="reserved">this</span>._inQ = <span class="reserved">this</span>._inQ.slice(1,<span class="reserved">this</span>._inQ.length);
+    var packet = JSJaCPacket.wrapNode(item);
+
+    <span class="reserved">if</span> (!packet)
+      <span class="reserved">return</span>;
+
+    <span class="reserved">this</span>._handleEvent(<span class="literal">"packet_in"</span>, packet);
+
+    <span class="reserved">if</span> (packet.pType &amp;&amp; !<span class="reserved">this</span>._handlePID(packet)) {
+      <span class="reserved">this</span>._handleEvent(packet.pType()+<span class="literal">'_in'</span>,packet);
+      <span class="reserved">this</span>._handleEvent(packet.pType(),packet);
+    }
+  }
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._checkQueue = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (<span class="reserved">this</span>._pQueue.length != 0)
+    <span class="reserved">this</span>._process();
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doAuth = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (<span class="reserved">this</span>.has_sasl &amp;&amp; <span class="reserved">this</span>.authtype == <span class="literal">'nonsasl'</span>)
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Warning: SASL present but not used"</span>, 1);
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>._doSASLAuth() &amp;&amp;
+      !<span class="reserved">this</span>._doLegacyAuth()) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Auth failed for authtype "</span>+<span class="reserved">this</span>.authtype,1);
+    <span class="reserved">this</span>.disconnect();
+    <span class="reserved">return</span> false;
+  }
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doInBandReg = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (<span class="reserved">this</span>.authtype == <span class="literal">'saslanon'</span> || <span class="reserved">this</span>.authtype == <span class="literal">'anonymous'</span>)
+    <span class="reserved">return</span>; <span class="comment">// bullshit - no need to register if anonymous</span>
+
+  <span class="comment">/* ***
+   * In-Band Registration see JEP-0077
+   */</span>
+
+  var iq = new JSJaCIQ();
+  iq.setType(<span class="literal">'set'</span>);
+  iq.setID(<span class="literal">'reg1'</span>);
+  iq.appendNode(<span class="literal">"query"</span>, {xmlns: NS_REGISTER},
+                [[<span class="literal">"username"</span>, <span class="reserved">this</span>.username],
+                 [<span class="literal">"password"</span>, <span class="reserved">this</span>.pass]]);
+
+  <span class="reserved">this</span>.send(iq,<span class="reserved">this</span>._doInBandRegDone);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doInBandRegDone = <span class="reserved">function</span>(iq) {
+  <span class="reserved">if</span> (iq &amp;&amp; iq.getType() == <span class="literal">'error'</span>) { <span class="comment">// we failed to register</span>
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"registration failed for "</span>+<span class="reserved">this</span>.username,0);
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,iq.getChild(<span class="literal">'error'</span>));
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">this</span>.oDbg.log(<span class="reserved">this</span>.username + <span class="literal">" registered succesfully"</span>,0);
+
+  <span class="reserved">this</span>._doAuth();
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doLegacyAuth = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (<span class="reserved">this</span>.authtype != <span class="literal">'nonsasl'</span> &amp;&amp; <span class="reserved">this</span>.authtype != <span class="literal">'anonymous'</span>)
+    <span class="reserved">return</span> false;
+
+  <span class="comment">/* ***
+   * Non-SASL Authentication as described in JEP-0078
+   */</span>
+  var iq = new JSJaCIQ();
+  iq.setIQ(null,<span class="literal">'get'</span>,<span class="literal">'auth1'</span>);
+  iq.appendNode(<span class="literal">'query'</span>, {xmlns: NS_AUTH},
+                [[<span class="literal">'username'</span>, <span class="reserved">this</span>.username]]);
+
+  <span class="reserved">this</span>.send(iq,<span class="reserved">this</span>._doLegacyAuth2);
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doLegacyAuth2 = <span class="reserved">function</span>(iq) {
+  <span class="reserved">if</span> (!iq || iq.getType() != <span class="literal">'result'</span>) {
+    <span class="reserved">if</span> (iq &amp;&amp; iq.getType() == <span class="literal">'error'</span>)
+      <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,iq.getChild(<span class="literal">'error'</span>));
+    <span class="reserved">this</span>.disconnect();
+    <span class="reserved">return</span>;
+  }
+
+  var use_digest = (iq.getChild(<span class="literal">'digest'</span>) != null);
+
+  <span class="comment">/* ***
+   * Send authentication
+   */</span>
+  var iq = new JSJaCIQ();
+  iq.setIQ(null,<span class="literal">'set'</span>,<span class="literal">'auth2'</span>);
+
+  var query = iq.appendNode(<span class="literal">'query'</span>, {xmlns: NS_AUTH},
+                            [[<span class="literal">'username'</span>, <span class="reserved">this</span>.username],
+                             [<span class="literal">'resource'</span>, <span class="reserved">this</span>.resource]]);
+
+  <span class="reserved">if</span> (use_digest) { <span class="comment">// digest login</span>
+    query.appendChild(iq.buildNode(<span class="literal">'digest'</span>, {xmlns: NS_AUTH},
+                                   hex_sha1(<span class="reserved">this</span>.streamid + <span class="reserved">this</span>.pass)));
+  } <span class="reserved">else</span> <span class="reserved">if</span> (<span class="reserved">this</span>.allow_plain) { <span class="comment">// use plaintext auth</span>
+    query.appendChild(iq.buildNode(<span class="literal">'password'</span>, {xmlns: NS_AUTH},
+                                   <span class="reserved">this</span>.pass));
+  } <span class="reserved">else</span> {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"no valid login mechanism found"</span>,1);
+    <span class="reserved">this</span>.disconnect();
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">this</span>.send(iq,<span class="reserved">this</span>._doLegacyAuthDone);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doLegacyAuthDone = <span class="reserved">function</span>(iq) {
+  <span class="reserved">if</span> (iq.getType() != <span class="literal">'result'</span>) { <span class="comment">// auth' failed</span>
+    <span class="reserved">if</span> (iq.getType() == <span class="literal">'error'</span>)
+      <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,iq.getChild(<span class="literal">'error'</span>));
+    <span class="reserved">this</span>.disconnect();
+  } <span class="reserved">else</span>
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'onconnect'</span>);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doSASLAuth = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (<span class="reserved">this</span>.authtype == <span class="literal">'nonsasl'</span> || <span class="reserved">this</span>.authtype == <span class="literal">'anonymous'</span>)
+    <span class="reserved">return</span> false;
+
+  <span class="reserved">if</span> (<span class="reserved">this</span>.authtype == <span class="literal">'saslanon'</span>) {
+    <span class="reserved">if</span> (<span class="reserved">this</span>.mechs[<span class="literal">'ANONYMOUS'</span>]) {
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"SASL using mechanism 'ANONYMOUS'"</span>,2);
+      <span class="reserved">return</span> <span class="reserved">this</span>._sendRaw(<span class="literal">"&lt;auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/&gt;"</span>,
+                           <span class="reserved">this</span>._doSASLAuthDone);
+    }
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"SASL ANONYMOUS requested but not supported"</span>,1);
+
+  }<span class="reserved">else</span> <span class="reserved">if</span> (<span class="reserved">this</span>.authtype == <span class="literal">'x-facebook-platform'</span>) {
+	<span class="reserved">if</span> (<span class="reserved">this</span>.mechs[<span class="literal">'X-FACEBOOK-PLATFORM'</span>]) {
+		<span class="reserved">return</span> <span class="reserved">this</span>._sendRaw(<span class="literal">"&lt;auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-FACEBOOK-PLATFORM' /&gt;"</span>,
+							<span class="reserved">this</span>._doFacebookAuth);
+	}
+	<span class="reserved">this</span>.oDbg.log(<span class="literal">"X-FACEBOOK-PLATFORM requested but not supported"</span>,1);
+
+  } <span class="reserved">else</span> {
+    <span class="reserved">if</span> (<span class="reserved">this</span>.mechs[<span class="literal">'DIGEST-MD5'</span>]) {
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"SASL using mechanism 'DIGEST-MD5'"</span>,2);
+      <span class="reserved">return</span> <span class="reserved">this</span>._sendRaw(<span class="literal">"&lt;auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/&gt;"</span>,
+                           <span class="reserved">this</span>._doSASLAuthDigestMd5S1);
+    } <span class="reserved">else</span> <span class="reserved">if</span> (<span class="reserved">this</span>.allow_plain &amp;&amp; <span class="reserved">this</span>.mechs[<span class="literal">'PLAIN'</span>]) {
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"SASL using mechanism 'PLAIN'"</span>,2);
+      var authStr = <span class="reserved">this</span>.username+<span class="literal">'@'</span>+
+      <span class="reserved">this</span>.domain+String.fromCharCode(0)+
+      <span class="reserved">this</span>.username+String.fromCharCode(0)+
+      <span class="reserved">this</span>.pass;
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"authenticating with '"</span>+authStr+<span class="literal">"'"</span>,2);
+      authStr = b64encode(authStr);
+      <span class="reserved">return</span> <span class="reserved">this</span>._sendRaw(<span class="literal">"&lt;auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'&gt;"</span>+authStr+<span class="literal">"&lt;/auth&gt;"</span>,
+                           <span class="reserved">this</span>._doSASLAuthDone);
+    }
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"No SASL mechanism applied"</span>,1);
+    <span class="reserved">this</span>.authtype = <span class="literal">'nonsasl'</span>; <span class="comment">// fallback</span>
+  }
+  <span class="reserved">return</span> false;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doSASLAuthDigestMd5S1 = <span class="reserved">function</span>(el) {
+  <span class="reserved">if</span> (el.nodeName != <span class="literal">"challenge"</span>) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"challenge missing"</span>,1);
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,JSJaCError(<span class="literal">'401'</span>,<span class="literal">'auth'</span>,<span class="literal">'not-authorized'</span>));
+    <span class="reserved">this</span>.disconnect();
+  } <span class="reserved">else</span> {
+    var challenge = b64decode(el.firstChild.nodeValue);
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"got challenge: "</span>+challenge,2);
+    <span class="reserved">this</span>._nonce = challenge.substring(challenge.indexOf(<span class="literal">"nonce="</span>)+7);
+    <span class="reserved">this</span>._nonce = <span class="reserved">this</span>._nonce.substring(0,<span class="reserved">this</span>._nonce.indexOf(<span class="literal">"\"</span><span class="literal">"));
+    this.oDbg.log("</span>nonce: <span class="literal">"+this._nonce,2);
+    if (this._nonce == '' || this._nonce.indexOf('\"</span><span class="literal">') != -1) {
+      this.oDbg.log("nonce not valid, aborting",1);
+      this.disconnect();
+      return;
+    }
+
+    this._digest_uri = "xmpp/";
+    //     if (typeof(this.host) != '</span>undefined<span class="literal">' &amp;&amp; this.host != '</span><span class="literal">') {
+    //       this._digest-uri += this.host;
+    //       if (typeof(this.port) != '</span>undefined<span class="literal">' &amp;&amp; this.port)
+    //         this._digest-uri += ":" + this.port;
+    //       this._digest-uri += '</span>/<span class="literal">';
+    //     }
+    this._digest_uri += this.domain;
+
+    this._cnonce = cnonce(14);
+
+    this._nc = '</span>00000001<span class="literal">';
+
+    var A1 = str_md5(this.username+'</span>:<span class="literal">'+this.domain+'</span>:<span class="literal">'+this.pass)+
+    '</span>:<span class="literal">'+this._nonce+'</span>:<span class="literal">'+this._cnonce;
+
+    var A2 = '</span>AUTHENTICATE:<span class="literal">'+this._digest_uri;
+
+    var response = hex_md5(hex_md5(A1)+'</span>:<span class="literal">'+this._nonce+'</span>:<span class="literal">'+this._nc+'</span>:<span class="literal">'+
+                           this._cnonce+'</span>:auth:<span class="literal">'+hex_md5(A2));
+
+    var rPlain = '</span>username=<span class="literal">"'+this.username+'"</span>,realm=<span class="literal">"'+this.domain+
+    '"</span>,nonce=<span class="literal">"'+this._nonce+'"</span>,cnonce=<span class="literal">"'+this._cnonce+'"</span>,nc=<span class="literal">"'+this._nc+
+    '"</span>,qop=auth,digest-uri=<span class="literal">"'+this._digest_uri+'"</span>,response=<span class="literal">"'+response+
+    '"</span>,charset=<span class="literal">"utf-8"</span><span class="literal">';
+
+    this.oDbg.log("response: "+rPlain,2);
+
+    this._sendRaw("&lt;response xmlns='</span>urn:ietf:params:xml:ns:xmpp-sasl<span class="literal">'&gt;"+
+                  binb2b64(str2binb(rPlain))+"&lt;/response&gt;",
+                  this._doSASLAuthDigestMd5S2);
+  }
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
+  if (el.nodeName == '</span>failure<span class="literal">') {
+    if (el.xml)
+      this.oDbg.log("auth error: "+el.xml,1);
+    else
+      this.oDbg.log("auth error",1);
+    this._handleEvent('</span>onerror<span class="literal">',JSJaCError('</span>401<span class="literal">','</span>auth<span class="literal">','</span>not-authorized<span class="literal">'));
+    this.disconnect();
+    return;
+  }
+
+  var response = b64decode(el.firstChild.nodeValue);
+  this.oDbg.log("response: "+response,2);
+
+  var rspauth = response.substring(response.indexOf("rspauth=")+8);
+  this.oDbg.log("rspauth: "+rspauth,2);
+
+  var A1 = str_md5(this.username+'</span>:<span class="literal">'+this.domain+'</span>:<span class="literal">'+this.pass)+
+  '</span>:<span class="literal">'+this._nonce+'</span>:<span class="literal">'+this._cnonce;
+
+  var A2 = '</span>:<span class="literal">'+this._digest_uri;
+
+  var rsptest = hex_md5(hex_md5(A1)+'</span>:<span class="literal">'+this._nonce+'</span>:<span class="literal">'+this._nc+'</span>:<span class="literal">'+
+                        this._cnonce+'</span>:auth:<span class="literal">'+hex_md5(A2));
+  this.oDbg.log("rsptest: "+rsptest,2);
+
+  if (rsptest != rspauth) {
+    this.oDbg.log("SASL Digest-MD5: server repsonse with wrong rspauth",1);
+    this.disconnect();
+    return;
+  }
+
+    if (el.nodeName == '</span>success<span class="literal">') {
+        this._reInitStream(JSJaC.bind(this._doStreamBind, this));
+    } else { // some extra turn
+        this._sendRaw("&lt;response xmlns='</span>urn:ietf:params:xml:ns:xmpp-sasl<span class="literal">'/&gt;",
+                      this._doSASLAuthDone);
+    }
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doSASLAuthDone = function (el) {
+    if (el.nodeName != '</span>success<span class="literal">') {
+        this.oDbg.log("auth failed",1);
+        this._handleEvent('</span>onerror<span class="literal">',JSJaCError('</span>401<span class="literal">','</span>auth<span class="literal">','</span>not-authorized<span class="literal">'));
+        this.disconnect();
+    } else {
+        this._reInitStream(JSJaC.bind(this._doStreamBind, this));
+    }
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doFacebookAuth = function(el) {
+
+  if (el.nodeName != "challenge") {
+    this.oDbg.log("challenge missing",1);
+    this._handleEvent('</span>onerror<span class="literal">',JSJaCError('</span>401<span class="literal">','</span>auth<span class="literal">','</span>not-authorized<span class="literal">'));
+    this.disconnect();
+  } else {
+    var challenge = b64decode(el.firstChild.nodeValue);
+    this.oDbg.log("got challenge: "+challenge,2);
+
+	//Let'</span>s split all the variables taked back from server side
+	var parts = challenge.split(<span class="literal">'&amp;'</span>);
+	var vars = Array();
+	<span class="reserved">for</span> (var i=0;i&lt;parts.length;i++){
+		var tmp = parts[i].split(<span class="literal">'='</span>);
+		vars[tmp[0]] = tmp[1];
+	}
+
+	<span class="reserved">if</span>(vars[<span class="literal">'nonce'</span>] != <span class="literal">''</span>){
+
+		var fbSession = <span class="reserved">this</span>._facebookApp.getSession();
+
+		var response = {
+			<span class="literal">'api_key'</span>     : <span class="reserved">this</span>._facebookApp.getApiKey(),
+			<span class="literal">'call_id'</span>     : new Date().getTime(),
+			<span class="literal">'method'</span>      : vars[<span class="literal">'method'</span>],
+			<span class="literal">'nonce'</span>       : vars[<span class="literal">'nonce'</span>],
+			<span class="literal">'session_key'</span> : fbSession[<span class="literal">'session_key'</span>],
+			<span class="literal">'v'</span>           : <span class="literal">'1.0'</span>
+		};
+
+		response[<span class="literal">'sig'</span>] = <span class="literal">'api_key='</span> + response[<span class="literal">'api_key'</span>] +
+						  <span class="literal">'call_id='</span> + response[<span class="literal">'call_id'</span>] +
+						  <span class="literal">'method='</span> + response[<span class="literal">'method'</span>] +
+						  <span class="literal">'nonce='</span> + response[<span class="literal">'nonce'</span>] +
+						  <span class="literal">'session_key='</span> + response[<span class="literal">'session_key'</span>] +
+						  <span class="literal">'v='</span> + response[<span class="literal">'v'</span>];
+
+		response[<span class="literal">'sig'</span>] = hex_md5(response[<span class="literal">'sig'</span>] + <span class="reserved">this</span>._facebookApp.getApiSecret());
+
+		response = <span class="literal">'api_key='</span> + response[<span class="literal">'api_key'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'call_id='</span> + response[<span class="literal">'call_id'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'method='</span> + response[<span class="literal">'method'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'nonce='</span> + response[<span class="literal">'nonce'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'session_key='</span> + response[<span class="literal">'session_key'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'v='</span> + response[<span class="literal">'v'</span>] + <span class="literal">'&amp;'</span> +
+				   <span class="literal">'sig='</span> + response[<span class="literal">'sig'</span>];
+
+		response = b64encode(response);
+
+		<span class="reserved">return</span> <span class="reserved">this</span>._sendRaw(<span class="literal">"&lt;response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'&gt;"</span> + response + <span class="literal">"&lt;/response&gt;"</span>,
+                           <span class="reserved">this</span>._doFacebookAuthDone);
+
+
+	}<span class="reserved">else</span>{
+
+		<span class="reserved">this</span>.oDbg.log(<span class="literal">"nonce missing"</span>,1);
+		<span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,JSJaCError(<span class="literal">'401'</span>,<span class="literal">'auth'</span>,<span class="literal">'not-authorized'</span>));
+		<span class="reserved">this</span>.disconnect();
+
+	}
+
+  }
+
+}
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doFacebookAuthDone = <span class="reserved">function</span>(el) {
+
+	<span class="reserved">if</span> (el.nodeName != <span class="literal">'success'</span>) {
+		<span class="reserved">this</span>.oDbg.log(<span class="literal">"auth failed"</span>,1);
+		<span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,JSJaCError(<span class="literal">'401'</span>,<span class="literal">'auth'</span>,<span class="literal">'not-authorized'</span>));
+		<span class="reserved">this</span>.disconnect();
+	}<span class="reserved">else</span> {
+        <span class="reserved">this</span>._reInitStream(JSJaC.bind(<span class="reserved">this</span>._doStreamBind, <span class="reserved">this</span>));
+	}
+}
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doStreamBind = <span class="reserved">function</span>() {
+  var iq = new JSJaCIQ();
+  iq.setIQ(null,<span class="literal">'set'</span>,<span class="literal">'bind_1'</span>);
+  iq.appendNode(<span class="literal">"bind"</span>, {xmlns: NS_BIND}, [[<span class="literal">"resource"</span>, <span class="reserved">this</span>.resource]]);
+  <span class="reserved">this</span>.oDbg.log(iq.xml());
+  <span class="reserved">this</span>.send(iq,<span class="reserved">this</span>._doXMPPSess);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doXMPPSess = <span class="reserved">function</span>(iq) {
+  <span class="reserved">if</span> (iq.getType() != <span class="literal">'result'</span> || iq.getType() == <span class="literal">'error'</span>) { <span class="comment">// failed</span>
+    <span class="reserved">this</span>.disconnect();
+    <span class="reserved">if</span> (iq.getType() == <span class="literal">'error'</span>)
+      <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,iq.getChild(<span class="literal">'error'</span>));
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">this</span>.fulljid = iq.getChildVal(<span class="literal">"jid"</span>);
+  <span class="reserved">this</span>.jid = <span class="reserved">this</span>.fulljid.substring(0,<span class="reserved">this</span>.fulljid.lastIndexOf(<span class="literal">'/'</span>));
+
+  iq = new JSJaCIQ();
+  iq.setIQ(null,<span class="literal">'set'</span>,<span class="literal">'sess_1'</span>);
+  iq.appendNode(<span class="literal">"session"</span>, {xmlns: NS_SESSION}, []);
+  <span class="reserved">this</span>.oDbg.log(iq.xml());
+  <span class="reserved">this</span>.send(iq,<span class="reserved">this</span>._doXMPPSessDone);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._doXMPPSessDone = <span class="reserved">function</span>(iq) {
+  <span class="reserved">if</span> (iq.getType() != <span class="literal">'result'</span> || iq.getType() == <span class="literal">'error'</span>) { <span class="comment">// failed</span>
+    <span class="reserved">this</span>.disconnect();
+    <span class="reserved">if</span> (iq.getType() == <span class="literal">'error'</span>)
+      <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,iq.getChild(<span class="literal">'error'</span>));
+    <span class="reserved">return</span>;
+  } <span class="reserved">else</span>
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'onconnect'</span>);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._handleEvent = <span class="reserved">function</span>(event,arg) {
+  event = event.toLowerCase(); <span class="comment">// don't be case-sensitive here</span>
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"incoming event '"</span>+event+<span class="literal">"'"</span>,3);
+  <span class="reserved">if</span> (!<span class="reserved">this</span>._events[event])
+    <span class="reserved">return</span>;
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"handling event '"</span>+event+<span class="literal">"'"</span>,2);
+  <span class="reserved">for</span> (var i=0;i&lt;<span class="reserved">this</span>._events[event].length; i++) {
+    var aEvent = <span class="reserved">this</span>._events[event][i];
+    <span class="reserved">if</span> (typeof aEvent.handler == <span class="literal">'function'</span>) {
+      try {
+        <span class="reserved">if</span> (arg) {
+          <span class="reserved">if</span> (arg.pType) { <span class="comment">// it's a packet</span>
+            <span class="reserved">if</span> ((!arg.getNode().hasChildNodes() &amp;&amp; aEvent.childName != <span class="literal">'*'</span>) ||
+				(arg.getNode().hasChildNodes() &amp;&amp;
+				 !arg.getChild(aEvent.childName, aEvent.childNS)))
+              continue;
+            <span class="reserved">if</span> (aEvent.type != <span class="literal">'*'</span> &amp;&amp;
+                arg.getType() != aEvent.type)
+              continue;
+            <span class="reserved">this</span>.oDbg.log(aEvent.childName+<span class="literal">"/"</span>+aEvent.childNS+<span class="literal">"/"</span>+aEvent.type+<span class="literal">" =&gt; match for handler "</span>+aEvent.handler,3);
+          }
+          <span class="reserved">if</span> (aEvent.handler(arg)) {
+            <span class="comment">// handled!</span>
+            break;
+          }
+        }
+        <span class="reserved">else</span>
+          <span class="reserved">if</span> (aEvent.handler()) {
+            <span class="comment">// handled!</span>
+            break;
+          }
+      } catch (e) {
+
+        <span class="reserved">if</span> (e.fileName&amp;&amp;e.lineNumber) {
+            <span class="reserved">this</span>.oDbg.log(aEvent.handler+<span class="literal">"\n&gt;&gt;&gt;"</span>+e.name+<span class="literal">": "</span>+ e.message+<span class="literal">' in '</span>+e.fileName+<span class="literal">' line '</span>+e.lineNumber,1);
+        } <span class="reserved">else</span> {
+            <span class="reserved">this</span>.oDbg.log(aEvent.handler+<span class="literal">"\n&gt;&gt;&gt;"</span>+e.name+<span class="literal">": "</span>+ e.message,1);
+        }
+
+      }
+    }
+  }
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._handlePID = <span class="reserved">function</span>(aJSJaCPacket) {
+  <span class="reserved">if</span> (!aJSJaCPacket.getID())
+    <span class="reserved">return</span> false;
+  <span class="reserved">for</span> (var i in <span class="reserved">this</span>._regIDs) {
+    <span class="reserved">if</span> (<span class="reserved">this</span>._regIDs.hasOwnProperty(i) &amp;&amp;
+        <span class="reserved">this</span>._regIDs[i] &amp;&amp; i == aJSJaCPacket.getID()) {
+      var pID = aJSJaCPacket.getID();
+      <span class="reserved">this</span>.oDbg.log(<span class="literal">"handling "</span>+pID,3);
+      try {
+        <span class="reserved">if</span> (<span class="reserved">this</span>._regIDs[i].cb.call(<span class="reserved">this</span>, aJSJaCPacket, <span class="reserved">this</span>._regIDs[i].arg) === false) {
+          <span class="comment">// don't unregister</span>
+          <span class="reserved">return</span> false;
+        } <span class="reserved">else</span> {
+          <span class="reserved">this</span>._unregisterPID(pID);
+          <span class="reserved">return</span> true;
+        }
+      } catch (e) {
+        <span class="comment">// broken handler?</span>
+        <span class="reserved">this</span>.oDbg.log(e.name+<span class="literal">": "</span>+ e.message, 1);
+        <span class="reserved">this</span>._unregisterPID(pID);
+        <span class="reserved">return</span> true;
+      }
+    }
+  }
+  <span class="reserved">return</span> false;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._handleResponse = <span class="reserved">function</span>(req) {
+  var rootEl = <span class="reserved">this</span>._parseResponse(req);
+
+  <span class="reserved">if</span> (!rootEl)
+    <span class="reserved">return</span>;
+
+  <span class="reserved">for</span> (var i=0; i&lt;rootEl.childNodes.length; i++) {
+    <span class="reserved">if</span> (<span class="reserved">this</span>._sendRawCallbacks.length) {
+      var cb = <span class="reserved">this</span>._sendRawCallbacks[0];
+      <span class="reserved">this</span>._sendRawCallbacks = <span class="reserved">this</span>._sendRawCallbacks.slice(1, <span class="reserved">this</span>._sendRawCallbacks.length);
+      cb.fn.call(<span class="reserved">this</span>, rootEl.childNodes.item(i), cb.arg);
+      continue;
+    }
+    <span class="reserved">this</span>._inQ = <span class="reserved">this</span>._inQ.concat(rootEl.childNodes.item(i));
+  }
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._parseStreamFeatures = <span class="reserved">function</span>(doc) {
+    <span class="reserved">if</span> (!doc) {
+        <span class="reserved">this</span>.oDbg.log(<span class="literal">"nothing to parse ... aborting"</span>,1);
+        <span class="reserved">return</span> false;
+    }
+
+    var errorTag;
+    <span class="reserved">if</span> (doc.getElementsByTagNameNS) {
+        errorTag = doc.getElementsByTagNameNS(NS_STREAM, <span class="literal">"error"</span>).item(0);
+    } <span class="reserved">else</span> {
+        var errors = doc.getElementsByTagName(<span class="literal">"error"</span>);
+        <span class="reserved">for</span> (var i=0; i&lt;errors.length; i++)
+            <span class="reserved">if</span> (errors.item(i).namespaceURI == NS_STREAM ||
+                errors.item(i).getAttribute(<span class="literal">'xmlns'</span>) == NS_STREAM) {
+                errorTag = errors.item(i);
+                break;
+            }
+    }
+
+    <span class="reserved">if</span> (errorTag) {
+        <span class="reserved">this</span>._setStatus(<span class="literal">"internal_server_error"</span>);
+        clearTimeout(<span class="reserved">this</span>._timeout); <span class="comment">// remove timer</span>
+        clearInterval(<span class="reserved">this</span>._interval);
+        clearInterval(<span class="reserved">this</span>._inQto);
+        <span class="reserved">this</span>._handleEvent(<span class="literal">'onerror'</span>,JSJaCError(<span class="literal">'503'</span>,<span class="literal">'cancel'</span>,<span class="literal">'session-terminate'</span>));
+        <span class="reserved">this</span>._connected = false;
+        <span class="reserved">this</span>.oDbg.log(<span class="literal">"Disconnected."</span>,1);
+        <span class="reserved">this</span>._handleEvent(<span class="literal">'ondisconnect'</span>);
+        <span class="reserved">return</span> false;
+    }
+
+    <span class="reserved">this</span>.mechs = new Object();
+    var lMec1 = doc.getElementsByTagName(<span class="literal">"mechanisms"</span>);
+    <span class="reserved">if</span> (!lMec1.length) <span class="reserved">return</span> false;
+    <span class="reserved">this</span>.has_sasl = false;
+    <span class="reserved">for</span> (var i=0; i&lt;lMec1.length; i++)
+        <span class="reserved">if</span> (lMec1.item(i).getAttribute(<span class="literal">"xmlns"</span>) == NS_SASL) {
+            <span class="reserved">this</span>.has_sasl=true;
+            var lMec2 = lMec1.item(i).getElementsByTagName(<span class="literal">"mechanism"</span>);
+            <span class="reserved">for</span> (var j=0; j&lt;lMec2.length; j++)
+                <span class="reserved">this</span>.mechs[lMec2.item(j).firstChild.nodeValue] = true;
+            break;
+        }
+    <span class="reserved">if</span> (<span class="reserved">this</span>.has_sasl)
+        <span class="reserved">this</span>.oDbg.log(<span class="literal">"SASL detected"</span>,2);
+    <span class="reserved">else</span> {
+        <span class="reserved">this</span>.oDbg.log(<span class="literal">"No support for SASL detected"</span>,2);
+        <span class="reserved">return</span> true;
+    }
+
+    <span class="comment">/* [TODO]
+     * check if in-band registration available
+     * check for session and bind features
+     */</span>
+
+    <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._process = <span class="reserved">function</span>(timerval) {
+  <span class="reserved">if</span> (!<span class="reserved">this</span>.connected()) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Connection lost ..."</span>,1);
+    <span class="reserved">if</span> (<span class="reserved">this</span>._interval)
+      clearInterval(<span class="reserved">this</span>._interval);
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">this</span>.setPollInterval(timerval);
+
+  <span class="reserved">if</span> (<span class="reserved">this</span>._timeout)
+    clearTimeout(<span class="reserved">this</span>._timeout);
+
+  var slot = <span class="reserved">this</span>._getFreeSlot();
+
+  <span class="reserved">if</span> (slot &lt; 0)
+    <span class="reserved">return</span>;
+
+  <span class="reserved">if</span> (typeof(<span class="reserved">this</span>._req[slot]) != <span class="literal">'undefined'</span> &amp;&amp;
+      typeof(<span class="reserved">this</span>._req[slot].r) != <span class="literal">'undefined'</span> &amp;&amp;
+      <span class="reserved">this</span>._req[slot].r.readyState != 4) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Slot "</span>+slot+<span class="literal">" is not ready"</span>);
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>.isPolling() &amp;&amp; <span class="reserved">this</span>._pQueue.length == 0 &amp;&amp;
+      <span class="reserved">this</span>._req[(slot+1)%2] &amp;&amp; <span class="reserved">this</span>._req[(slot+1)%2].r.readyState != 4) {
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"all slots busy, standby ..."</span>, 2);
+    <span class="reserved">return</span>;
+  }
+
+  <span class="reserved">if</span> (!<span class="reserved">this</span>.isPolling())
+    <span class="reserved">this</span>.oDbg.log(<span class="literal">"Found working slot at "</span>+slot,2);
+
+  <span class="reserved">this</span>._req[slot] = <span class="reserved">this</span>._setupRequest(true);
+
+  <span class="comment">/* setup onload handler for async send */</span>
+  <span class="reserved">this</span>._req[slot].r.onreadystatechange =
+  JSJaC.bind(<span class="reserved">function</span>() {
+               <span class="reserved">if</span> (!<span class="reserved">this</span>.connected())
+                 <span class="reserved">return</span>;
+               <span class="reserved">if</span> (<span class="reserved">this</span>._req[slot].r.readyState == 4) {
+                 <span class="reserved">this</span>._setStatus(<span class="literal">'processing'</span>);
+                 <span class="reserved">this</span>.oDbg.log(<span class="literal">"async recv: "</span>+<span class="reserved">this</span>._req[slot].r.responseText,4);
+                 <span class="reserved">this</span>._handleResponse(<span class="reserved">this</span>._req[slot]);
+                 <span class="comment">// schedule next tick</span>
+                 <span class="reserved">if</span> (<span class="reserved">this</span>._pQueue.length) {
+                   <span class="reserved">this</span>._timeout = setTimeout(JSJaC.bind(<span class="reserved">this</span>._process, <span class="reserved">this</span>),100);
+                 } <span class="reserved">else</span> {
+                   <span class="reserved">this</span>.oDbg.log(<span class="literal">"scheduling next poll in "</span>+<span class="reserved">this</span>.getPollInterval()+
+                                 <span class="literal">" msec"</span>, 4);
+                   <span class="reserved">this</span>._timeout = setTimeout(JSJaC.bind(<span class="reserved">this</span>._process, <span class="reserved">this</span>),<span class="reserved">this</span>.getPollInterval());
+                 }
+               }
+             }, <span class="reserved">this</span>);
+
+  try {
+    <span class="reserved">this</span>._req[slot].r.onerror =
+      JSJaC.bind(<span class="reserved">function</span>() {
+                   <span class="reserved">if</span> (!<span class="reserved">this</span>.connected())
+                     <span class="reserved">return</span>;
+                   <span class="reserved">this</span>._errcnt++;
+                   <span class="reserved">this</span>.oDbg.log(<span class="literal">'XmlHttpRequest error ('</span>+<span class="reserved">this</span>._errcnt+<span class="literal">')'</span>,1);
+                   <span class="reserved">if</span> (<span class="reserved">this</span>._errcnt &gt; JSJAC_ERR_COUNT) {
+                     <span class="comment">// abort</span>
+                     <span class="reserved">this</span>._abort();
+                     <span class="reserved">return</span>;
+                   }
+
+                   <span class="reserved">this</span>._setStatus(<span class="literal">'onerror_fallback'</span>);
+
+                   <span class="comment">// schedule next tick</span>
+                   setTimeout(JSJaC.bind(<span class="reserved">this</span>._resume, <span class="reserved">this</span>), JSJAC_RETRYDELAY);
+                   <span class="reserved">return</span>;
+                 }, <span class="reserved">this</span>);
+  } catch(e) { } <span class="comment">// well ... no onerror property available, maybe we</span>
+  <span class="comment">// can catch the error somewhere else ...</span>
+
+  var reqstr = <span class="reserved">this</span>._getRequestString();
+
+  <span class="reserved">if</span> (typeof(<span class="reserved">this</span>._rid) != <span class="literal">'undefined'</span>) <span class="comment">// remember request id if any</span>
+    <span class="reserved">this</span>._req[slot].rid = <span class="reserved">this</span>._rid;
+
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"sending: "</span> + reqstr,4);
+  <span class="reserved">this</span>._req[slot].r.send(reqstr);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._registerPID = <span class="reserved">function</span>(pID,cb,arg) {
+  <span class="reserved">if</span> (!pID || !cb)
+    <span class="reserved">return</span> false;
+  <span class="reserved">this</span>._regIDs[pID] = new Object();
+  <span class="reserved">this</span>._regIDs[pID].cb = cb;
+  <span class="reserved">if</span> (arg)
+    <span class="reserved">this</span>._regIDs[pID].arg = arg;
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"registered "</span>+pID,3);
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * partial function binding sendEmpty to callback
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._prepSendEmpty = <span class="reserved">function</span>(cb, ctx) {
+    <span class="reserved">return</span> <span class="reserved">function</span>() {
+        ctx._sendEmpty(JSJaC.bind(cb, ctx));
+    };
+};
+
+<span class="comment">/**
+ * send empty request
+ * waiting for stream id to be able to proceed with authentication
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._sendEmpty = <span class="reserved">function</span>(cb) {
+  var slot = <span class="reserved">this</span>._getFreeSlot();
+  <span class="reserved">this</span>._req[slot] = <span class="reserved">this</span>._setupRequest(true);
+
+  <span class="reserved">this</span>._req[slot].r.onreadystatechange =
+  JSJaC.bind(<span class="reserved">function</span>() {
+               <span class="reserved">if</span> (<span class="reserved">this</span>._req[slot].r.readyState == 4) {
+                 <span class="reserved">this</span>.oDbg.log(<span class="literal">"async recv: "</span>+<span class="reserved">this</span>._req[slot].r.responseText,4);
+                   cb(<span class="reserved">this</span>._req[slot].r); <span class="comment">// handle response</span>
+               }
+             },<span class="reserved">this</span>);
+
+  <span class="reserved">if</span> (typeof(<span class="reserved">this</span>._req[slot].r.onerror) != <span class="literal">'undefined'</span>) {
+    <span class="reserved">this</span>._req[slot].r.onerror =
+      JSJaC.bind(<span class="reserved">function</span>(e) {
+                   <span class="reserved">this</span>.oDbg.log(<span class="literal">'XmlHttpRequest error'</span>,1);
+                 }, <span class="reserved">this</span>);
+  }
+
+  var reqstr = <span class="reserved">this</span>._getRequestString();
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"sending: "</span> + reqstr,4);
+  <span class="reserved">this</span>._req[slot].r.send(reqstr);
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._sendRaw = <span class="reserved">function</span>(xml,cb,arg) {
+  <span class="reserved">if</span> (cb)
+    <span class="reserved">this</span>._sendRawCallbacks.push({fn: cb, arg: arg});
+
+  <span class="reserved">this</span>._pQueue.push(xml);
+  <span class="reserved">this</span>._process();
+
+  <span class="reserved">return</span> true;
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._setStatus = <span class="reserved">function</span>(status) {
+  <span class="reserved">if</span> (!status || status == <span class="literal">''</span>)
+    <span class="reserved">return</span>;
+  <span class="reserved">if</span> (status != <span class="reserved">this</span>._status) { <span class="comment">// status changed!</span>
+    <span class="reserved">this</span>._status = status;
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'onstatuschanged'</span>, status);
+    <span class="reserved">this</span>._handleEvent(<span class="literal">'status_changed'</span>, status);
+  }
+};
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ */</span>
+JSJaCConnection.<span class="reserved">prototype</span>._unregisterPID = <span class="reserved">function</span>(pID) {
+  <span class="reserved">if</span> (!<span class="reserved">this</span>._regIDs[pID])
+    <span class="reserved">return</span> false;
+  <span class="reserved">this</span>._regIDs[pID] = null;
+  <span class="reserved">this</span>.oDbg.log(<span class="literal">"unregistered "</span>+pID,3);
+  <span class="reserved">return</span> true;
+};
+</pre>
+	<hr>
+
+
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> <font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top"><em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<font size="-1">
+
+</font>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Sat Apr 14 20:25:13 2012</div>
+</body>
+</html>

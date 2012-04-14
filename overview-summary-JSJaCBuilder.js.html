@@ -1,0 +1,286 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+<title>
+JSJaC Overview
+</title>
+<link rel ="stylesheet" type="text/css" href="stylesheet.css" title="Style">
+<script>
+function asd() {
+	
+		parent.document.title="JSJaCBuilder.js Overview";
+	
+}
+</script>
+</head>
+<body bgcolor="white" onload="asd();">
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> 	<font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top">
+<em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<center>
+	
+	   <h2>JSJaCBuilder.js</h2>
+	
+</center>
+
+	
+
+
+<h4>Summary</h4>
+<p>
+	
+		No overview generated for 'JSJaCBuilder.js'<BR/><BR/>
+	
+</p>
+
+<hr>
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+
+<!-- ========== END METHOD SUMMARY =========== -->
+
+
+        <pre class="sourceview"><span class="comment">/* Copyright (c) 2005 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */</span>
+
+<span class="comment">/**
+ * <span class="attrib">@private</span>
+ * This code is taken from {<span class="attrib">@link</span>
+ * http://wiki.script.aculo.us/scriptaculous/show/Builder
+ * script.aculo.us' Dom Builder} and has been modified to suit our
+ * needs.&lt;br/&gt;
+ * The original parts of the code do have the following
+ * copyright and license notice:&lt;br/&gt;
+ * Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+ * http://mir.acu lo.us) &lt;br/&gt;
+ * script.aculo.us is freely distributable under the terms of an
+ * MIT-style license.&lt;br&gt;
+ * For details, see the script.aculo.us web site:
+ * http://script.aculo.us/&lt;br&gt;
+ */</span>
+var JSJaCBuilder = {
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  buildNode: <span class="reserved">function</span>(doc, elementName) {
+
+    var element, ns = arguments[4];
+
+    <span class="comment">// attributes (or text)</span>
+    <span class="reserved">if</span>(arguments[2])
+      <span class="reserved">if</span>(JSJaCBuilder._isStringOrNumber(arguments[2]) ||
+         (arguments[2] instanceof Array)) {
+        element = <span class="reserved">this</span>._createElement(doc, elementName, ns);
+        JSJaCBuilder._children(doc, element, arguments[2]);
+      } <span class="reserved">else</span> {
+        ns = arguments[2][<span class="literal">'xmlns'</span>] || ns;
+        element = <span class="reserved">this</span>._createElement(doc, elementName, ns);
+        <span class="reserved">for</span>(var attr in arguments[2]) {
+          <span class="reserved">if</span> (arguments[2].hasOwnProperty(attr) &amp;&amp; attr != <span class="literal">'xmlns'</span>)
+            element.setAttribute(attr, arguments[2][attr]);
+        }
+      }
+    <span class="reserved">else</span>
+      element = <span class="reserved">this</span>._createElement(doc, elementName, ns);
+    <span class="comment">// text, or array of children</span>
+    <span class="reserved">if</span>(arguments[3])
+      JSJaCBuilder._children(doc, element, arguments[3], ns);
+
+    <span class="reserved">return</span> element;
+  },
+
+  _createElement: <span class="reserved">function</span>(doc, elementName, ns) {
+    try {
+      <span class="reserved">if</span> (ns)
+        <span class="reserved">return</span> doc.createElementNS(ns, elementName);
+    } catch (ex) { }
+
+    var el = doc.createElement(elementName);
+
+    <span class="reserved">if</span> (ns)
+      el.setAttribute(<span class="literal">"xmlns"</span>, ns);
+
+    <span class="reserved">return</span> el;
+  },
+
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  _text: <span class="reserved">function</span>(doc, text) {
+    <span class="reserved">return</span> doc.createTextNode(text);
+  },
+
+  <span class="comment">/**
+   * <span class="attrib">@private</span>
+   */</span>
+  _children: <span class="reserved">function</span>(doc, element, children, ns) {
+    <span class="reserved">if</span>(typeof children==<span class="literal">'object'</span>) { <span class="comment">// array can hold nodes and text</span>
+      <span class="reserved">for</span> (var i in children) {
+        <span class="reserved">if</span> (children.hasOwnProperty(i)) {
+          var e = children[i];
+          <span class="reserved">if</span> (typeof e==<span class="literal">'object'</span>) {
+            <span class="reserved">if</span> (e instanceof Array) {
+              var node = JSJaCBuilder.buildNode(doc, e[0], e[1], e[2], ns);
+              element.appendChild(node);
+            } <span class="reserved">else</span> {
+              element.appendChild(e);
+            }
+          } <span class="reserved">else</span> {
+            <span class="reserved">if</span>(JSJaCBuilder._isStringOrNumber(e)) {
+              element.appendChild(JSJaCBuilder._text(doc, e));
+            }
+          }
+        }
+      }
+    } <span class="reserved">else</span> {
+      <span class="reserved">if</span>(JSJaCBuilder._isStringOrNumber(children)) {
+        element.appendChild(JSJaCBuilder._text(doc, children));
+      }
+    }
+  },
+
+  _attributes: <span class="reserved">function</span>(attributes) {
+    var attrs = [];
+    <span class="reserved">for</span>(var attribute in attributes)
+      <span class="reserved">if</span> (attributes.hasOwnProperty(attribute))
+        attrs.push(attribute +
+          <span class="literal">'="'</span> + attributes[attribute].toString().htmlEnc() + <span class="literal">'"'</span>);
+    <span class="reserved">return</span> attrs.join(<span class="literal">" "</span>);
+  },
+
+  _isStringOrNumber: <span class="reserved">function</span>(param) {
+    <span class="reserved">return</span>(typeof param==<span class="literal">'string'</span> || typeof param==<span class="literal">'number'</span>);
+  }
+};
+</pre>
+	<hr>
+
+
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> <font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top"><em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<font size="-1">
+
+</font>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Sat Apr 14 20:25:13 2012</div>
+</body>
+</html>

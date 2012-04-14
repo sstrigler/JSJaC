@@ -1,0 +1,392 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+<title>
+JSJaC Overview
+</title>
+<link rel ="stylesheet" type="text/css" href="stylesheet.css" title="Style">
+<script>
+function asd() {
+	
+		parent.document.title="xmlextras.js Overview";
+	
+}
+</script>
+</head>
+<body bgcolor="white" onload="asd();">
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> 	<font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top">
+<em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<center>
+	
+	   <h2>xmlextras.js</h2>
+	
+</center>
+
+	
+
+
+<h4>Summary</h4>
+<p>
+	
+		Wrapper to make working with XmlHttpRequest and the
+ DOM more convenient (cross browser compliance).
+ this code is taken from
+ http://webfx.eae.net/dhtml/xmlextras/xmlextras.html
+ <BR/><BR/><B>Version: </B>$Revision$<BR/><BR/><B>Author:</B> Stefan Strigler steve@zeank.in-berlin.de
+ <BR/>
+	
+</p>
+
+<hr>
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+
+<!-- ========== END METHOD SUMMARY =========== -->
+
+
+        <pre class="sourceview">
+<span class="comment">/* Copyright 2006 Erik Arvidsson
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License.  You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */</span>
+
+<span class="comment">/**
+ * <span class="attrib">@fileoverview</span> Wrapper to make working with XmlHttpRequest and the
+ * DOM more convenient (cross browser compliance).
+ * this code is taken from
+ * http://webfx.eae.net/dhtml/xmlextras/xmlextras.html
+ * <span class="attrib">@author</span> Stefan Strigler steve<span class="attrib">@zeank</span>.in-berlin.de
+ * <span class="attrib">@version</span> $Revision$
+ */</span>
+
+<span class="comment">/**
+ * XmlHttp factory
+ * <span class="attrib">@private</span>
+ */</span>
+<span class="reserved">function</span> XmlHttp() {}
+
+<span class="comment">/**
+ * creates a cross browser compliant XmlHttpRequest object
+ */</span>
+XmlHttp.create = <span class="reserved">function</span> () {
+  try {
+    <span class="reserved">if</span> (window.XMLHttpRequest) {
+      var req = new XMLHttpRequest();
+     
+      <span class="comment">// some versions of Moz do not support the readyState property</span>
+      <span class="comment">// and the onreadystate event so we patch it!</span>
+      <span class="reserved">if</span> (req.readyState == null) {
+	req.readyState = 1;
+	req.addEventListener(<span class="literal">"load"</span>, <span class="reserved">function</span> () {
+			       req.readyState = 4;
+			       <span class="reserved">if</span> (typeof req.onreadystatechange == <span class="literal">"function"</span>)
+				 req.onreadystatechange();
+			     }, false);
+      }
+     
+      <span class="reserved">return</span> req;
+    }
+    <span class="reserved">if</span> (window.ActiveXObject) {
+      <span class="reserved">return</span> new ActiveXObject(XmlHttp.getPrefix() + <span class="literal">".XmlHttp"</span>);
+    }
+  }
+  catch (ex) {}
+  <span class="comment">// fell through</span>
+  throw new Error(<span class="literal">"Your browser does not support XmlHttp objects"</span>);
+};
+
+<span class="comment">/**
+ * used to find the Automation server name
+ * <span class="attrib">@private</span>
+ */</span>
+XmlHttp.getPrefix = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (XmlHttp.prefix) <span class="comment">// I know what you did last summer</span>
+    <span class="reserved">return</span> XmlHttp.prefix;
+ 
+  var prefixes = [<span class="literal">"MSXML2"</span>, <span class="literal">"Microsoft"</span>, <span class="literal">"MSXML"</span>, <span class="literal">"MSXML3"</span>];
+  var o;
+  <span class="reserved">for</span> (var i = 0; i &lt; prefixes.length; i++) {
+    try {
+      <span class="comment">// try to create the objects</span>
+      o = new ActiveXObject(prefixes[i] + <span class="literal">".XmlHttp"</span>);
+      <span class="reserved">return</span> XmlHttp.prefix = prefixes[i];
+    }
+    catch (ex) {};
+  }
+ 
+  throw new Error(<span class="literal">"Could not find an installed XML parser"</span>);
+};
+
+
+<span class="comment">/**
+ * XmlDocument factory
+ * <span class="attrib">@private</span>
+ */</span>
+<span class="reserved">function</span> XmlDocument() {}
+
+XmlDocument.create = <span class="reserved">function</span> (name,ns) {
+  name = name || <span class="literal">'foo'</span>;
+  ns = ns || <span class="literal">''</span>;
+
+  try {
+    var doc;
+    <span class="comment">// DOM2</span>
+    <span class="reserved">if</span> (document.implementation &amp;&amp; document.implementation.createDocument) {
+      doc = document.implementation.createDocument(ns, name, null);
+      <span class="comment">// some versions of Moz do not support the readyState property</span>
+      <span class="comment">// and the onreadystate event so we patch it!</span>
+      <span class="reserved">if</span> (doc.readyState == null) {
+	doc.readyState = 1;
+	doc.addEventListener(<span class="literal">"load"</span>, <span class="reserved">function</span> () {
+			       doc.readyState = 4;
+			       <span class="reserved">if</span> (typeof doc.onreadystatechange == <span class="literal">"function"</span>)
+				 doc.onreadystatechange();
+			     }, false);
+      }
+    } <span class="reserved">else</span> <span class="reserved">if</span> (window.ActiveXObject) {
+      doc = new ActiveXObject(XmlDocument.getPrefix() + <span class="literal">".DomDocument"</span>);
+    }
+   
+    <span class="reserved">if</span> (!doc.documentElement || doc.documentElement.tagName != name ||
+        (doc.documentElement.namespaceURI &amp;&amp;
+         doc.documentElement.namespaceURI != ns)) {
+          try {
+            <span class="reserved">if</span> (ns != <span class="literal">''</span>)
+              doc.appendChild(doc.createElement(name)).
+                setAttribute(<span class="literal">'xmlns'</span>,ns);
+            <span class="reserved">else</span>
+              doc.appendChild(doc.createElement(name));
+          } catch (dex) {
+            doc = document.implementation.createDocument(ns,name,null);
+           
+            <span class="reserved">if</span> (doc.documentElement == null)
+              doc.appendChild(doc.createElement(name));
+
+             <span class="comment">// fix buggy opera 8.5x</span>
+            <span class="reserved">if</span> (ns != <span class="literal">''</span> &amp;&amp;
+                doc.documentElement.getAttribute(<span class="literal">'xmlns'</span>) != ns) {
+              doc.documentElement.setAttribute(<span class="literal">'xmlns'</span>,ns);
+            }
+          }
+        }
+   
+    <span class="reserved">return</span> doc;
+  }
+  catch (ex) { }
+  throw new Error(<span class="literal">"Your browser does not support XmlDocument objects"</span>);
+};
+
+<span class="comment">/**
+ * used to find the Automation server name
+ * <span class="attrib">@private</span>
+ */</span>
+XmlDocument.getPrefix = <span class="reserved">function</span>() {
+  <span class="reserved">if</span> (XmlDocument.prefix)
+    <span class="reserved">return</span> XmlDocument.prefix;
+
+  var prefixes = [<span class="literal">"MSXML2"</span>, <span class="literal">"Microsoft"</span>, <span class="literal">"MSXML"</span>, <span class="literal">"MSXML3"</span>];
+  var o;
+  <span class="reserved">for</span> (var i = 0; i &lt; prefixes.length; i++) {
+    try {
+      <span class="comment">// try to create the objects</span>
+      o = new ActiveXObject(prefixes[i] + <span class="literal">".DomDocument"</span>);
+      <span class="reserved">return</span> XmlDocument.prefix = prefixes[i];
+    }
+    catch (ex) {};
+  }
+ 
+  throw new Error(<span class="literal">"Could not find an installed XML parser"</span>);
+};
+
+
+<span class="comment">// Create the loadXML method</span>
+<span class="reserved">if</span> (typeof(Document) != <span class="literal">'undefined'</span> &amp;&amp; window.DOMParser) {
+
+  <span class="comment">/**
+   * XMLDocument did not extend the Document interface in some
+   * versions of Mozilla.
+   * <span class="attrib">@private</span>
+   */</span>
+  Document.<span class="reserved">prototype</span>.loadXML = <span class="reserved">function</span> (s) {
+	
+    <span class="comment">// parse the string to a new doc</span>
+    var doc2 = (new DOMParser()).parseFromString(s, <span class="literal">"text/xml"</span>);
+	
+    <span class="comment">// remove all initial children</span>
+    <span class="reserved">while</span> (<span class="reserved">this</span>.hasChildNodes())
+      <span class="reserved">this</span>.removeChild(<span class="reserved">this</span>.lastChild);
+		
+    <span class="comment">// insert and import nodes</span>
+    <span class="reserved">for</span> (var i = 0; i &lt; doc2.childNodes.length; i++) {
+      <span class="reserved">this</span>.appendChild(<span class="reserved">this</span>.importNode(doc2.childNodes[i], true));
+    }
+  };
+ }
+
+<span class="comment">// Create xml getter for Mozilla</span>
+<span class="reserved">if</span> (window.XMLSerializer &amp;&amp;
+    window.Node &amp;&amp; Node.<span class="reserved">prototype</span> &amp;&amp; Node.<span class="reserved">prototype</span>.__defineGetter__) {
+
+  <span class="comment">/**
+   * xml getter
+   *
+   * This serializes the DOM tree to an XML String
+   *
+   * Usage: var sXml = oNode.xml
+   * <span class="attrib">@deprecated</span>
+   * <span class="attrib">@private</span>
+   */</span>
+  <span class="comment">// XMLDocument did not extend the Document interface in some versions</span>
+  <span class="comment">// of Mozilla. Extend both!</span>
+  XMLDocument.<span class="reserved">prototype</span>.__defineGetter__(<span class="literal">"xml"</span>, <span class="reserved">function</span> () {
+                                           <span class="reserved">return</span> (new XMLSerializer()).serializeToString(<span class="reserved">this</span>);
+                                         });
+  <span class="comment">/**
+   * xml getter
+   *
+   * This serializes the DOM tree to an XML String
+   *
+   * Usage: var sXml = oNode.xml
+   * <span class="attrib">@deprecated</span>
+   * <span class="attrib">@private</span>
+   */</span>
+  Document.<span class="reserved">prototype</span>.__defineGetter__(<span class="literal">"xml"</span>, <span class="reserved">function</span> () {
+                                        <span class="reserved">return</span> (new XMLSerializer()).serializeToString(<span class="reserved">this</span>);
+                                      });
+
+  <span class="comment">/**
+   * xml getter
+   *
+   * This serializes the DOM tree to an XML String
+   *
+   * Usage: var sXml = oNode.xml
+   * <span class="attrib">@deprecated</span>
+   * <span class="attrib">@private</span>
+   */</span>
+  Node.<span class="reserved">prototype</span>.__defineGetter__(<span class="literal">"xml"</span>, <span class="reserved">function</span> () {
+                                    <span class="reserved">return</span> (new XMLSerializer()).serializeToString(<span class="reserved">this</span>);
+                                  });
+ }
+</pre>
+	<hr>
+
+
+
+<!-- ========== START OF NAVBAR ========== -->
+<a name="navbar_top"><!-- --></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td colspan=2 bgcolor="#EEEEFF" class="NavBarCell1">
+<a name="navbar_top_firstrow"><!-- --></a>
+<table border="0" cellpadding="0" cellspacing="3">
+  <tr align="center" valign="top">
+  
+  
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-summary.html"><font class="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td>
+  <td bgcolor="#FFFFFF" class="NavBarCell1Rev">	&nbsp;<font class="NavBarFont1Rev"><b>File</b></font>&nbsp;</td>
+  
+
+  <td bgcolor="#FFFFFF" class="NavBarCell1"> <font class="NavBarFont1">Class</font>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="overview-tree.html"><font class="NavBarFont1"><b>Tree</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="index-all.html"--><font class="NavBarFont1"><b>Index</b></font></a>&nbsp;</td>
+  <td bgcolor="#EEEEFF" class="NavBarCell1">    <a href="help-doc.html"><font class="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+  </tr>
+</table>
+</td>
+<td bgcolor="#EEEEFF" align="right" valign="top"><em>
+<b>JSJaC</b></em>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+&nbsp;PREV&nbsp;
+&nbsp;NEXT</font></td>
+<td bgcolor="white" class="NavBarCell2"><font size="-2">
+  <a href="index.html" target="_top"><b>FRAMES</b></a>  &nbsp;
+&nbsp;<a href="overview-summary.html" target="_top"><b>NO FRAMES</b></a>
+&nbsp;&nbsp;
+<script>
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
+  }
+  //-->
+</script>
+<noscript>
+<a href="allclasses-noframe.html" target=""><b>All Classes</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<!-- =========== END OF NAVBAR =========== -->
+
+<hr>
+<font size="-1">
+
+</font>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Sat Apr 14 20:25:13 2012</div>
+</body>
+</html>
