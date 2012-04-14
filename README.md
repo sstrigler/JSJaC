@@ -3,8 +3,8 @@ JSJaC - JavaScript Jabber Client Library
 
 JSJaC is a Jabber/XMPP client library written in JavaScript to ease
 implementation of web based Jabber/XMPP clients. For communication
-with a jabber server it needs to support either [1]HTTP Polling or
-[2]XMPP Over BOSH (formerl known as HTTP Binding).
+with a jabber server it needs to support either [HTTP Polling][1] or
+[XMPP Over BOSH][2] (formerly known as HTTP Binding).
 JSJaC has an object oriented interface which should be quite easy to
 use.
 Communication is done by using the HTTPRequest object also refered to
@@ -40,15 +40,13 @@ to access this service at some URI hosted at http://example.com/.
 If you're using apache you could use mod_proxy and mod_rewrite to do
 this job for you:
 
-%<---
-<VirtualHost *>
-  Servername example.com
-  DocumentRoot /var/www
-  AddDefaultCharset UTF-8
-  RewriteEngine On
-  RewriteRule ^/http-bind/ http://jabber.example.com:5280/http-bind/ [P]
-</VirtualHost>
-%<---
+    <VirtualHost *>
+      Servername example.com
+      DocumentRoot /var/www
+      AddDefaultCharset UTF-8
+      RewriteEngine On
+      RewriteRule ^/http-bind/ http://jabber.example.com:5280/http-bind/ [P]
+    </VirtualHost>
 
 With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
@@ -57,7 +55,7 @@ http://example.com/http-bind/ (the httpbase address).
 Debug Logger
 ------------
 
-JSJaCConnection supports use of [3]JSDebugger which is available
+JSJaCConnection supports use of [JSDebugger][3] which is available
 separately.
 
 JSJaC also ships with a class 'JSJaCConsoleLogger' which lets you log to
@@ -79,9 +77,6 @@ Firefox 2.0.x and newer (and probably most other Gecko based browsers)
 Opera 9 and newer
 Chrome/Safari (and probably mpst other Webkit based browsers)
 
-
-References:
-===========
-[1] http://xmpp.org/extensions/xep-0025.html
-[2] http://xmpp.org/extensions/xep-0206.html
-[3] http://blog.jwchat.org/javascript-debug-logger/
+[1]: http://xmpp.org/extensions/xep-0025.html
+[2]: http://xmpp.org/extensions/xep-0206.html
+[3]: http://blog.jwchat.org/javascript-debug-logger/
