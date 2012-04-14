@@ -13,17 +13,16 @@ JSJaC is fully compatible with all major AJAX/JavaScript frameworks
 like prototype, mootools, jQuery, dojo and YUI!.
 
 License
-=======
+-------
 
 JSJaC is licensed under the terms of the GNU Lesser General Public 
 License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
 Hints on Usage
-==============
+--------------
 
-Service Address
----------------
+### Service Address
 
 Due to security restrictions you may have to forward or proxy requests
 to your jabber server's service address.
@@ -52,8 +51,7 @@ With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
 
 
-Debug Logger
-------------
+### Debug Logger
 
 JSJaCConnection supports use of [JSDebugger][3] which is available
 separately.
@@ -62,13 +60,13 @@ JSJaC also ships with a class 'JSJaCConsoleLogger' which lets you log to
 Firebug's and Safari's console.
 
 
-Example
--------
+### Example
+
 For an example on how to use this library within your web application
 please have to look at 'examples/simpleclient.html'.
 
 Supported Browsers and Platforms
-================================
+--------------------------------
 
 The following browsers are known to work. Let me know about others!
 
