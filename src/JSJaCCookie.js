@@ -78,6 +78,7 @@ function JSJaCCookie(name,value,secs,domain,path)
       domain+
       path;
   };
+
   /**
    * Deletes this cookie
    */
