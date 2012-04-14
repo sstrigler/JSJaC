@@ -88,6 +88,8 @@ Documentation is provided by JSDoc under the docs/ subdirectory if
 you've downloaded JSJaC as a tarball. Otherwise you can generate it on
 your own by `make doc`.
 
+There's also an online version available at http://sstrigler.github.com/JSJaC/.
+
 [1]: http://xmpp.org/extensions/xep-0025.html
 [2]: http://xmpp.org/extensions/xep-0206.html
 [3]: http://blog.jwchat.org/javascript-debug-logger/
