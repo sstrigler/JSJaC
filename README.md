@@ -50,7 +50,6 @@ this job for you:
 With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
 
-
 ### Debug Logger
 
 JSJaCConnection supports use of [JSDebugger][3] which is available
@@ -58,7 +57,6 @@ separately.
 
 JSJaC also ships with a class 'JSJaCConsoleLogger' which lets you log to
 Firebug's and Safari's console.
-
 
 ### Example
 
@@ -74,6 +72,13 @@ Microsoft Internet Explorer 6/7/8/9
 Firefox 2.0.x and newer (and probably most other Gecko based browsers)
 Opera 9 and newer
 Chrome/Safari (and probably mpst other Webkit based browsers)
+
+Documentation
+-------------
+
+Documentation is provided by JSDoc under the docs/ subdirectory if
+you've downloaded JSJaC as a tarball. Otherwise you can generate it on
+your own by `make doc`.
 
 [1]: http://xmpp.org/extensions/xep-0025.html
 [2]: http://xmpp.org/extensions/xep-0206.html
