@@ -87,6 +87,11 @@ JSJaCWebSocketConnection.prototype.connect = function(oArg) {
   this.jid = this.username + '@' + this.domain;
   this.fulljid = this.jid + '/' + this.resource;
 
+  if (typeof WebSocket === 'undefined') {
+    this._handleEvent('onerror', JSJaCError('503', 'cancel', 'service-unavailable'));
+    return;
+  }
+
   this._ws = new WebSocket(this._httpbase, 'xmpp');
   this._ws.onclose = JSJaC.bind(this._onclose, this);
   this._ws.onerror = JSJaC.bind(this._onerror, this);
@@ -116,10 +121,7 @@ JSJaCWebSocketConnection.prototype._handleOpenStream = function(event) {
   open = event.data;
   // skip XML prolog if any
   open = open.substr(open.indexOf('<stream:stream'));
-  if (open.substr(-2) !== '/>' && open.substr(-16) !== '</stream:stream>') {
-    // some servers send closed opening tag
-    open += '</stream:stream>';
-  }
+  open += '</stream:stream>';
   stream = this._parseXml(open);
 
   // extract stream id used for non-SASL authentication
@@ -135,7 +137,6 @@ JSJaCWebSocketConnection.prototype._handleOpenStream = function(event) {
 JSJaCWebSocketConnection.prototype._handleInitialResponse = function(event) {
   var doc = this._parseXml(event.data);
   if (!this._parseStreamFeatures(doc)) {
-    this._connected = false;
     this._handleEvent('onerror', JSJaCError('503', 'cancel', 'service-unavailable'));
     return;
   }
@@ -234,9 +235,16 @@ JSJaCWebSocketConnection.prototype._parseXml = function(s) {
   this.oDbg.log('Parsing: ' + s, 4);
   try {
     doc = XmlDocument.create('stream', NS_STREAM);
-    // Wrap every stanza into stream element, so that XML namespaces work properly.
-    doc.loadXML("<stream:stream xmlns:stream='" + NS_STREAM + "' xmlns='jabber:client'>" + s + "</stream:stream>");
-    return doc.documentElement.firstChild;
+    if(s.indexOf('<stream:stream') === -1) {
+      // Wrap every stanza into stream element, so that XML namespaces work properly.
+      doc.loadXML("<stream:stream xmlns:stream='" + NS_STREAM + "' xmlns='jabber:client'>" + s + "</stream:stream>");
+      console.log(doc);
+      return doc.documentElement.firstChild;
+    } else {
+      doc.loadXML(s);
+      console.log(doc);
+      return doc.documentElement;
+    }
   } catch (e) {
     this.oDbg.log('Error: ' + e);
     this._connected = false;
