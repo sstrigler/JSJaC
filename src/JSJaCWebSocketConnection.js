@@ -32,10 +32,14 @@
  * and this implementation follows it.
  *
  * Tested servers:
- * - wxg (https://github.com/hocken/wxg) - supports RFC6455 and works
- *   with no problems
+ *
  * - node-xmpp-bosh (https://github.com/dhruvbird/node-xmpp-bosh) -
- *   supports RFC6455 and works with no problems since 0.6.1
+ *   supports RFC6455 and works with no problems since 0.6.1, it also
+ *   transparently uses STARTTLS if necessary
+ * - wxg (https://github.com/Gordin/wxg) - supports RFC6455 and works
+ *   with no problems, but cannot connect to servers requiring
+ *   STARTTLS (original wxg at https://github.com/hocken/wxg has some
+ *   issues, that were fixed by Gordin).
  * - ejabberd-websockets
  *   (https://github.com/superfeedr/ejabberd-websockets) - does not
  *   support RFC6455 hence it does work, adapting it to support
@@ -121,7 +125,10 @@ JSJaCWebSocketConnection.prototype._handleOpenStream = function(event) {
   open = event.data;
   // skip XML prolog if any
   open = open.substr(open.indexOf('<stream:stream'));
-  open += '</stream:stream>';
+  if (open.substr(-2) !== '/>' && open.substr(-16) !== '</stream:stream>') {
+    // some servers send closed opening tag, some not
+    open += '</stream:stream>';
+  }
   stream = this._parseXml(open);
 
   // extract stream id used for non-SASL authentication
@@ -238,11 +245,9 @@ JSJaCWebSocketConnection.prototype._parseXml = function(s) {
     if(s.indexOf('<stream:stream') === -1) {
       // Wrap every stanza into stream element, so that XML namespaces work properly.
       doc.loadXML("<stream:stream xmlns:stream='" + NS_STREAM + "' xmlns='jabber:client'>" + s + "</stream:stream>");
-      console.log(doc);
       return doc.documentElement.firstChild;
     } else {
       doc.loadXML(s);
-      console.log(doc);
       return doc.documentElement;
     }
   } catch (e) {
