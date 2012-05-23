@@ -12,6 +12,11 @@ as AJAX technology. Your browser must support this.
 JSJaC is fully compatible with all major AJAX/JavaScript frameworks
 like prototype, mootools, jQuery, dojo and YUI!.
 
+**Note**: As security restrictions of most modern browsers prevent
+  HTTP Polling from being usable anymore this module is disabled by
+  default now. If you want to compile it in use
+  Makefile.http\_polling.
+
 License
 -------
 
@@ -44,7 +49,7 @@ As most browser don't allow scripts to connect to a different domain
 and/or port as they have been loaded from you'd have to find a way how
 to access this service at some URI hosted at http://example.com/.
 
-If you're using apache you could use mod_proxy and mod_rewrite to do
+If you're using apache you could use mod\_proxy and mod\_rewrite to do
 this job for you:
 
     <VirtualHost *>
