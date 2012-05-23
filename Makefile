@@ -5,7 +5,7 @@ SRC=src/jsextras.js src/crypt.js src/JSJaCJSON.js src/xmlextras.js \
 src/JSJaCBuilder.js src/JSJaCConstants.js \
 src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
 src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js src/JSJaCConnection.js \
-src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js \
+src/JSJaCHttpBindingConnection.js src/JSJaCHttpPollingConnection.js src/JSJaCWebSocketConnection.js \
 src/JSJaCFBApplication.js \
 src/JSJaC.js
 
