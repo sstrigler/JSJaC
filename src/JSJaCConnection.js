@@ -225,13 +225,14 @@ JSJaCConnection.prototype.disconnect = function() {
   var request = this._getRequestString(false, true);
 
   this.oDbg.log("Disconnecting: " + request,4);
-  this._req[slot].r.send(request);
-
+  try {
+    this._req[slot].r.send(request);
+  } catch(e) {}
+  this.oDbg.log("disconnected");
   try {
     JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
   } catch (e) {}
 
-  this.oDbg.log("Disconnected: "+this._req[slot].r.responseText,2);
   this._handleEvent('ondisconnect');
 };
 
