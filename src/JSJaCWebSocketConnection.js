@@ -42,7 +42,7 @@
  *   issues, that were fixed by Gordin).
  * - ejabberd-websockets
  *   (https://github.com/superfeedr/ejabberd-websockets) - does not
- *   support RFC6455 hence it does work, adapting it to support
+ *   support RFC6455 hence it does not work, adapting it to support
  *   RFC6455 should be quite easy for anyone knowing Erlang (some work
  *   in progress can be found on github)
  * - Openfire (http://www.igniterealtime.org/projects/openfire/) -
