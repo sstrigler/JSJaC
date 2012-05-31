@@ -104,8 +104,13 @@ function doLogin(oForm) {
 
   try {
 
-    con = new JSJaCHttpBindingConnection({httpbase: oForm.http_base.value,
+    if (oForm.http_base.value.substr(0, 5) === 'ws://' || oForm.http_base.value.substr(0, 6) === 'wss://') {
+      con = new JSJaCWebSocketConnection({httpbase: oForm.http_base.value,
                                           oDbg: new JSJaCConsoleLogger(4)});
+    } else {
+      con = new JSJaCHttpBindingConnection({httpbase: oForm.http_base.value,
+                                            oDbg: new JSJaCConsoleLogger(4)});
+    }
 
     setupCon(con);
 
