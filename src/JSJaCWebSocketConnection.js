@@ -72,9 +72,23 @@ function JSJaCWebSocketConnection(oArg) {
   this.base(oArg);
 
   this._ws = null;
+
+  this.registerHandler('onerror', JSJaC.bind(this._cleanupWebSocket, this));
 }
 
 JSJaCWebSocketConnection.prototype = new JSJaCConnection();
+
+JSJaCWebSocketConnection.prototype._cleanupWebSocket = function() {
+  if (this._ws !== null) {
+    this._ws.onclose = null;
+    this._ws.onerror = null;
+    this._ws.onopen = null;
+    this._ws.onmessage = null;
+
+    this._ws.close();
+    this._ws = null;
+  }
+};
 
 JSJaCWebSocketConnection.prototype.connect = function(oArg) {
   this._setStatus('connecting');
@@ -130,6 +144,10 @@ JSJaCWebSocketConnection.prototype._handleOpenStream = function(event) {
     open += '</stream:stream>';
   }
   stream = this._parseXml(open);
+  if(!stream) {
+    this._handleEvent('onerror', JSJaCError('503', 'cancel', 'service-unavailable'));
+    return;
+  }
 
   // extract stream id used for non-SASL authentication
   this.streamid = stream.getAttribute('id');
@@ -166,7 +184,7 @@ JSJaCWebSocketConnection.prototype.disconnect = function() {
   this._connected = false;
 
   this.oDbg.log('Disconnecting', 4);
-  this._ws.close();
+  this._cleanupWebSocket();
 
   this.oDbg.log('Disconnected', 2);
   this._handleEvent('ondisconnect');
