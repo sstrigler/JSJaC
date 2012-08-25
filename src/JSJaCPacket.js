@@ -331,7 +331,7 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
     for (i = 0, il = node.attributes.length;i < il; i++) {
       var attr = node.attributes.item(i);
       if (attr.nodeName == 'xmlns' &&
-          (newNode.getAttribute('xmlns') != null || newNode.namespaceURI)) {
+          (newNode.getAttribute('xmlns') !== null || newNode.namespaceURI)) {
           // skip setting an xmlns attribute as it has been set
           // before already by createElementNS
 
@@ -340,11 +340,11 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
       }
       if (newNode.setAttributeNS && attr.namespaceURI) {
         newNode.setAttributeNS(attr.namespaceURI,
-                               attr.nodeName,
-                               attr.nodeValue);
+                               attr.name,
+                               attr.value);
       } else {
-        newNode.setAttribute(attr.nodeName,
-                             attr.nodeValue);
+        newNode.setAttribute(attr.name,
+                             attr.value);
       }
     }
   /* are we going after children too, and does the node have any? */
@@ -354,12 +354,10 @@ JSJaCPacket.prototype._importNode = function(node, allChildren) {
     }
   }
   return newNode;
-  break;
   case document.TEXT_NODE:
   case document.CDATA_SECTION_NODE:
   case document.COMMENT_NODE:
   return this.getDoc().createTextNode(node.nodeValue);
-  break;
   }
 };
 
