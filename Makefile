@@ -9,19 +9,38 @@ src/JSJaCHttpBindingConnection.js src/JSJaCWebSocketConnection.js \
 src/JSJaCFBApplication.js \
 src/JSJaC.js
 
-all: clean utils install doc
+POLLING_SRC=src/jsextras.js src/crypt.js src/JSJaCJSON.js src/xmlextras.js \
+src/JSJaCBuilder.js src/JSJaCConstants.js \
+src/JSJaCConsoleLogger.js src/JSJaCCookie.js src/JSJaCError.js \
+src/JSJaCJID.js src/JSJaCKeys.js src/JSJaCPacket.js src/JSJaCConnection.js \
+src/JSJaCHttpPollingConnection.js \
+src/JSJaCFBApplication.js \
+src/JSJaC.js
 
-install: build uncompressed crunch  
+all: clean utils install doc
+polling: clean utils polling_install doc
+
+install: build uncompressed crunch
 	@echo "done."
 
-build: 
+polling_install: polling_build uncompressed crunch
+	@echo "done."
+
+build:
 	@echo "building ...";
 	@for i in ${SRC}; do \
 		echo "\t$$i"; \
 		cat "$$i" >> $(OUTFILE); \
 	done
 
-crunch: 
+polling_build:
+	@echo "building ...";
+	@for i in ${POLLING_SRC}; do \
+		echo "\t$$i"; \
+		cat "$$i" >> $(OUTFILE); \
+	done
+
+crunch:
 	@echo "crunching ..."
 	@if [ -e $(OUTFILE) ]; then \
 		utils/jsmin < $(OUTFILE) > $(OUTFILE).tmp && \
@@ -33,7 +52,7 @@ crunch:
 
 pack: clean utils build moo crunch doc
 
-moo:	
+moo:
 	@echo "packing..."
 	@if [ -e $(OUTFILE) ]; then \
 		php ./utils/packer/pack.php $(OUTFILE) $(PACKFILE).tmp && \
@@ -45,7 +64,7 @@ moo:
 		echo "$(OUTFILE) not found. build failed?"; \
 	fi
 
-doc: 
+doc:
 	@utils/jsdoc3/jsdoc -d doc src/
 
 utils:
@@ -57,7 +76,7 @@ clean:
 	@rm -rf doc/
 	@make -C utils clean
 
-uncompressed: 
+uncompressed:
 	@if [ -e $(OUTFILE) ]; then \
 		cat src/header.js > $(UNCOMPRESSED) && \
 		cat src/JSJaCConfig.js >> $(UNCOMPRESSED) && \

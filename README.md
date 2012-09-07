@@ -16,7 +16,7 @@ like prototype, mootools, jQuery, dojo and YUI!.
 **Note**: As security restrictions of most modern browsers prevent
   HTTP Polling from being usable anymore this module is disabled by
   default now. If you want to compile it in use
-  Makefile.http\_polling.
+  'make polling'.
 
 License
 -------
