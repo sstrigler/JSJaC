@@ -5,7 +5,7 @@
 
 /**
  * Instantiates a BOSH session connection.
- * @class Implementation of {@link http://www.xmpp.org/extensions/xep-0206.html | XMPP Over BOSH}
+ * @class Implementation of {@link http://xmpp.org/extensions/xep-0206.html | XMPP Over BOSH}
  * formerly known as HTTP Binding.
  * @constructor
  * @extends {JSJaCConnection}
