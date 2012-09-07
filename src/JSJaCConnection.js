@@ -2,45 +2,45 @@
  * @fileoverview Contains all things in common for all subtypes of connections
  * supported.
  * @author Stefan Strigler steve@zeank.in-berlin.de
- * @version $Revision$
  */
 
 /**
- * Creates a new Jabber connection (a connection to a jabber server)
+ * Creates a new Jabber/XMPP connection (a connection to a jabber server)
  * @class Somewhat abstract base class for jabber connections. Contains all
  * of the code in common for all jabber connections
  * @constructor
- * @param {JSON http://www.json.org/index} oArg JSON with properties: <br>
- * * <code>httpbase</code> the http base address of the service to be used for
- * connecting to jabber<br>
- * * <code>oDbg</code> (optional) a reference to a debugger interface
+ * @param {Object} oArg Configurational object for this connection.
+ * @param {string} oArg.httpbase The connection endpoint of the HTTP service to talk to.
+ * @param {JSJaCDebugger} [oArg.oDbg] A reference to a debugger implementing the JSJaCDebugger interface.
+ * @param {int} [oArg.timerval] The polling interval.
+ * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
+ * @param {string} [oArg.cookie_prefix] Prefix to cookie names used when suspending.
  */
 function JSJaCConnection(oArg) {
 
-  if (oArg && oArg.oDbg && oArg.oDbg.log) {
+  /**
+   * @private
+   */
+  this._httpbase = oArg.httpbase;
+
+  if (oArg.oDbg && oArg.oDbg.log) {
       /**
        * Reference to debugger interface
        * (needs to implement method <code>log</code>)
-       * @type Debugger
+       * @type JSJaCDebugger
        */
     this.oDbg = oArg.oDbg;
   } else {
-    this.oDbg = new Object(); // always initialise a debugger
-    this.oDbg.log = function() { };
+      this.oDbg = {log: function() { }};
   }
 
-  if (oArg && oArg.timerval)
+  if (oArg.timerval)
     this.setPollInterval(oArg.timerval);
   else
     this.setPollInterval(JSJAC_TIMERVAL);
 
-  if (oArg && oArg.httpbase)
-      /**
-       * @private
-       */
-    this._httpbase = oArg.httpbase;
-
-  if (oArg &&oArg.allow_plain)
+  // [FIXME] this better goes to method 'connect'
+  if (oArg.allow_plain)
       /**
        * @private
        */
@@ -48,7 +48,7 @@ function JSJaCConnection(oArg) {
   else
     this.allow_plain = JSJAC_ALLOW_PLAIN;
 
-  if (oArg && oArg.cookie_prefix)
+  if (oArg.cookie_prefix)
       /**
        * @private
        */
@@ -63,7 +63,7 @@ function JSJaCConnection(oArg) {
   /**
    * @private
    */
-  this._events = new Array();
+  this._events = [];
   /**
    * @private
    */
@@ -75,19 +75,19 @@ function JSJaCConnection(oArg) {
   /**
    * @private
    */
-  this._inQ = new Array();
+  this._inQ = [];
   /**
    * @private
    */
-  this._pQueue = new Array();
+  this._pQueue = [];
   /**
    * @private
    */
-  this._regIDs = new Array();
+  this._regIDs = [];
   /**
    * @private
    */
-  this._req = new Array();
+  this._req = [];
   /**
    * @private
    */
@@ -103,9 +103,25 @@ function JSJaCConnection(oArg) {
   /**
    * @private
    */
-  this._sendRawCallbacks = new Array();
+  this._sendRawCallbacks = [];
 }
 
+/**
+ * Connect to a jabber/XMPP server.
+ * @param {Object} oArg The configuration to be used for connecting.
+ * @param {string} oArg.domain The domain name of the XMPP service.
+ * @param {string} oArg.username The username (nodename) to be logged in with.
+ * @param {string} oArg.resource The resource to identify the login with.
+ * @param {string} oArg.password The user's password.
+ * @param {boolean} [oArg.register] Whether to register a new account.
+ * @param {string} [oArg.host] The host to connect to which might be different from the domain given above. So some XMPP service might host the domain 'example.com' but might be located at the host 'jabber.example.com'. Normally such situations should be gracefully handled by using DNS SRV records. But in cases where this isn't available you can set the host manually here.
+ * @param {int} [oArg.port] The port of the manually given host from above.
+ * @param {boolean} [oArg.secure] Whether to only allow secured (i.e. encrypted) connections to the XMPP service.
+ * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
+ * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.
+ * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
+ * @param {int} [oArg.wait] The 'wait' attribute of BOSH connections.
+ */
 JSJaCConnection.prototype.connect = function(oArg) {
     this._setStatus('connecting');
 
@@ -114,7 +130,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this.domain = oArg.domain || 'localhost';
         this.username = oArg.username;
         this.resource = oArg.resource;
-        this.pass = oArg.pass;
+        this.pass = oArg.password || oArg.pass;
         this.register = oArg.register;
 
         this.authhost = oArg.authhost || oArg.host || oArg.domain;
@@ -159,6 +175,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
     else
         this.secure = 'false';
 
+    // [FIXME] probably should go to subclass, not here
     if (oArg.wait)
         this._wait = oArg.wait;
 

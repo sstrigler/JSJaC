@@ -56,9 +56,7 @@
 
 /**
  * Instantiates a WebSocket session.
- * @class Implementation of {@link
- * http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00 An
- * XMPP Sub-protocol for WebSocket}.
+ * @class Implementation of {@link http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00 | An XMPP Sub-protocol for WebSocket}.
  * @extends JSJaCConnection
  * @constructor
  * @param oArg connection properties.

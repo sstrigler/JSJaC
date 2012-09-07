@@ -1,11 +1,16 @@
 /**
- * @fileoverview Contains Debugger interface for Firebug and Safari
- * @class Implementation of the Debugger interface for {@link
- * http://www.getfirebug.com/ Firebug} and Safari
+ * @fileOverview Contains Debugger interface for Firebug and Safari
+ */
+/**
+ * A logger that logs using the 'console' object.
+ * @constructor
+ * @class Implementation of the Debugger interface for 
+ * {@link http://www.getfirebug.com/ | Firebug} and Safari.
  * Creates a new debug logger to be passed to jsjac's connection
  * constructor. Of course you can use it for debugging in your code
  * too.
- * @constructor
+ * @extends {JSJaCDebugger}
+ * @author Stefan Strigler steve@zeank.in-berlin.de
  * @param {int} level The maximum level for debugging messages to be
  * displayed. Thus you can tweak the verbosity of the logger. A value
  * of 0 means very low traffic whilst a value of 4 makes logging very
@@ -67,8 +72,7 @@ function JSJaCConsoleLogger(level) {
   this.setLevel = function(level) { this.level = level; return this; };
   /**
    * Gets verbosity level.
-   * @return The level
-   * @type int
+   * @return {int} The level
    */
   this.getLevel = function() { return this.level; };
 }

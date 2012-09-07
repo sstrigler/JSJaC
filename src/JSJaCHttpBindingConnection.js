@@ -1,16 +1,20 @@
 /**
  * @fileoverview All stuff related to HTTP Binding
  * @author Stefan Strigler steve@zeank.in-berlin.de
- * @version $Revision$
  */
 
 /**
- * Instantiates an HTTP Binding session
- * @class Implementation of {@link
- * http://www.xmpp.org/extensions/xep-0206.html XMPP Over BOSH}
+ * Instantiates a BOSH session connection.
+ * @class Implementation of {@link http://www.xmpp.org/extensions/xep-0206.html | XMPP Over BOSH}
  * formerly known as HTTP Binding.
- * @extends JSJaCConnection
  * @constructor
+ * @extends {JSJaCConnection}
+ * @param {Object} oArg Configurational object for this connection.
+ * @param {string} oArg.httpbase The connection endpoint of the HTTP service to talk to.
+ * @param {JSJaCDebugger} [oArg.oDbg] A reference to a debugger implementing the JSJaCDebugger interface.
+ * @param {int} [oArg.timerval] The polling interval.
+ * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
+ * @param {string} [oArg.cookie_prefix] Prefix to cookie names used when suspending.
  */
 function JSJaCHttpBindingConnection(oArg) {
   /**
@@ -31,7 +35,7 @@ function JSJaCHttpBindingConnection(oArg) {
   /**
    * @private
    */
-  this._last_requests = new Object(); // 'hash' storing hold+1 last requests
+  this._last_requests = {}; // 'hash' storing hold+1 last requests
   /**
    * @private
    */
@@ -109,7 +113,7 @@ JSJaCHttpBindingConnection.prototype.setPollInterval = function(timerval) {
  * whether this session is in polling mode
  * @type boolean
  */
-JSJaCHttpBindingConnection.prototype.isPolling = function() { return (this._hold == 0) };
+JSJaCHttpBindingConnection.prototype.isPolling = function() { return (this._hold === 0); };
 
 /**
  * @private
@@ -167,7 +171,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
       reqstr += "> </body>";
     }
 
-    this._last_requests[this._rid] = new Object();
+    this._last_requests[this._rid] = {};
     this._last_requests[this._rid].xml = reqstr;
     this._last_rid = this._rid;
 
@@ -367,19 +371,17 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
     }
   } catch (e) {
     this.oDbg.log("XMLHttpRequest error: status not available", 1);
-	  this._errcnt++;
-	  if (this._errcnt > JSJAC_ERR_COUNT) {
-	    // abort
-	    this._abort();
-	  } else {
+    this._errcnt++;
+    if (this._errcnt > JSJAC_ERR_COUNT) {
+      // abort
+      this._abort();
+    } else {
       if (this.connected()) {
-	      this.oDbg.log("repeating ("+this._errcnt+")",1);
-
-	      this._setStatus('proto_error_fallback');
-
-	      // schedule next tick
-	      setTimeout(JSJaC.bind(this._resume, this),
-                   this.getPollInterval());
+        this.oDbg.log("repeating ("+this._errcnt+")",1);
+        this._setStatus('proto_error_fallback');
+        // schedule next tick
+          setTimeout(JSJaC.bind(this._resume, this),
+                     this.getPollInterval());
       }
     }
     return null;
@@ -399,7 +401,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
     this._setStatus('internal_server_error');
     this._handleEvent('onerror',
-					  JSJaCError('500','wait','internal-server-error'));
+                      JSJaCError('500','wait','internal-server-error'));
 
     return null;
   }
@@ -563,7 +565,7 @@ JSJaCHttpBindingConnection.prototype._setHold = function(hold)  {
  * @private
  */
 JSJaCHttpBindingConnection.prototype._setupRequest = function(async) {
-  var req = new Object();
+  var req = {};
   var r = XmlHttp.create();
   try {
     r.open("POST",this._httpbase,async);

@@ -22,10 +22,9 @@
  */
 
 /**
- * @private
- * This code is taken from {@link
- * http://wiki.script.aculo.us/scriptaculous/show/Builder
- * script.aculo.us' Dom Builder} and has been modified to suit our
+ * This code is taken from 
+ * {@link http://wiki.script.aculo.us/scriptaculous/show/Builder | script.aculo.us' Dom Builder} 
+ * and has been modified to suit our
  * needs.<br/>
  * The original parts of the code do have the following
  * copyright and license notice:<br/>
@@ -33,13 +32,17 @@
  * http://mir.acu lo.us) <br/>
  * script.aculo.us is freely distributable under the terms of an
  * MIT-style license.<br>
- * For details, see the script.aculo.us web site:
- * http://script.aculo.us/<br>
+ * For details, see the script.aculo.us web site at
+ * {@link http://script.aculo.us/}<br>
+ * @namespace
  */
 var JSJaCBuilder = {
-  /**
-   * @private
-   */
+
+    /**
+     * build a new node within an xml document
+     * @param {XMLDocument} doc an xml document to build the new nodes for
+     * @param {string} elementName the name of the element to be created
+     */
   buildNode: function(doc, elementName) {
 
     var element, ns = arguments[4];
@@ -67,6 +70,9 @@ var JSJaCBuilder = {
     return element;
   },
 
+  /**
+   * @private
+   */
   _createElement: function(doc, elementName, ns) {
     try {
       if (ns)
@@ -117,6 +123,9 @@ var JSJaCBuilder = {
     }
   },
 
+  /**
+   * @private
+   */
   _attributes: function(attributes) {
     var attrs = [];
     for(var attribute in attributes)
@@ -126,6 +135,9 @@ var JSJaCBuilder = {
     return attrs.join(" ");
   },
 
+  /**
+   * @private
+   */
   _isStringOrNumber: function(param) {
     return(typeof param=='string' || typeof param=='number');
   }
