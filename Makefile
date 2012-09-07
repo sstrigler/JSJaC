@@ -46,7 +46,7 @@ moo:
 	fi
 
 doc: 
-	@utils/JSDoc/jsdoc.pl --project-name JSJaC -d doc src/
+	@utils/jsdoc3/jsdoc -d doc src/
 
 utils:
 	@make -C utils
