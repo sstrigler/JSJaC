@@ -15,6 +15,7 @@
  * @param {int} [oArg.timerval] The polling interval.
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {string} [oArg.cookie_prefix] Prefix to cookie names used when suspending.
+ * @param {int} [oArg.wait] The 'wait' attribute of BOSH connections.
  */
 function JSJaCHttpBindingConnection(oArg) {
   /**
@@ -44,7 +45,6 @@ function JSJaCHttpBindingConnection(oArg) {
    * @private
    */
   this._min_polling = 0;
-
   /**
    * @private
    */
@@ -52,12 +52,23 @@ function JSJaCHttpBindingConnection(oArg) {
   /**
    * @private
    */
-  this._wait = JSJACHBC_MAX_WAIT;
+  this._wait = oArg.wait || JSJACHBC_MAX_WAIT;
 }
 JSJaCHttpBindingConnection.prototype = new JSJaCConnection();
 
 /**
  * Inherit an instantiated HTTP Binding session
+ * @param {Object} oArg The configuration to be used for connecting.
+ * @param {string} oArg.jid The full jid of the entity this session is connected with. Either provide this or 'domain', 'username' and 'resource'.
+ * @param {string} oArg.domain The domain name of the XMPP service.
+ * @param {string} oArg.username The username (nodename) to be logged in with.
+ * @param {string} oArg.resource The resource to identify the login with.
+ * @param {string} oArg.sid The BOSH session id.
+ * @param {int} oArg.rid The BOSH request id.
+ * @param {int} oArg.polling The BOSH polling attribute.
+ * @param {int} oArg.inactivity The BOSH inactivity attribute.
+ * @param {int} oArg.requests The BOSH requests attribute.
+ * @param {int} [oArg.wait] The BOSH wait attribute.
  */
 JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
   if (oArg.jid) {
@@ -76,8 +87,9 @@ JSJaCHttpBindingConnection.prototype.inherit = function(oArg) {
   this._inactivity = oArg.inactivity;
   this._setHold(oArg.requests-1);
   this.setPollInterval(this._timerval);
+
   if (oArg.wait)
-    this._wait = oArg.wait; // for whatever reason
+    this._wait = oArg.wait;
 
   this._connected = true;
 

@@ -13,7 +13,6 @@
  * @param {string} oArg.httpbase The connection endpoint of the HTTP service to talk to.
  * @param {JSJaCDebugger} [oArg.oDbg] A reference to a debugger implementing the JSJaCDebugger interface.
  * @param {int} [oArg.timerval] The polling interval.
- * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {string} [oArg.cookie_prefix] Prefix to cookie names used when suspending.
  */
 function JSJaCConnection(oArg) {
@@ -38,15 +37,6 @@ function JSJaCConnection(oArg) {
     this.setPollInterval(oArg.timerval);
   else
     this.setPollInterval(JSJAC_TIMERVAL);
-
-  // [FIXME] this better goes to method 'connect'
-  if (oArg.allow_plain)
-      /**
-       * @private
-       */
-    this.allow_plain = oArg.allow_plain;
-  else
-    this.allow_plain = JSJAC_ALLOW_PLAIN;
 
   if (oArg.cookie_prefix)
       /**
@@ -113,6 +103,7 @@ function JSJaCConnection(oArg) {
  * @param {string} oArg.username The username (nodename) to be logged in with.
  * @param {string} oArg.resource The resource to identify the login with.
  * @param {string} oArg.password The user's password.
+ * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {boolean} [oArg.register] Whether to register a new account.
  * @param {string} [oArg.host] The host to connect to which might be different from the domain given above. So some XMPP service might host the domain 'example.com' but might be located at the host 'jabber.example.com'. Normally such situations should be gracefully handled by using DNS SRV records. But in cases where this isn't available you can set the host manually here.
  * @param {int} [oArg.port] The port of the manually given host from above.
@@ -120,7 +111,6 @@ function JSJaCConnection(oArg) {
  * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
  * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.
  * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
- * @param {int} [oArg.wait] The 'wait' attribute of BOSH connections.
  */
 JSJaCConnection.prototype.connect = function(oArg) {
     this._setStatus('connecting');
@@ -141,7 +131,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this.domain = 'chat.facebook.com';
         this.authtype = oArg.authtype;
 
-        if (oArg.facebookApp != undefined) {
+        if (oArg.facebookApp !== undefined) {
 
             this._facebookApp = oArg.facebookApp;
 
@@ -151,7 +141,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
                 document.body.appendChild(fbDiv);
             }
 
-              if (oArg.facebookApp.getSession() == undefined) {
+              if (oArg.facebookApp.getSession() === undefined) {
                 this._facebookApp.Login(this, oArg);
                 return;
             }
@@ -163,21 +153,28 @@ JSJaCConnection.prototype.connect = function(oArg) {
 
     }
 
-    if (oArg.xmllang && oArg.xmllang != '')
+    if (oArg.xmllang && oArg.xmllang !== '')
         this._xmllang = oArg.xmllang;
     else
         this._xmllang = 'en';
 
+    if (oArg.allow_plain)
+        this._allow_plain = oArg.allow_plain;
+    else
+        this._allow_plain = JSJAC_ALLOW_PLAIN;
+
     this.host = oArg.host;
     this.port = oArg.port || 5222;
     if (oArg.secure)
+        /**
+         * @private
+         */
         this.secure = 'true';
     else
+        /**
+         * @private
+         */
         this.secure = 'false';
-
-    // [FIXME] probably should go to subclass, not here
-    if (oArg.wait)
-        this._wait = oArg.wait;
 
     this.jid = this.username + '@' + this.domain;
     this.fulljid = this.jid + '/' + this.resource;
@@ -375,7 +372,7 @@ JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
   if (!this._events[event])
     return;
 
-  var arr = this._events[event], res = new Array();
+  var arr = this._events[event], res = [];
   for (var i=0; i<arr.length; i++)
     if (arr[i].handler != handler)
       res.push(arr[i]);
@@ -450,8 +447,8 @@ JSJaCConnection.prototype.resumeFromData = function(data) {
     if (this._keys) {
       this._keys2 = new JSJaCKeys();
       var u = this._keys2._getSuspendVars();
-      for (var i=0; i<u.length; i++)
-        this._keys2[u[i]] = this._keys[u[i]];
+      for (var j=0; j<u.length; j++)
+        this._keys2[u[j]] = this._keys[u[j]];
       this._keys = this._keys2;
     }
 
@@ -460,7 +457,7 @@ JSJaCConnection.prototype.resumeFromData = function(data) {
       this._handleEvent('onresume');
       setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
       this._interval = setInterval(JSJaC.bind(this._checkQueue, this),
-				   JSJAC_CHECKQUEUEINTERVAL);
+                                   JSJAC_CHECKQUEUEINTERVAL);
       this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
 				JSJAC_CHECKINQUEUEINTERVAL);
     }
@@ -632,17 +629,17 @@ JSJaCConnection.prototype.suspendToData = function() {
 
   var u = ('_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
   u = u.concat(this._getSuspendVars());
-  var s = new Object();
+  var s = {};
 
   for (var i=0; i<u.length; i++) {
     if (!this[u[i]]) continue; // hu? skip these!
+    var o = {};
     if (this[u[i]]._getSuspendVars) {
       var uo = this[u[i]]._getSuspendVars();
-      var o = new Object();
       for (var j=0; j<uo.length; j++)
         o[uo[j]] = this[u[i]][uo[j]];
     } else
-      var o = this[u[i]];
+      o = this[u[i]];
 
     s[u[i]] = o;
   }
@@ -695,7 +692,7 @@ JSJaCConnection.prototype._checkInQ = function() {
  * @private
  */
 JSJaCConnection.prototype._checkQueue = function() {
-  if (this._pQueue.length != 0)
+  if (this._pQueue.length > 0)
     this._process();
   return true;
 };
@@ -774,15 +771,15 @@ JSJaCConnection.prototype._doLegacyAuth = function() {
 /**
  * @private
  */
-JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
-  if (!iq || iq.getType() != 'result') {
-    if (iq && iq.getType() == 'error')
-      this._handleEvent('onerror',iq.getChild('error'));
+JSJaCConnection.prototype._doLegacyAuth2 = function(resIq) {
+  if (!resIq || resIq.getType() != 'result') {
+    if (resIq && resIq.getType() == 'error')
+      this._handleEvent('onerror',resIq.getChild('error'));
     this.disconnect();
     return;
   }
 
-  var use_digest = (iq.getChild('digest') != null);
+  var use_digest = (resIq.getChild('digest') !== null);
 
   /* ***
    * Send authentication
@@ -797,9 +794,9 @@ JSJaCConnection.prototype._doLegacyAuth2 = function(iq) {
   if (use_digest) { // digest login
     query.appendChild(iq.buildNode('digest', {xmlns: NS_AUTH},
                                    hex_sha1(this.streamid + this.pass)));
-  } else if (this.allow_plain) { // use plaintext auth
+  } else if (this._allow_plain) { // use plaintext auth
     query.appendChild(iq.buildNode('password', {xmlns: NS_AUTH},
-                                   this.pass));
+                                    this.pass));
   } else {
     this.oDbg.log("no valid login mechanism found",1);
     this.disconnect();
@@ -848,7 +845,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
       this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",2);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",
                            this._doSASLAuthDigestMd5S1);
-    } else if (this.allow_plain && this.mechs['PLAIN']) {
+    } else if (this._allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
       var authStr = this.username+'@'+
       this.domain+String.fromCharCode(0)+
@@ -879,7 +876,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
     this._nonce = this._nonce.substring(0,this._nonce.indexOf("\""));
     this.oDbg.log("nonce: "+this._nonce,2);
-    if (this._nonce == '' || this._nonce.indexOf('\"') != -1) {
+    if (this._nonce === '' || this._nonce.indexOf('\"') != -1) {
       this.oDbg.log("nonce not valid, aborting",1);
       this.disconnect();
       return;
@@ -996,53 +993,53 @@ JSJaCConnection.prototype._doFacebookAuth = function(el) {
 		vars[tmp[0]] = tmp[1];
 	}
 
-	if(vars['nonce'] != ''){
+      if(vars['nonce'] != ''){
 
-		var fbSession = this._facebookApp.getSession();
+          var fbSession = this._facebookApp.getSession();
 
-		var response = {
-			'api_key'     : this._facebookApp.getApiKey(),
-			'call_id'     : new Date().getTime(),
-			'method'      : vars['method'],
-			'nonce'       : vars['nonce'],
-			'session_key' : fbSession['session_key'],
-			'v'           : '1.0'
-		};
+          var response = {
+              'api_key'     : this._facebookApp.getApiKey(),
+              'call_id'     : new Date().getTime(),
+              'method'      : vars['method'],
+              'nonce'       : vars['nonce'],
+              'session_key' : fbSession['session_key'],
+              'v'           : '1.0'
+          };
 
-		response['sig'] = 'api_key=' + response['api_key'] +
-						  'call_id=' + response['call_id'] +
-						  'method=' + response['method'] +
-						  'nonce=' + response['nonce'] +
-						  'session_key=' + response['session_key'] +
-						  'v=' + response['v'];
+          response['sig'] = 'api_key=' + response['api_key'] +
+              'call_id=' + response['call_id'] +
+              'method=' + response['method'] +
+              'nonce=' + response['nonce'] +
+              'session_key=' + response['session_key'] +
+              'v=' + response['v'];
 
-		response['sig'] = hex_md5(response['sig'] + this._facebookApp.getApiSecret());
+          response['sig'] = hex_md5(response['sig'] + this._facebookApp.getApiSecret());
 
-		response = 'api_key=' + response['api_key'] + '&' +
-				   'call_id=' + response['call_id'] + '&' +
-				   'method=' + response['method'] + '&' +
-				   'nonce=' + response['nonce'] + '&' +
-				   'session_key=' + response['session_key'] + '&' +
-				   'v=' + response['v'] + '&' +
-				   'sig=' + response['sig'];
+          response = 'api_key=' + response['api_key'] + '&' +
+              'call_id=' + response['call_id'] + '&' +
+              'method=' + response['method'] + '&' +
+              'nonce=' + response['nonce'] + '&' +
+              'session_key=' + response['session_key'] + '&' +
+              'v=' + response['v'] + '&' +
+              'sig=' + response['sig'];
 
-		response = b64encode(response);
+          response = b64encode(response);
 
-		return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
-                           this._doFacebookAuthDone);
+          return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
+                               this._doFacebookAuthDone);
 
 
-	}else{
+      }else{
 
-		this.oDbg.log("nonce missing",1);
-		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
-		this.disconnect();
+          this.oDbg.log("nonce missing",1);
+          this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
+          this.disconnect();
 
-	}
+      }
 
   }
 
-}
+};
 
 /**
  * @private
@@ -1056,7 +1053,7 @@ JSJaCConnection.prototype._doFacebookAuthDone = function(el) {
 	}else {
         this._reInitStream(JSJaC.bind(this._doStreamBind, this));
 	}
-}
+};
 
 /**
  * @private
@@ -1120,7 +1117,7 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
           if (arg.pType) { // it's a packet
             if ((!arg.getNode().hasChildNodes() && aEvent.childName != '*') ||
 				(arg.getNode().hasChildNodes() &&
-				 !arg.getChild(aEvent.childName, aEvent.childNS)))
+                 !arg.getChild(aEvent.childName, aEvent.childNS)))
               continue;
             if (aEvent.type != '*' &&
                 arg.getType() != aEvent.type)
@@ -1234,7 +1231,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         return false;
     }
 
-    this.mechs = new Object();
+    this.mechs = {};
     var lMec1 = doc.getElementsByTagName("mechanisms");
     if (!lMec1.length) return false;
     this.has_sasl = false;
@@ -1289,7 +1286,7 @@ JSJaCConnection.prototype._process = function(timerval) {
     return;
   }
 
-  if (!this.isPolling() && this._pQueue.length == 0 &&
+  if (!this.isPolling() && this._pQueue.length === 0 &&
       this._req[(slot+1)%2] && this._req[(slot+1)%2].r.readyState != 4) {
     this.oDbg.log("all slots busy, standby ...", 2);
     return;
@@ -1357,7 +1354,7 @@ JSJaCConnection.prototype._process = function(timerval) {
 JSJaCConnection.prototype._registerPID = function(pID,cb,arg) {
   if (!pID || !cb)
     return false;
-  this._regIDs[pID] = new Object();
+  this._regIDs[pID] = {};
   this._regIDs[pID].cb = cb;
   if (arg)
     this._regIDs[pID].arg = arg;
@@ -1421,7 +1418,7 @@ JSJaCConnection.prototype._sendRaw = function(xml,cb,arg) {
  * @private
  */
 JSJaCConnection.prototype._setStatus = function(status) {
-  if (!status || status == '')
+  if (!status || status === '')
     return;
   if (status != this._status) { // status changed!
     this._status = status;
