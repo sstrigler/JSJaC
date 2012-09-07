@@ -1,1341 +1,2216 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
-<!--NewPage-->
-<HTML>
-<HEAD>
-<TITLE>
-JSJaCPacket
-</TITLE>
-<LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
-</HEAD>
-<SCRIPT>
-function asd()
-{
-parent.document.title="JSJaCPacket";
-}
-</SCRIPT>
-<BODY BGCOLOR="white" onload="asd();">
-
-<!-- ========== START OF NAVBAR ========== -->
-<A NAME="navbar_bottom"><!-- --></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0">
-<TR>
-<TD COLSPAN=3 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_bottom_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-JSJaCPacket.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev">&nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"--><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<B>JSJaC</B>
-</EM>
-</TD
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="JSJaCMessage.html"><B>PREV CLASS</B></A><!-- 
-   NEXT CLASS 
--->
-&nbsp;<A HREF="JSJaCPresence.html"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;
-<SCRIPT>
-  <!--
-  if(window==top) {
-    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
-  }
-  //-->
-</SCRIPT>
-<NOSCRIPT>
-<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-<!-- =========== END OF NAVBAR =========== -->
-<HR>
-
-<!-- ======== START OF CLASS DATA ======== -->
-<H2>Class JSJaCPacket</H2>
-<PRE>Object
-   |
-   +--<b>JSJaCPacket</b>
-</PRE>
-
-   
-      <DL>
-      <DT>
-         <B>Direct Known Subclasses:</B> 
-         <DD>
-                  <a href='JSJaCPresence.html'>JSJaCPresence</a>, <a href='JSJaCMessage.html'>JSJaCMessage</a>, <a href='JSJaCIQ.html'>JSJaCIQ</a>
-         </DD>
-      </DL>
-   
-
-
-<HR>
-<DL>
-   <!-- Class definition -->
-   <DT>class 
-   <B>JSJaCPacket</B>
-   
-
-</DL>
-   
-   <P>
-   <BR/>Somewhat abstract base class for all kinds of specialised packets
- <BR/><I>Defined in <a href='overview-summary-JSJaCPacket.js.html'>JSJaCPacket.js</a></I><BR/><BR/>
-   </P>
-   
-   <HR>
-
-<!-- ======== NESTED CLASS SUMMARY ======== -->
-
-<!-- ======== END NESTED CLASS SUMMARY ======== -->
-
-
-<!-- =========== FIELD SUMMARY =========== -->
-
-   <A NAME="field_summary"><!-- --></A>
-      <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-         <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-            <TD COLSPAN=2><FONT SIZE="+2">
-               <B>Field Summary</B></FONT></TD>
-         </TR>
-
-   <!-- This is one instance field summary -->
-   
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-   <CODE>&nbsp;<a href="String.html">String</a></CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#xml">xml</A></B></CODE>
-   <BR>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a string representation of the raw xml content of this packet.</TD>
-   </TR>
-   
-
-   </TABLE>
-   &nbsp;
-   
-
-   
-
-<!-- =========== END FIELD SUMMARY =========== -->
-
-
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-
-<A NAME="constructor_summary"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TD COLSPAN=2><FONT SIZE="+2">
-<B>Constructor Summary</B></FONT></TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD>
-      <CODE>
-	 <B>
-	    <A HREF="#JSJaCPacket()">JSJaCPacket</A></B>(&lt;<a href="String.html">String</a>&gt; name)
-      </CODE>
-      <BR>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      Creates a new packet with given root tag name (for internal use)
-      </TD>
-</TR>
-</TABLE>
-
-<!-- ======== END CONSTRUCTOR SUMMARY ======== -->
-
-&nbsp;
-
-<!-- ========== METHOD SUMMARY =========== -->
-
-<A NAME="method_summary"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TD COLSPAN=2><FONT SIZE="+2">
-<B>Method Summary</B></FONT></TD>
-</TR>
-
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#appendNode">appendNode</A></B>(&lt;<a href="String.html">String</a>&gt; element)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Appends node created by buildNode to this packets parent node.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#buildNode">buildNode</A></B>(elementName)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Builds a node using <a href='http://wiki.script.aculo.us/scriptaculous/show/Builder'>script.aculo.us' Dom Builder</a> notation.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#clone">clone</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Returns a copy of this node
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#errorReply">errorReply</A></B>(&lt;<a href="STANZA_ERROR.html">STANZA_ERROR</a>&gt; stanza_error)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Returns an error condition reply according to <a href='http://www.xmpp.org/extensions/xep-0086.html'>XEP-0086</a>.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getChild">getChild</A></B>(&lt;<a href="String.html">String</a>&gt; name, &lt;<a href="String.html">String</a>&gt; ns)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets a child element of this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getChildVal">getChildVal</A></B>(&lt;<a href="String.html">String</a>&gt; name, &lt;<a href="String.html">String</a>&gt; ns)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the node value of a child element of this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#i-Document'>Document</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getDoc">getDoc</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the associated Document for this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getFrom">getFrom</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'from' attribute of this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCJID.html">JSJaCJID</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getFromJID">getFromJID</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'from' attribute of this packet as a JSJaCJID object
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getID">getID</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'id' of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getNode">getNode</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the root node of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getTo">getTo</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'to' attribute of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCJID.html">JSJaCJID</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getToJID">getToJID</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'to' attribute of this packet as a JSJaCJID object
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getType">getType</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'type' of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getXMLLang">getXMLLang</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'xml:lang' of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#getXMLNS">getXMLNS</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the 'xmlns' (xml namespace) of the root node of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#isError">isError</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Checks if packet is of type 'error'
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="String.html">String</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#pType">pType</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Gets the type (name of root element) of this packet, i.e.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#setFrom">setFrom</A></B>(from)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sets the 'from' attribute of the root node of this
- packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#setID">setID</A></B>(&lt;<a href="String.html">String</a>&gt; id)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sets 'id' attribute of the root node of this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#setTo">setTo</A></B>(&lt;<a href="String.html">String</a>&gt; to)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sets the 'to' attribute of the root node of this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#setType">setType</A></B>(&lt;<a href="String.html">String</a>&gt; type)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sets the 'type' attribute of the root node of this packet.
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#setXMLLang">setXMLLang</A></B>(&lt;<a href="String.html">String</a>&gt; xmllang)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Sets 'xml:lang' for this packet
-      </TD>
-   </TR>
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&lt;static&gt;&nbsp;<a href="JSJaCPacket.html">JSJaCPacket</a></CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#!s!wrapNode">wrapNode</A></B>(&lt;<a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247.html">Node</a>&gt; node)
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Tries to transform a w3c DOM node to JSJaC's internal representation
- (JSJaCPacket type, one of JSJaCPresence, JSJaCMessage, JSJaCIQ)
-      </TD>
-   </TR>
-
-
-</TABLE>
-
-
-
-<P>
-<!-- ========== END METHOD SUMMARY =========== -->
-
-
-<!-- ============ FIELD DETAIL START =========== -->
-
-   <A NAME="field_detail"><!-- --></A>
-   <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-      <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-         <TD COLSPAN=1><FONT SIZE="+2"><B>Field Detail</B></FONT></TD>
-      </TR>
-   </TABLE>
-
-   
-   <A NAME="xml"><!-- --></A>
-   <H3>xml</H3>
-   <PRE><a href="String.html">String</a>&nbsp;<B>xml</B></PRE>
-   <UL>
-   Returns a string representation of the raw xml content of this packet.
-   
-   </UL>
-   <HR>
-   
-
-
-<!-- ============ FIELD DETAIL END =========== -->
-
-    <!-- ========= CONSTRUCTOR DETAIL START ======== -->
-
-<A NAME="constructor_detail"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-      <TD COLSPAN=1>
-      <FONT SIZE="+2"><B>Constructor Detail</B></FONT>
-      </TD>
-   </TR>
-</TABLE>
-
-<A NAME="JSJaCPacket()"><!-- --></A><H3>
-JSJaCPacket</H3>
-<PRE><B>JSJaCPacket</B>(&lt;<a href="String.html">String</a>&gt; name)</PRE>
-
-
-<UL>
-   Creates a new packet with given root tag name (for internal use)
-</UL>
-
-
-
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>name</CODE> -  The root tag name of the packet  (i.e. one of 'message', 'iq' or 'presence')    
-     </UL>
-   
-   
-   </UL>
-
-
-<!-- Constructor return value(s) -->
-
-<!-- End constructor return value(s) -->
-
-<!-- ADDITIONAL ATTRIBUTES -->
-
-<HR/>
-<!-- END ADDITIONAL ATTRIBUTES  -->
-
-<!-- ========= CONSTRUCTOR DETAIL END ======== -->
-
-
-<!-- ============ METHOD DETAIL START ========== -->
-
-<A NAME="method_detail"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-      <TD COLSPAN=1><FONT SIZE="+2">
-         <B>Method Detail</B></FONT>
-      </TD>
-   </TR>
-</TABLE>
-
-<!-- One single method detail entry -->
-
-   <A NAME="appendNode"><!-- --></A>
-   <H3>appendNode</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>appendNode</B>(&lt;<a href="String.html">String</a>&gt; element)</PRE>
-   
-      <UL>Appends node created by buildNode to this packets parent node.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>element</CODE> -  A name plus an object hash with attributes (optional) plus an array of childnodes (optional)  
-      </UL> 
-   
-     <UL><CODE>link</CODE> -  http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node} element The node to append or  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        This packet   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <UL>   
-   <B>See:</B><UL>- <a href="#buildNode">buildNode()</a></UL>
-   </UL>
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="buildNode"><!-- --></A>
-   <H3>buildNode</H3>
-   <PRE><a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a> <B>buildNode</B>(elementName)</PRE>
-   
-      <UL>Builds a node using <a href='http://wiki.script.aculo.us/scriptaculous/show/Builder'>script.aculo.us' Dom Builder</a> notation.
- This code is taken from <a href='http://wiki.script.aculo.us/scriptaculous/show/Builder'>script.aculo.us' Dom Builder</a> and has been modified to suit our
- needs.<br/>
- The original parts of the code do have the following copyright
- and license notice:<br/>
- Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
- http://mir.acu lo.us) <br/>
- script.aculo.us is freely distributable under the terms of an
- MIT-style licen se.  // For details, see the script.aculo.us web
- site: http://script.aculo.us/<br></UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        The newly created node   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <UL>   
-   <B>Author:</B> Thomas Fuchs  , Stefan Strigler  <BR/>
-   </UL>
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="clone"><!-- --></A>
-   <H3>clone</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>clone</B>()</PRE>
-   
-      <UL>Returns a copy of this node</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        a copy of this node   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="errorReply"><!-- --></A>
-   <H3>errorReply</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>errorReply</B>(&lt;<a href="STANZA_ERROR.html">STANZA_ERROR</a>&gt; stanza_error)</PRE>
-   
-      <UL>Returns an error condition reply according to <a href='http://www.xmpp.org/extensions/xep-0086.html'>XEP-0086</a>. Creates a clone of the calling packet with senders and recipient exchanged and error stanza appended.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>stanza_error</CODE> -  an error stanza containing error cody, type and condition of the error to be indicated  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        an error reply packet   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getChild"><!-- --></A>
-   <H3>getChild</H3>
-   <PRE><a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a> <B>getChild</B>(&lt;<a href="String.html">String</a>&gt; name, &lt;<a href="String.html">String</a>&gt; ns)</PRE>
-   
-      <UL>Gets a child element of this packet. If no params given returns first child.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>name</CODE> -  Tagname of child to retrieve. Use '*' to match any tag. [optional]  
-      </UL> 
-   
-     <UL><CODE>ns</CODE> -    Namespace of child. Use '*' to match any ns.[optional]  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        The child node, null if none found   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getChildVal"><!-- --></A>
-   <H3>getChildVal</H3>
-   <PRE><a href="String.html">String</a> <B>getChildVal</B>(&lt;<a href="String.html">String</a>&gt; name, &lt;<a href="String.html">String</a>&gt; ns)</PRE>
-   
-      <UL>Gets the node value of a child element of this packet.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>name</CODE> -  Tagname of child to retrieve.  
-      </UL> 
-   
-     <UL><CODE>ns</CODE> -    Namespace of child  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        The value of the child node, empty string if none found   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getDoc"><!-- --></A>
-   <H3>getDoc</H3>
-   <PRE><a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#i-Document'>Document</a> <B>getDoc</B>()</PRE>
-   
-      <UL>Gets the associated Document for this packet.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getFrom"><!-- --></A>
-   <H3>getFrom</H3>
-   <PRE><a href="String.html">String</a> <B>getFrom</B>()</PRE>
-   
-      <UL>Gets the 'from' attribute of this packet.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getFromJID"><!-- --></A>
-   <H3>getFromJID</H3>
-   <PRE><a href="JSJaCJID.html">JSJaCJID</a> <B>getFromJID</B>()</PRE>
-   
-      <UL>Gets the 'from' attribute of this packet as a JSJaCJID object</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getID"><!-- --></A>
-   <H3>getID</H3>
-   <PRE><a href="String.html">String</a> <B>getID</B>()</PRE>
-   
-      <UL>Gets the 'id' of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getNode"><!-- --></A>
-   <H3>getNode</H3>
-   <PRE><a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247'>Node</a> <B>getNode</B>()</PRE>
-   
-      <UL>Gets the root node of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getTo"><!-- --></A>
-   <H3>getTo</H3>
-   <PRE><a href="String.html">String</a> <B>getTo</B>()</PRE>
-   
-      <UL>Gets the 'to' attribute of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getToJID"><!-- --></A>
-   <H3>getToJID</H3>
-   <PRE><a href="JSJaCJID.html">JSJaCJID</a> <B>getToJID</B>()</PRE>
-   
-      <UL>Gets the 'to' attribute of this packet as a JSJaCJID object</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getType"><!-- --></A>
-   <H3>getType</H3>
-   <PRE><a href="String.html">String</a> <B>getType</B>()</PRE>
-   
-      <UL>Gets the 'type' of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getXMLLang"><!-- --></A>
-   <H3>getXMLLang</H3>
-   <PRE><a href="String.html">String</a> <B>getXMLLang</B>()</PRE>
-   
-      <UL>Gets the 'xml:lang' of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="getXMLNS"><!-- --></A>
-   <H3>getXMLNS</H3>
-   <PRE><a href="String.html">String</a> <B>getXMLNS</B>()</PRE>
-   
-      <UL>Gets the 'xmlns' (xml namespace) of the root node of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="isError"><!-- --></A>
-   <H3>isError</H3>
-   <PRE>boolean <B>isError</B>()</PRE>
-   
-      <UL>Checks if packet is of type 'error'</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        'true' if this packet is of type 'error', 'false' otherwise   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="pType"><!-- --></A>
-   <H3>pType</H3>
-   <PRE><a href="String.html">String</a> <B>pType</B>()</PRE>
-   
-      <UL>Gets the type (name of root element) of this packet, i.e. one of
- 'presence', 'message' or 'iq'</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        the top level tag name   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="setFrom"><!-- --></A>
-   <H3>setFrom</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>setFrom</B>(from)</PRE>
-   
-      <UL>Sets the 'from' attribute of the root node of this
- packet. Usually this is not needed as the server will take care
- of this automatically.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="setID"><!-- --></A>
-   <H3>setID</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>setID</B>(&lt;<a href="String.html">String</a>&gt; id)</PRE>
-   
-      <UL>Sets 'id' attribute of the root node of this packet.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>id</CODE> -  The id of the packet.  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="setTo"><!-- --></A>
-   <H3>setTo</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>setTo</B>(&lt;<a href="String.html">String</a>&gt; to)</PRE>
-   
-      <UL>Sets the 'to' attribute of the root node of this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>to</CODE> -   
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="setType"><!-- --></A>
-   <H3>setType</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>setType</B>(&lt;<a href="String.html">String</a>&gt; type)</PRE>
-   
-      <UL>Sets the 'type' attribute of the root node of this packet.</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>type</CODE> -  The type of the packet.  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="setXMLLang"><!-- --></A>
-   <H3>setXMLLang</H3>
-   <PRE><a href="JSJaCPacket.html">JSJaCPacket</a> <B>setXMLLang</B>(&lt;<a href="String.html">String</a>&gt; xmllang)</PRE>
-   
-      <UL>Sets 'xml:lang' for this packet</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>xmllang</CODE> -  The xml:lang of the packet.  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-   <A NAME="!s!wrapNode"><!-- --></A>
-   <H3>wrapNode</H3>
-   <PRE>&lt;static&gt; <a href="JSJaCPacket.html">JSJaCPacket</a> <B>wrapNode</B>(&lt;<a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247.html">Node</a>&gt; node)</PRE>
-   
-      <UL>Tries to transform a w3c DOM node to JSJaC's internal representation
- (JSJaCPacket type, one of JSJaCPresence, JSJaCMessage, JSJaCIQ)</UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <UL>
-   <B>Parameters:</B>
-   
-     <UL><CODE>node</CODE> -  The node to be transformed  
-      </UL> 
-   
-   </UL>
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        A JSJaCPacket representing the given node. If node's root  elemenent is not one of 'message', 'presence' or 'iq',  <code>null</code> is being returned.   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-
-
-<!-- ============ METHOD DETAIL END ========== -->
-
-<!-- ========= END OF CLASS DATA ========= -->
-
-<!-- ========== START OF NAVBAR ========== -->
-<A NAME="navbar_bottom"><!-- --></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0">
-<TR>
-<TD COLSPAN=3 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_bottom_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-JSJaCPacket.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><b>Tree</b></FONT></A>&nbsp;</TD>
-  <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<B>JSJaC</B>
-</EM>
-</TD
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="JSJaCMessage.html"><B>PREV CLASS</B></A><!-- 
-   NEXT CLASS 
--->
-&nbsp;<A HREF="JSJaCPresence.html"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;
-<SCRIPT>
-  <!--
-  if(window==top) {
-    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
-  }
-  //-->
-</SCRIPT>
-<NOSCRIPT>
-<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-
-<!-- =========== END OF NAVBAR =========== -->
-
-<HR>
-<FONT SIZE="-1">
-
-</FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Sat Apr 14 20:25:13 2012</div>
-</BODY>
-</HTML>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: JSJaCPacket</title>
+    
+    <script src="http://shjs.sourceforge.net/sh_main.min.js"> </script>
+    <script src="http://shjs.sourceforge.net/lang/sh_javascript.min.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/node-dark.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Class: JSJaCPacket</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    JSJaCPacket
+    </h2>
+    
+        <div class="class-description">Somewhat abstract base class for all kinds of specialised packets</div>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <h4 class="name" id="JSJaCPacket"><span class="type-signature"></span>new JSJaCPacket</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Creates a new packet with given root tag name (for internal use)
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The root tag name of the packet
+(i.e. one of 'message', 'iq' or 'presence')</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 15</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="xml"><span class="type-signature"></span>xml<span class="type-signature"> :String</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Returns a string representation of the raw xml content of this packet.
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 275</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="appendNode"><span class="type-signature"></span>appendNode</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Appends node created by buildNode to this packets parent node.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>element</code></td>
+            
+            
+            <td class="type">
+            
+                        @link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 Node
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The node to append or</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>element</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A name plus an object hash with attributes (optional) plus an array of childnodes (optional)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 424</li></ul></dd>
+	
+    
+    
+	
+	
+	<dt class="tag-see">See:</dt>
+	<dd class="tag-see">
+        <ul>
+            <li><a href="JSJaCPacket.html#buildNode">#buildNode</a></li>
+        </ul>
+	</dd>
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    This packet
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="buildNode"><span class="type-signature"></span>buildNode</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Builds a node using {@link
+http://wiki.script.aculo.us/scriptaculous/show/Builder
+script.aculo.us' Dom Builder} notation.
+This code is taken from {@link
+http://wiki.script.aculo.us/scriptaculous/show/Builder
+script.aculo.us' Dom Builder} and has been modified to suit our
+needs.<br/>
+The original parts of the code do have the following copyright
+and license notice:<br/>
+Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us,
+http://mir.acu lo.us) <br/>
+script.aculo.us is freely distributable under the terms of an
+MIT-style licen se.  // For details, see the script.aculo.us web
+site: http://script.aculo.us/<br>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-author">Author:</dt>
+	<dd class="tag-author">
+        <ul>
+            <li>Thomas Fuchs</li>
+        
+            <li>Stefan Strigler</li>
+        </ul>
+	</dd>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 408</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The newly created node
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="clone"><span class="type-signature"></span>clone</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns a copy of this node
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 239</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    a copy of this node
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="errorReply"><span class="type-signature"></span>errorReply</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns an error condition reply according to <a href="http://www.xmpp.org/extensions/xep-0086.html XEP-0086">http://www.xmpp.org/extensions/xep-0086.html XEP-0086</a>. Creates a clone of the calling packet with senders and recipient exchanged and error stanza appended.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>stanza_error</code></td>
+            
+            
+            <td class="type">
+            
+                        STANZA_ERROR
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">an error stanza containing error cody, type and condition of the error to be indicated</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 258</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    an error reply packet
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getChild"><span class="type-signature"></span>getChild</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets a child element of this packet. If no params given returns first child.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Tagname of child to retrieve. Use '*' to match any tag. [optional]</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>ns</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Namespace of child. Use '*' to match any ns.[optional]</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 189</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The child node, null if none found
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getChildVal"><span class="type-signature"></span>getChildVal</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the node value of a child element of this packet.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Tagname of child to retrieve.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>ns</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Namespace of child</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 222</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The value of the child node, empty string if none found
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getDoc"><span class="type-signature"></span>getDoc</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the associated Document for this packet.
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 45</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getFrom"><span class="type-signature"></span>getFrom</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'from' attribute of this packet.
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 136</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getFromJID"><span class="type-signature"></span>getFromJID</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'from' attribute of this packet as a JSJaCJID object
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 150</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getID"><span class="type-signature"></span>getID</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'id' of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 157</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getNode"><span class="type-signature"></span>getNode</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the root node of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 52</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getTo"><span class="type-signature"></span>getTo</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'to' attribute of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 129</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getToJID"><span class="type-signature"></span>getToJID</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'to' attribute of this packet as a JSJaCJID object
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 143</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getType"><span class="type-signature"></span>getType</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'type' of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 164</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getXMLLang"><span class="type-signature"></span>getXMLLang</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'xml:lang' of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 171</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getXMLNS"><span class="type-signature"></span>getXMLNS</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the 'xmlns' (xml namespace) of the root node of this packet
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 178</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isError"><span class="type-signature"></span>isError</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if packet is of type 'error'
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 248</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    'true' if this packet is of type 'error', 'false' otherwise
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="pType"><span class="type-signature"></span>pType</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the type (name of root element) of this packet, i.e. one of
+'presence', 'message' or 'iq'
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 39</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    the top level tag name
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setFrom"><span class="type-signature"></span>setFrom</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the 'from' attribute of the root node of this
+packet. Usually this is not needed as the server will take care
+of this automatically.
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 79</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setID"><span class="type-signature"></span>setID</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets 'id' attribute of the root node of this packet.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The id of the packet.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 93</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setTo"><span class="type-signature"></span>setTo</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the 'to' attribute of the root node of this packet
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>to</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 64</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setType"><span class="type-signature"></span>setType</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the 'type' attribute of the root node of this packet.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The type of the packet.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 105</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setXMLLang"><span class="type-signature"></span>setXMLLang</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets 'xml:lang' for this packet
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>xmllang</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The xml:lang of the packet.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 117</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="wrapNode"><span class="type-signature">&lt;static> </span>wrapNode</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Tries to transform a w3c DOM node to JSJaC's internal representation
+(JSJaCPacket type, one of JSJaCPresence, JSJaCMessage, JSJaCIQ)
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCPacket.js, line 710</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    A JSJaCPacket representing the given node. If node's root
+elemenent is not one of 'message', 'presence' or 'iq',
+<code>null</code> is being returned.
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="JSJaCConnection.html">JSJaCConnection</a></li><li><a href="JSJaCConsoleLogger.html">JSJaCConsoleLogger</a></li><li><a href="JSJaCCookie.html">JSJaCCookie</a></li><li><a href="JSJaCCookieException.html">JSJaCCookieException</a></li><li><a href="JSJaCDebugger.html">JSJaCDebugger</a></li><li><a href="JSJaCFBApplication.html">JSJaCFBApplication</a></li><li><a href="JSJaCHttpBindingConnection.html">JSJaCHttpBindingConnection</a></li><li><a href="JSJaCHttpPollingConnection.html">JSJaCHttpPollingConnection</a></li><li><a href="JSJaCIQ.html">JSJaCIQ</a></li><li><a href="JSJaCJID.html">JSJaCJID</a></li><li><a href="JSJaCJIDInvalidException.html">JSJaCJIDInvalidException</a></li><li><a href="JSJaCKeys.html">JSJaCKeys</a></li><li><a href="JSJaCMessage.html">JSJaCMessage</a></li><li><a href="JSJaCPacket.html">JSJaCPacket</a></li><li><a href="JSJaCPresence.html">JSJaCPresence</a></li><li><a href="JSJaCWebSocketConnection.html">JSJaCWebSocketConnection</a></li></ul><h3>Namespaces</h3><ul><li><a href="JSJaCBuilder.html">JSJaCBuilder</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Fri Sep 07 2012 16:13:12 GMT+0200 (MESZ)
+</footer>
+
+<script> sh_highlightDocument(); </script>
+</body>
+</html>

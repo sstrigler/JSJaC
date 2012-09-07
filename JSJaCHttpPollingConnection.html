@@ -1,359 +1,2305 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
-<!--NewPage-->
-<HTML>
-<HEAD>
-<TITLE>
-JSJaCHttpPollingConnection
-</TITLE>
-<LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
-</HEAD>
-<SCRIPT>
-function asd()
-{
-parent.document.title="JSJaCHttpPollingConnection";
-}
-</SCRIPT>
-<BODY BGCOLOR="white" onload="asd();">
-
-<!-- ========== START OF NAVBAR ========== -->
-<A NAME="navbar_bottom"><!-- --></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0">
-<TR>
-<TD COLSPAN=3 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_bottom_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-JSJaCHttpPollingConnection.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev">&nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"--><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<B>JSJaC</B>
-</EM>
-</TD
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="JSJaCHttpBindingConnection.html"><B>PREV CLASS</B></A><!-- 
-   NEXT CLASS 
--->
-&nbsp;<A HREF="JSJaCIQ.html"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;
-<SCRIPT>
-  <!--
-  if(window==top) {
-    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
-  }
-  //-->
-</SCRIPT>
-<NOSCRIPT>
-<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-<!-- =========== END OF NAVBAR =========== -->
-<HR>
-
-<!-- ======== START OF CLASS DATA ======== -->
-<H2>Class JSJaCHttpPollingConnection</H2>
-<PRE>Object
-   |
-   +--<a href='JSJaCConnection.html'>JSJaCConnection</a>
-         |
-         +--<b>JSJaCHttpPollingConnection</b>
-</PRE>
-
-
-<HR>
-<DL>
-   <!-- Class definition -->
-   <DT>class 
-   <B>JSJaCHttpPollingConnection</B>
-   
-      <DT>extends <a href='JSJaCConnection.html'>JSJaCConnection</a> 
-   
-
-</DL>
-   
-   <P>
-   <BR/>Implementation of <a href='http://www.xmpp.org/extensions/xep-0025.html'>HTTP Polling</a>
- <BR/><I>Defined in <a href='overview-summary-JSJaCHttpPollingConnection.js.html'>JSJaCHttpPollingConnection.js</a></I><BR/><BR/>
-   </P>
-   
-   <HR>
-
-<!-- ======== NESTED CLASS SUMMARY ======== -->
-
-<!-- ======== END NESTED CLASS SUMMARY ======== -->
-
-
-<!-- =========== FIELD SUMMARY =========== -->
-
-
-   
-   
-   &nbsp;<A NAME=""><!-- --></A>
-   <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-   <TD><B>Fields inherited from class <A HREF="JSJaCConnection.html">JSJaCConnection</A></B></TD>
-   </TR>
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD><CODE>
-   <a href='JSJaCConnection.html#oDbg'>oDbg</a>
-   </CODE></TD>
-   </TR>
-</TABLE>
-&nbsp;
-
-
-
-<!-- =========== END FIELD SUMMARY =========== -->
-
-
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-
-<A NAME="constructor_summary"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TD COLSPAN=2><FONT SIZE="+2">
-<B>Constructor Summary</B></FONT></TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-   <TD>
-      <CODE>
-	 <B>
-	    <A HREF="#JSJaCHttpPollingConnection()">JSJaCHttpPollingConnection</A></B>(oArg)
-      </CODE>
-      <BR>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      Instantiates an HTTP Polling session
-      </TD>
-</TR>
-</TABLE>
-
-<!-- ======== END CONSTRUCTOR SUMMARY ======== -->
-
-&nbsp;
-
-<!-- ========== METHOD SUMMARY =========== -->
-
-<A NAME="method_summary"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TD COLSPAN=2><FONT SIZE="+2">
-<B>Method Summary</B></FONT></TD>
-</TR>
-
-
-   <TR BGCOLOR="white" CLASS="TableRowColor">
-      <TD ALIGN="right" VALIGN="top" WIDTH="1%">
-	 <FONT SIZE="-1">
-	    <CODE>&nbsp;boolean</CODE>
-	 </FONT>
-      </TD>
-      <TD>
-	 <CODE>
-	    <B>
-	       <A HREF="#isPolling">isPolling</A></B>()
-	 </CODE>
-	 <BR>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 Tells whether this implementation of JSJaCConnection is polling
- Useful if it needs to be decided
- whether it makes sense to allow for adjusting or adjust the
- polling interval <a href="JSJaCConnection.html#setPollInterval">JSJaCConnection.setPollInterval()</a>
-      </TD>
-   </TR>
-
-
-</TABLE>
-
-
-
-&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TD><B>Methods inherited from class <a href="JSJaCConnection.html">JSJaCConnection</a></B></TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE>
-<!-- Inherited methods -->
-<a href='JSJaCConnection.html#connect'>connect</a>, <a href='JSJaCConnection.html#connected'>connected</a>, <a href='JSJaCConnection.html#disconnect'>disconnect</a>, <a href='JSJaCConnection.html#getPollInterval'>getPollInterval</a>, <a href='JSJaCConnection.html#registerHandler'>registerHandler</a>, <a href='JSJaCConnection.html#unregisterHandler'>unregisterHandler</a>, <a href='JSJaCConnection.html#registerIQGet'>registerIQGet</a>, <a href='JSJaCConnection.html#registerIQSet'>registerIQSet</a>, <a href='JSJaCConnection.html#resume'>resume</a>, <a href='JSJaCConnection.html#resumeFromData'>resumeFromData</a>, <a href='JSJaCConnection.html#send'>send</a>, <a href='JSJaCConnection.html#sendIQ'>sendIQ</a>, <a href='JSJaCConnection.html#setPollInterval'>setPollInterval</a>, <a href='JSJaCConnection.html#status'>status</a>, <a href='JSJaCConnection.html#suspend'>suspend</a>, <a href='JSJaCConnection.html#suspendToData'>suspendToData</a>
-</CODE></TD>
-</TR>
-</TABLE>
-&nbsp;
-
-<P>
-<!-- ========== END METHOD SUMMARY =========== -->
-
-
-<!-- ============ FIELD DETAIL START =========== -->
-
-
-<!-- ============ FIELD DETAIL END =========== -->
-
-    <!-- ========= CONSTRUCTOR DETAIL START ======== -->
-
-<A NAME="constructor_detail"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-      <TD COLSPAN=1>
-      <FONT SIZE="+2"><B>Constructor Detail</B></FONT>
-      </TD>
-   </TR>
-</TABLE>
-
-<A NAME="JSJaCHttpPollingConnection()"><!-- --></A><H3>
-JSJaCHttpPollingConnection</H3>
-<PRE><B>JSJaCHttpPollingConnection</B>(oArg)</PRE>
-
-
-<UL>
-   Instantiates an HTTP Polling session
-</UL>
-
-
-
-   </UL>
-
-
-<!-- Constructor return value(s) -->
-
-<!-- End constructor return value(s) -->
-
-<!-- ADDITIONAL ATTRIBUTES -->
-
-<HR/>
-<!-- END ADDITIONAL ATTRIBUTES  -->
-
-<!-- ========= CONSTRUCTOR DETAIL END ======== -->
-
-
-<!-- ============ METHOD DETAIL START ========== -->
-
-<A NAME="method_detail"><!-- --></A>
-<TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
-   <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-      <TD COLSPAN=1><FONT SIZE="+2">
-         <B>Method Detail</B></FONT>
-      </TD>
-   </TR>
-</TABLE>
-
-<!-- One single method detail entry -->
-
-   <A NAME="isPolling"><!-- --></A>
-   <H3>isPolling</H3>
-   <PRE>boolean <B>isPolling</B>()</PRE>
-   
-      <UL>Tells whether this implementation of JSJaCConnection is polling
- Useful if it needs to be decided
- whether it makes sense to allow for adjusting or adjust the
- polling interval <a href="JSJaCConnection.html#setPollInterval">JSJaCConnection.setPollInterval()</a></UL>
-   
-
-   <!-- METHOD PARAMETERS START -->
-   
-   <!-- METHOD PARAMETERS END -->
-
-   
-   <UL>
-   <B>Returns:</B>
-        <UL>
-        <code>true</code> if this is a polling connection,  <code>false</code> otherwise.   
-        </UL>
-   </UL>
-   
-
-   <!-- ADDITIONAL ATTRIBUTES START -->
-   
-   <!-- ADDITIONAL ATTRIBUTES  END -->
-<HR>
-
-
-
-<!-- ============ METHOD DETAIL END ========== -->
-
-<!-- ========= END OF CLASS DATA ========= -->
-
-<!-- ========== START OF NAVBAR ========== -->
-<A NAME="navbar_bottom"><!-- --></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0">
-<TR>
-<TD COLSPAN=3 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_bottom_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">  <A HREF="overview-summary-JSJaCHttpPollingConnection.js.html"><FONT CLASS="NavBarFont1"><B>File</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><b>Tree</b></FONT></A>&nbsp;</TD>
-  <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<B>JSJaC</B>
-</EM>
-</TD
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="JSJaCHttpBindingConnection.html"><B>PREV CLASS</B></A><!-- 
-   NEXT CLASS 
--->
-&nbsp;<A HREF="JSJaCIQ.html"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="" TARGET="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;
-<SCRIPT>
-  <!--
-  if(window==top) {
-    document.writeln('<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>');
-  }
-  //-->
-</SCRIPT>
-<NOSCRIPT>
-<A HREF="allclasses-noframe.html" TARGET=""><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-
-<!-- =========== END OF NAVBAR =========== -->
-
-<HR>
-<FONT SIZE="-1">
-
-</FONT>
-<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/" target="_parent">JSDoc</a> on Sat Apr 14 20:25:13 2012</div>
-</BODY>
-</HTML>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: JSJaCHttpPollingConnection</title>
+    
+    <script src="http://shjs.sourceforge.net/sh_main.min.js"> </script>
+    <script src="http://shjs.sourceforge.net/lang/sh_javascript.min.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/node-dark.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Class: JSJaCHttpPollingConnection</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    JSJaCHttpPollingConnection
+    </h2>
+    
+        <div class="class-description">Implementation of {@link
+http://www.xmpp.org/extensions/xep-0025.html HTTP Polling}</div>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <h4 class="name" id="JSJaCHttpPollingConnection"><span class="type-signature"></span>new JSJaCHttpPollingConnection</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Instantiates an HTTP Polling session
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCHttpPollingConnection.js, line 14</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+    
+    </div>
+    
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="JSJaCConnection.html">JSJaCConnection</a></li>
+        </ul>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="oDbg"><span class="type-signature"></span>oDbg<span class="type-signature"> :<a href="JSJaCDebugger.html">JSJaCDebugger</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Reference to debugger interface
+(needs to implement method <code>log</code>)
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 32</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="connect"><span class="type-signature"></span>connect</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Connect to a jabber/XMPP server.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>oArg</code></td>
+            
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The configuration to be used for connecting.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>domain</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The domain name of the XMPP service.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>username</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The username (nodename) to be logged in with.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>resource</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The resource to identify the login with.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The user's password.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>register</code></td>
+            
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">Whether to register a new account.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The host to connect to which might be different from the domain given above. So some XMPP service might host the domain 'example.com' but might be located at the host 'jabber.example.com'. Normally such situations should be gracefully handled by using DNS SRV records. But in cases where this isn't available you can set the host manually here.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+            
+            <td class="type">
+            
+                        int
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The port of the manually given host from above.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>secure</code></td>
+            
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">Whether to only allow secured (i.e. encrypted) connections to the XMPP service.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>authhost</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>authtype</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>xmllang</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>wait</code></td>
+            
+            
+            <td class="type">
+            
+                        int
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The 'wait' attribute of BOSH connections.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+            </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 125</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="connected"><span class="type-signature"></span>connected</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Tells whether this connection is connected
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 220</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <code>true</code> if this connections is connected,
+<code>false</code> otherwise
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="disconnect"><span class="type-signature"></span>disconnect</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Disconnects from jabber server and terminates session (if applicable)
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 225</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getPollInterval"><span class="type-signature"></span>getPollInterval</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets current value of polling interval
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 261</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Polling interval in milliseconds
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isPolling"><span class="type-signature"></span>isPolling</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Tells whether this implementation of JSJaCConnection is polling
+Useful if it needs to be decided
+whether it makes sense to allow for adjusting or adjust the
+polling interval <a href="JSJaCConnection.html#setPollInterval">JSJaCConnection#setPollInterval</a>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCHttpPollingConnection.js, line 35</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <code>true</code> if this is a polling connection,
+<code>false</code> otherwise.
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="registerHandler"><span class="type-signature"></span>registerHandler</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Registers an event handler (callback) for this connection.
+<p>Note: All of the packet handlers for specific packets (like
+message_in, presence_in and iq_in) fire only if there's no
+callback associated with the id.<br>
+<p>Example:<br/>
+<code>con.registerHandler('iq', 'query', 'jabber:iq:version', handleIqVersion);</code>
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">One of
+<ul>
+<li>onConnect - connection has been established and authenticated</li>
+<li>onDisconnect - connection has been disconnected</li>
+<li>onResume - connection has been resumed</li>
+<li>onStatusChanged - connection status has changed, current
+status as being passed argument to handler. See #status.</li>
+<li>onError - an error has occured, error node is supplied as
+argument, like this:<br><code>&lt;error code='404' type='cancel'&gt;<br>
+&lt;item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/&gt;<br>
+&lt;/error&gt;</code></li>
+<li>packet_in - a packet has been received (argument: the
+packet)</li>
+<li>packet_out - a packet is to be sent(argument: the
+packet)</li>
+<li>message_in | message - a message has been received (argument:
+the packet)</li>
+<li>message_out - a message packet is to be sent (argument: the
+packet)</li>
+<li>presence_in | presence - a presence has been received
+(argument: the packet)</li>
+<li>presence_out - a presence packet is to be sent (argument: the
+packet)</li>
+<li>iq_in | iq - an iq has been received (argument: the packet)</li>
+<li>iq_out - an iq is to be sent (argument: the packet)</li>
+</ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>childName</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's name that must occur within a
+retrieved packet [optional]</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>childNS</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's namespace that must occure within
+a retrieved packet (works only if childName is given) [optional]</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The type of the packet to handle (works only if childName and chidNS are given (both may be set to '*' in order to get skipped) [optional]</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
+            
+            <td class="type">
+            
+                        Function
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 323</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="registerIQGet"><span class="type-signature"></span>registerIQGet</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Register for iq packets of type 'get'.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>childName</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's name that must occur within a
+retrieved packet</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>childNS</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's namespace that must occure within
+a retrieved packet (works only if childName is given)</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
+            
+            <td class="type">
+            
+                        Function
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 399</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="registerIQSet"><span class="type-signature"></span>registerIQSet</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Register for iq packets of type 'set'.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>childName</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's name that must occur within a
+retrieved packet</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>childNS</code></td>
+            
+            
+            <td class="type">
+            
+                        String
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">A childnode's namespace that must occure within
+a retrieved packet (works only if childName is given)</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>handler</code></td>
+            
+            
+            <td class="type">
+            
+                        Function
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 414</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="resume"><span class="type-signature"></span>resume</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Resumes this connection from saved state (cookie)
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 424</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Whether resume was successful
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="resumeFromData"><span class="type-signature"></span>resumeFromData</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Resumes BOSH connection from data
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>serialized</code></td>
+            
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">jsjac state information</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 441</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Whether resume was successful
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="send"><span class="type-signature"></span>send</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sends a JSJaCPacket
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>packet</code></td>
+            
+            
+            <td class="type">
+            
+                        <a href="JSJaCPacket.html">JSJaCPacket</a>
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The packet to send</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+            
+            <td class="type">
+            
+                        Function
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The callback to be called if there's a reply
+to this packet (identified by id) [optional]</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>arg</code></td>
+            
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Arguments passed to the callback
+(additionally to the packet received) [optional]</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 488</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    'true' if sending was successfull, 'false' otherwise
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="sendIQ"><span class="type-signature"></span>sendIQ</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sends an IQ packet. Has default handlers for each reply type.
+Those maybe overriden by passing an appropriate handler.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>iq</code></td>
+            
+            
+            <td class="type">
+            
+                        JSJaCIQPacket
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the iq packet to send</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>handlers</code></td>
+            
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">object with properties 'error_handler',
+                           'result_handler' and 'default_handler'
+                           with appropriate functions</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>arg</code></td>
+            
+            
+            <td class="type">
+            
+                        Object
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">argument to handlers</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 532</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    'true' if sending was successfull, 'false' otherwise
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setPollInterval"><span class="type-signature"></span>setPollInterval</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets polling interval for this connection
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>millisecs</code></td>
+            
+            
+            <td class="type">
+            
+                        int
+                        
+                    
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Milliseconds to set timer to</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 565</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    effective interval this connection has been set to
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="status"><span class="type-signature"></span>status</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns current status of this connection
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 588</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    String to denote current state. One of
+<ul>
+<li>'initializing' ... well
+<li>'connecting' if connect() was called
+<li>'resuming' if resume() was called
+<li>'processing' if it's about to operate as normal
+<li>'onerror_fallback' if there was an error with the request object
+<li>'protoerror_fallback' if there was an error at the http binding protocol flow (most likely that's where you interested in)
+<li>'internal_server_error' in case of an internal server error
+<li>'suspending' if suspend() is being called
+<li>'aborted' if abort() was called
+<li>'disconnecting' if disconnect() has been called
+</ul>
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="suspend"><span class="type-signature"></span>suspend</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Suspends this connection (saving state for later resume)
+Saves state to cookie
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 596</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Whether suspend (saving to cookie) was successful
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="suspendToData"><span class="type-signature"></span>suspendToData</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Suspend connection and return serialized JSJaC connection state
+    </div>
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 624</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    JSJaC connection state object
+</div>
+
+
+
+        
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="JSJaCConnection.html">JSJaCConnection</a></li><li><a href="JSJaCConsoleLogger.html">JSJaCConsoleLogger</a></li><li><a href="JSJaCCookie.html">JSJaCCookie</a></li><li><a href="JSJaCCookieException.html">JSJaCCookieException</a></li><li><a href="JSJaCDebugger.html">JSJaCDebugger</a></li><li><a href="JSJaCFBApplication.html">JSJaCFBApplication</a></li><li><a href="JSJaCHttpBindingConnection.html">JSJaCHttpBindingConnection</a></li><li><a href="JSJaCHttpPollingConnection.html">JSJaCHttpPollingConnection</a></li><li><a href="JSJaCIQ.html">JSJaCIQ</a></li><li><a href="JSJaCJID.html">JSJaCJID</a></li><li><a href="JSJaCJIDInvalidException.html">JSJaCJIDInvalidException</a></li><li><a href="JSJaCKeys.html">JSJaCKeys</a></li><li><a href="JSJaCMessage.html">JSJaCMessage</a></li><li><a href="JSJaCPacket.html">JSJaCPacket</a></li><li><a href="JSJaCPresence.html">JSJaCPresence</a></li><li><a href="JSJaCWebSocketConnection.html">JSJaCWebSocketConnection</a></li></ul><h3>Namespaces</h3><ul><li><a href="JSJaCBuilder.html">JSJaCBuilder</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Fri Sep 07 2012 16:13:12 GMT+0200 (MESZ)
+</footer>
+
+<script> sh_highlightDocument(); </script>
+</body>
+</html>

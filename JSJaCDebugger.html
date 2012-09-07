@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: JSJaCCookieException</title>
+    <title>JSDoc: Class: JSJaCDebugger</title>
     
     <script src="http://shjs.sourceforge.net/sh_main.min.js"> </script>
     <script src="http://shjs.sourceforge.net/lang/sh_javascript.min.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: JSJaCCookieException</h1>
+    <h1 class="page-title">Class: JSJaCDebugger</h1>
     
     
 
@@ -27,7 +27,7 @@
     
 <header>
     <h2>
-    JSJaCCookieException
+    JSJaCDebugger
     </h2>
     
 </header>  
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="JSJaCCookieException"><span class="type-signature"></span>new JSJaCCookieException</h4>
+    <h4 class="name" id="JSJaCDebugger"><span class="type-signature"></span>new JSJaCDebugger</h4>
     
     
 </dt>
@@ -47,58 +47,12 @@
     
     
     <div class="description">
-        Some exception denoted to dealing with cookies
+        Interface debuggers (loggers) have to implement in order to be used by JSJaC for debugging.
     </div>
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>msg</code></td>
-            
-            
-            <td class="type">
-            
-                        String
-                        
-                    
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The message to pass to the exception</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -121,7 +75,7 @@
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>JSJaCCookie.js, line 215</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCDebugger.js, line 5</li></ul></dd>
 	
     
     
@@ -156,6 +110,152 @@
     
     
     
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="log"><span class="type-signature"></span>log</h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Log a message.
+    </div>
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The message to be logged.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>level</code></td>
+            
+            
+            <td class="type">
+            
+                        int
+                        
+                    
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The loglevel of the message to be logged.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCDebugger.js, line 12</li></ul></dd>
+	
+    
+    
+	
+	
+	
+	
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        </dl>
     
     
     

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: JSJaCConnection</title>
+    <title>JSDoc: Class: JSJaCWebSocketConnection</title>
     
     <script src="http://shjs.sourceforge.net/sh_main.min.js"> </script>
     <script src="http://shjs.sourceforge.net/lang/sh_javascript.min.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: JSJaCConnection</h1>
+    <h1 class="page-title">Class: JSJaCWebSocketConnection</h1>
     
     
 
@@ -27,11 +27,10 @@
     
 <header>
     <h2>
-    JSJaCConnection
+    JSJaCWebSocketConnection
     </h2>
     
-        <div class="class-description">Somewhat abstract base class for jabber connections. Contains all
-of the code in common for all jabber connections</div>
+        <div class="class-description">Implementation of <a href="http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00 "> An XMPP Sub-protocol for WebSocket</a>.</div>
     
 </header>  
 
@@ -42,7 +41,7 @@ of the code in common for all jabber connections</div>
     
         
 <dt>
-    <h4 class="name" id="JSJaCConnection"><span class="type-signature"></span>new JSJaCConnection</h4>
+    <h4 class="name" id="JSJaCWebSocketConnection"><span class="type-signature"></span>new JSJaCWebSocketConnection</h4>
     
     
 </dt>
@@ -50,7 +49,7 @@ of the code in common for all jabber connections</div>
     
     
     <div class="description">
-        Creates a new Jabber/XMPP connection (a connection to a jabber server)
+        Instantiates a WebSocket session.
     </div>
     
     
@@ -87,16 +86,13 @@ of the code in common for all jabber connections</div>
             
             <td class="type">
             
-                        Object
-                        
-                    
             </td>
             
             
             
             
             
-            <td class="description last">Configurational object for this connection.
+            <td class="description last">connection properties.
                 <h6>Properties</h6>
                 
 
@@ -129,9 +125,6 @@ of the code in common for all jabber connections</div>
             
             <td class="type">
             
-                        string
-                        
-                    
             </td>
             
             
@@ -144,65 +137,7 @@ of the code in common for all jabber connections</div>
             
             
             
-            <td class="description last">The connection endpoint of the HTTP service to talk to.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>oDbg</code></td>
-            
-            
-            <td class="type">
-            
-                        <a href="JSJaCDebugger.html">JSJaCDebugger</a>
-                        
-                    
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">A reference to a debugger implementing the JSJaCDebugger interface.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>timerval</code></td>
-            
-            
-            <td class="type">
-            
-                        int
-                        
-                    
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">The polling interval.</td>
+            <td class="description last">WebSocket connection endpoint (i.e. ws://localhost:5280)</td>
         </tr>
 	
 	
@@ -214,9 +149,6 @@ of the code in common for all jabber connections</div>
             
             <td class="type">
             
-                        boolean
-                        
-                    
             </td>
             
             
@@ -231,21 +163,19 @@ of the code in common for all jabber connections</div>
             
             
             
-            <td class="description last">Whether to allow plain text logins.</td>
+            <td class="description last">controls if plaintext authentication is
+allowed.</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>cookie_prefix</code></td>
+                <td class="name"><code>oDbg</code></td>
             
             
             <td class="type">
             
-                        string
-                        
-                    
             </td>
             
             
@@ -260,7 +190,7 @@ of the code in common for all jabber connections</div>
             
             
             
-            <td class="description last">Prefix to cookie names used when suspending.</td>
+            <td class="description last">a reference to a debugger interface.</td>
         </tr>
 	
 	
@@ -294,7 +224,7 @@ of the code in common for all jabber connections</div>
 	
 	
 	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source"><ul class="dummy"><li>JSJaCConnection.js, line 19</li></ul></dd>
+	<dd class="tag-source"><ul class="dummy"><li>JSJaCWebSocketConnection.js, line 68</li></ul></dd>
 	
     
     
@@ -317,6 +247,12 @@ of the code in common for all jabber connections</div>
     
     </div>
     
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="JSJaCConnection.html">JSJaCConnection</a></li>
+        </ul>
     
     
     
@@ -2434,7 +2370,7 @@ Saves state to cookie
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Fri Sep 07 2012 16:13:11 GMT+0200 (MESZ)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3</a> on Fri Sep 07 2012 16:13:13 GMT+0200 (MESZ)
 </footer>
 
 <script> sh_highlightDocument(); </script>
