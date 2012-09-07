@@ -33,7 +33,7 @@
  * script.aculo.us is freely distributable under the terms of an
  * MIT-style license.<br>
  * For details, see the script.aculo.us web site at
- * {@link http://script.aculo.us/}<br>
+ * {@link http://script.aculo.us/}
  * @namespace
  */
 var JSJaCBuilder = {

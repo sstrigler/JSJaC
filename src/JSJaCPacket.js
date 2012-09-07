@@ -1,7 +1,6 @@
 /**
  * @fileoverview Contains all Jabber/XMPP packet related classes.
  * @author Stefan Strigler steve@zeank.in-berlin.de
- * @version $Revision$
  */
 
 var JSJACPACKET_USE_XMLNS = true;

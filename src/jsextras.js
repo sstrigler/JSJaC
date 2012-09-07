@@ -1,7 +1,6 @@
 /**
  * @fileoverview Collection of functions to make live easier
  * @author Stefan Strigler
- * @version $Revision$
  */
 
 /**

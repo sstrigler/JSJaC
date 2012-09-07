@@ -1,4 +1,3 @@
-
 /* Copyright 2006 Erik Arvidsson
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you
@@ -18,9 +17,9 @@
  * @fileoverview Wrapper to make working with XmlHttpRequest and the
  * DOM more convenient (cross browser compliance).
  * this code is taken from
- * http://webfx.eae.net/dhtml/xmlextras/xmlextras.html
+ * {@link http://webfx.eae.net/dhtml/xmlextras/xmlextras.html}.
+ * @author Erik Arvidsson
  * @author Stefan Strigler steve@zeank.in-berlin.de
- * @version $Revision$
  */
 
 /**
@@ -35,28 +34,28 @@ function XmlHttp() {}
 XmlHttp.create = function () {
   try {
     if (window.XMLHttpRequest) {
-      var req = new XMLHttpRequest();
-     
-      // some versions of Moz do not support the readyState property
-      // and the onreadystate event so we patch it!
-      if (req.readyState == null) {
-	req.readyState = 1;
-	req.addEventListener("load", function () {
-			       req.readyState = 4;
-			       if (typeof req.onreadystatechange == "function")
-				 req.onreadystatechange();
-			     }, false);
+        var req = new XMLHttpRequest();
+
+        // some versions of Moz do not support the readyState property
+        // and the onreadystate event so we patch it!
+        if (req.readyState === null) {
+            req.readyState = 1;
+            req.addEventListener("load", function () {
+                req.readyState = 4;
+                if (typeof req.onreadystatechange == "function")
+                    req.onreadystatechange();
+			}, false);
+        }
+
+        return req;
+    }
+      if (window.ActiveXObject) {
+          return new ActiveXObject(XmlHttp.getPrefix() + ".XmlHttp");
       }
-     
-      return req;
-    }
-    if (window.ActiveXObject) {
-      return new ActiveXObject(XmlHttp.getPrefix() + ".XmlHttp");
-    }
   }
-  catch (ex) {}
-  // fell through
-  throw new Error("Your browser does not support XmlHttp objects");
+    catch (ex) {}
+    // fell through
+    throw new Error("Your browser does not support XmlHttp objects");
 };
 
 /**
@@ -66,7 +65,7 @@ XmlHttp.create = function () {
 XmlHttp.getPrefix = function() {
   if (XmlHttp.prefix) // I know what you did last summer
     return XmlHttp.prefix;
- 
+
   var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
   var o;
   for (var i = 0; i < prefixes.length; i++) {
@@ -75,9 +74,9 @@ XmlHttp.getPrefix = function() {
       o = new ActiveXObject(prefixes[i] + ".XmlHttp");
       return XmlHttp.prefix = prefixes[i];
     }
-    catch (ex) {};
+    catch (ex) {}
   }
- 
+
   throw new Error("Could not find an installed XML parser");
 };
 
@@ -99,41 +98,41 @@ XmlDocument.create = function (name,ns) {
       doc = document.implementation.createDocument(ns, name, null);
       // some versions of Moz do not support the readyState property
       // and the onreadystate event so we patch it!
-      if (doc.readyState == null) {
-	doc.readyState = 1;
-	doc.addEventListener("load", function () {
-			       doc.readyState = 4;
-			       if (typeof doc.onreadystatechange == "function")
-				 doc.onreadystatechange();
-			     }, false);
+      if (doc.readyState === null) {
+          doc.readyState = 1;
+          doc.addEventListener("load", function () {
+              doc.readyState = 4;
+              if (typeof doc.onreadystatechange == "function")
+                  doc.onreadystatechange();
+          }, false);
       }
     } else if (window.ActiveXObject) {
       doc = new ActiveXObject(XmlDocument.getPrefix() + ".DomDocument");
     }
-   
+
     if (!doc.documentElement || doc.documentElement.tagName != name ||
         (doc.documentElement.namespaceURI &&
          doc.documentElement.namespaceURI != ns)) {
           try {
-            if (ns != '')
+            if (ns !== '')
               doc.appendChild(doc.createElement(name)).
                 setAttribute('xmlns',ns);
             else
               doc.appendChild(doc.createElement(name));
           } catch (dex) {
             doc = document.implementation.createDocument(ns,name,null);
-           
-            if (doc.documentElement == null)
+
+            if (doc.documentElement === null)
               doc.appendChild(doc.createElement(name));
 
              // fix buggy opera 8.5x
-            if (ns != '' &&
+            if (ns !== '' &&
                 doc.documentElement.getAttribute('xmlns') != ns) {
               doc.documentElement.setAttribute('xmlns',ns);
             }
           }
         }
-   
+
     return doc;
   }
   catch (ex) { }
@@ -156,9 +155,9 @@ XmlDocument.getPrefix = function() {
       o = new ActiveXObject(prefixes[i] + ".DomDocument");
       return XmlDocument.prefix = prefixes[i];
     }
-    catch (ex) {};
+    catch (ex) {}
   }
- 
+
   throw new Error("Could not find an installed XML parser");
 };
 
@@ -172,14 +171,14 @@ if (typeof(Document) != 'undefined' && window.DOMParser) {
    * @private
    */
   Document.prototype.loadXML = function (s) {
-	
+
     // parse the string to a new doc
     var doc2 = (new DOMParser()).parseFromString(s, "text/xml");
-	
+
     // remove all initial children
     while (this.hasChildNodes())
       this.removeChild(this.lastChild);
-		
+
     // insert and import nodes
     for (var i = 0; i < doc2.childNodes.length; i++) {
       this.appendChild(this.importNode(doc2.childNodes[i], true));

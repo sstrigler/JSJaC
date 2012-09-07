@@ -2,7 +2,6 @@
  * @fileoverview This file contains all things that make life easier when
  * dealing with JIDs
  * @author Stefan Strigler
- * @version $Revision$
  */
 
 /**

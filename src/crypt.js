@@ -36,7 +36,6 @@
  * @fileoverview Collection of MD5 and SHA1 hashing and encoding
  * methods.
  * @author Stefan Strigler steve@zeank.in-berlin.de
- * @version $Revision$
  */
 
 /*

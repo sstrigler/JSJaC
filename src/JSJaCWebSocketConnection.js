@@ -1,7 +1,7 @@
 /**
- * @fileoverview All stuff related to WebSocket
  * @author Janusz Dziemidowicz rraptorr@nails.eu.org
- *
+ * @fileoverview All stuff related to WebSocket
+ * <pre>
  * The WebSocket protocol is a bit of a mess. Various, incompatible,
  * protocol drafts were implemented in browsers. Fortunately, recently
  * a finished protocol was released in RFC6455. Further description
@@ -52,6 +52,7 @@
  *   not support RFC6455 hence does not work
  * - Tigase (http://www.tigase.org/) - no known work on WebSocket
  *   support
+ * </pre>
  */
 
 /**
