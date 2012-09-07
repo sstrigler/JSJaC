@@ -13,7 +13,6 @@
  * @param {string} oArg.httpbase The connection endpoint of the HTTP service to talk to.
  * @param {JSJaCDebugger} [oArg.oDbg] A reference to a debugger implementing the JSJaCDebugger interface.
  * @param {int} [oArg.timerval] The polling interval.
- * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {string} [oArg.cookie_prefix] Prefix to cookie names used when suspending.
  * @param {int} [oArg.wait] The 'wait' attribute of BOSH connections.
  */
