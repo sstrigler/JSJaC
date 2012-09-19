@@ -504,14 +504,9 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
     this._registerPID(packet.getID(),cb,arg);
   }
 
-  try {
-    this._handleEvent(packet.pType()+'_out', packet);
-    this._handleEvent("packet_out", packet);
-    this._pQueue = this._pQueue.concat(packet.xml());
-  } catch (e) {
-    this.oDbg.log(e.toString(),1);
-    return false;
-  }
+  this._pQueue = this._pQueue.concat(packet.xml());
+  this._handleEvent(packet.pType()+'_out', packet);
+  this._handleEvent("packet_out", packet);
 
   return true;
 };
@@ -1159,17 +1154,10 @@ JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
         this._regIDs[i] && i == aJSJaCPacket.getID()) {
       var pID = aJSJaCPacket.getID();
       this.oDbg.log("handling "+pID,3);
-      try {
-        if (this._regIDs[i].cb.call(this, aJSJaCPacket, this._regIDs[i].arg) === false) {
-          // don't unregister
-          return false;
-        } else {
-          this._unregisterPID(pID);
-          return true;
-        }
-      } catch (e) {
-        // broken handler?
-        this.oDbg.log(e.name+": "+ e.message, 1);
+      if (this._regIDs[i].cb.call(this, aJSJaCPacket, this._regIDs[i].arg) === false) {
+        // don't unregister
+        return false;
+      } else {
         this._unregisterPID(pID);
         return true;
       }
