@@ -17,10 +17,11 @@
  */
 function JSJaCConnection(oArg) {
 
-  /**
-   * @private
-   */
-  this._httpbase = oArg.httpbase;
+  if (oArg && oArg.httpbase)
+    /**
+     * @private
+     */
+    this._httpbase = oArg.httpbase;
 
   if (oArg.oDbg && oArg.oDbg.log) {
       /**
@@ -33,12 +34,12 @@ function JSJaCConnection(oArg) {
       this.oDbg = {log: function() { }};
   }
 
-  if (oArg.timerval)
+  if (oArg && oArg.timerval)
     this.setPollInterval(oArg.timerval);
   else
     this.setPollInterval(JSJAC_TIMERVAL);
 
-  if (oArg.cookie_prefix)
+  if (oArg && oArg.cookie_prefix)
       /**
        * @private
        */
