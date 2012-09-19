@@ -23,7 +23,7 @@ function JSJaCConnection(oArg) {
      */
     this._httpbase = oArg.httpbase;
 
-  if (oArg.oDbg && oArg.oDbg.log) {
+  if (oArg && oArg.oDbg && oArg.oDbg.log) {
       /**
        * Reference to debugger interface
        * (needs to implement method <code>log</code>)
