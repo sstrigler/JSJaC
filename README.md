@@ -38,16 +38,13 @@ Hints on Usage
 
 ### Service Address
 
-Due to security restrictions you may have to forward or proxy requests
-to your jabber server's service address.
-
 Let's say your JSJaC based web application is located at
 http://example.com/. Your Jabber server is at jabber-example.com and
 it's HTTP Binding service is located at
 http://jabber-example.org:5280/ or https://jabber-example.org:5281/.
 
 
-1. You could use mod\_proxy and mod\_rewrite to connect to jabber server:
+* You could use mod\_proxy and mod\_rewrite to connect to jabber server:
 
 ```apacheconf
     <VirtualHost *>
@@ -62,18 +59,19 @@ http://jabber-example.org:5280/ or https://jabber-example.org:5281/.
 With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
 
-2. You could use cross domain requests directly to jabber server without any
+* You could use cross domain requests directly to jabber server without any
 proxy server:
 
 ```js
-        var oDbg = new JSJaCConsoleLogger(3);
-            
-        var connector = new JSJaCHttpBindingConnection({
-            oDbg: oDbg,
-            httpbase: 'http://jabber-example.org:5280/http-bind/',
-            timerval: 500
-        });
+    var oDbg = new JSJaCConsoleLogger(3);
+        
+    var connector = new JSJaCHttpBindingConnection({
+        oDbg: oDbg,
+        httpbase: 'http://jabber-example.org:5280/http-bind/',
+        timerval: 500
+    });
 ```
+More information: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 
 ### Debug Logger
 
@@ -98,6 +96,13 @@ know about others!
  * Firefox 2.0.x and newer (and probably most other Gecko based browsers)
  * Opera 9 and newer
  * Chrome/Safari (and probably most other Webkit based browsers)
+ 
+The following browsers are known to work with cross domain requests.
+
+ * Internet Explorer 8 and newer
+ * Opera 12 and newer
+ * Firefox 3.5 and newer
+ * Google Chrome 3 and newer
 
 The following browsers are known to work with WebSocket.
 
