@@ -42,27 +42,38 @@ Due to security restrictions you may have to forward or proxy requests
 to your jabber server's service address.
 
 Let's say your JSJaC based web application is located at
-http://example.com/. Your Jabber server is at jabber.example.com and
+http://example.com/. Your Jabber server is at jabber-example.com and
 it's HTTP Binding service is located at
-http://jabber.example.org:5280/.
+http://jabber-example.org:5280/ or https://jabber-example.org:5281/.
 
-As most browser don't allow scripts to connect to a different domain
-and/or port as they have been loaded from you'd have to find a way how
-to access this service at some URI hosted at http://example.com/.
 
-If you're using apache you could use mod\_proxy and mod\_rewrite to do
-this job for you:
+1. You could use mod\_proxy and mod\_rewrite to connect to jabber server:
 
+```apacheconf
     <VirtualHost *>
       Servername example.com
       DocumentRoot /var/www
       AddDefaultCharset UTF-8
       RewriteEngine On
-      RewriteRule ^/http-bind/ http://jabber.example.com:5280/http-bind/ [P]
+      RewriteRule ^/http-bind/ http://jabber-example.com:5280/http-bind/ [P]
     </VirtualHost>
+```
 
 With this you'd end up having access to the Jabber server's service at
 http://example.com/http-bind/ (the httpbase address).
+
+2. You could use cross domain requests directly to jabber server without any
+proxy server:
+
+```js
+        var oDbg = new JSJaCConsoleLogger(3);
+            
+        var connector = new JSJaCHttpBindingConnection({
+            oDbg: oDbg,
+            httpbase: 'http://jabber-example.org:5280/http-bind/',
+            timerval: 500
+        });
+```
 
 ### Debug Logger
 
@@ -75,7 +86,7 @@ Firebug's and Safari's console.
 ### Example
 
 For an example on how to use this library within your web application
-please have to look at 'examples/simpleclient.html'.
+please have to look at 'examples/simpleclient.html' or 'examples/simpleCrossDomainClient.html'.
 
 Supported Browsers and Platforms
 --------------------------------
