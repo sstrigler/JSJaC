@@ -17,12 +17,13 @@
  */
 function JSJaCConnection(oArg) {
 
-  /**
-   * @private
-   */
-  this._httpbase = oArg.httpbase;
+  if (oArg && oArg.httpbase)
+    /**
+     * @private
+     */
+    this._httpbase = oArg.httpbase;
 
-  if (oArg.oDbg && oArg.oDbg.log) {
+  if (oArg && oArg.oDbg && oArg.oDbg.log) {
       /**
        * Reference to debugger interface
        * (needs to implement method <code>log</code>)
@@ -33,12 +34,12 @@ function JSJaCConnection(oArg) {
       this.oDbg = {log: function() { }};
   }
 
-  if (oArg.timerval)
+  if (oArg && oArg.timerval)
     this.setPollInterval(oArg.timerval);
   else
     this.setPollInterval(JSJAC_TIMERVAL);
 
-  if (oArg.cookie_prefix)
+  if (oArg && oArg.cookie_prefix)
       /**
        * @private
        */
@@ -503,14 +504,9 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
     this._registerPID(packet.getID(),cb,arg);
   }
 
-  try {
-    this._handleEvent(packet.pType()+'_out', packet);
-    this._handleEvent("packet_out", packet);
-    this._pQueue = this._pQueue.concat(packet.xml());
-  } catch (e) {
-    this.oDbg.log(e.toString(),1);
-    return false;
-  }
+  this._pQueue = this._pQueue.concat(packet.xml());
+  this._handleEvent(packet.pType()+'_out', packet);
+  this._handleEvent("packet_out", packet);
 
   return true;
 };

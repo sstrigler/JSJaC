@@ -65,7 +65,9 @@ moo:
 	fi
 
 doc:
+	@echo "creating jsdoc ...\c" 
 	@utils/jsdoc3/jsdoc -d doc src/
+	@echo " done."
 
 utils:
 	@make -C utils
