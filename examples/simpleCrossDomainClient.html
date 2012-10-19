@@ -1,19 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>JSJaC Simple Client</title>
+        <title>JSJaC Simple CORS Client</title>
 
         <script type="text/javascript" src="../jsjac.js"></script>
-        <!-- comment in above and uncomment below if you want to modify/hack
-        on jsjac -->
-        <!--script type="text/javascript" src="../src/JSJaC.js"></script-->
-
-        <!-- if you want to enable debugging uncomment line below
-        debugger available at
-        http://svn.stefan-strigler.de/JSDebugger/trunk -->
-        <!--script type="text/javascript" src="Debugger.js"></script-->
 
         <script type="text/javascript">
+            
+             var oDbg, con;
+        
             // <![CDATA[
             function handleIQ(oIQ) {
                 document.getElementById('iResp').innerHTML += "<div class='msg'>IN (raw): " + oIQ.xml().htmlEnc() + '</div>';
@@ -86,28 +81,32 @@
             }
 
             function doLogin(oForm) {
+                var server = oForm.server.value,
+                    oArgs = new Object();
+                    
+                oDbg = new JSJaCConsoleLogger(3);
                 document.getElementById('err').innerHTML = '';
                 // reset
 
                 try {
-
-                    if (oForm.http_base.value.substr(0, 5) === 'ws://' || oForm.http_base.value.substr(0, 6) === 'wss://') {
-                        con = new JSJaCWebSocketConnection({
-                            httpbase : oForm.http_base.value,
-                            oDbg : new JSJaCConsoleLogger(4)
-                        });
+                    
+                    if (window.location.protocol !== "https:"){
+                        httpbase = 'http://' + server + ':5280/http-bind/';
                     } else {
-                        con = new JSJaCHttpBindingConnection({
-                            httpbase : oForm.http_base.value,
-                            oDbg : new JSJaCConsoleLogger(4)
-                        });
+                        httpbase = 'https://' + server + ':5281/http-bind/';
                     }
+                    
+                    // set up the connection
+                    con = new JSJaCHttpBindingConnection({
+                        oDbg: oDbg,
+                        httpbase: httpbase,
+                        timerval: 500
+                    });
 
                     setupCon(con);
 
                     // setup args for connect method
-                    oArgs = new Object();
-                    oArgs.domain = oForm.server.value;
+                    oArgs.domain = oForm.domain.value;
                     oArgs.username = oForm.username.value;
                     oArgs.resource = 'jsjac_simpleclient';
                     oArgs.pass = oForm.password.value;
@@ -167,38 +166,6 @@
                 document.getElementById('sendmsg_pane').style.display = 'none';
             }
 
-            function init() {
-                try {// try to resume a session
-                    con = new JSJaCHttpBindingConnection({
-                        'oDbg' : new JSJaCConsoleLogger(4)
-                    });
-
-                    setupCon(con);
-
-                    if (con.resume()) {
-
-                        document.getElementById('login_pane').style.display = 'none';
-                        document.getElementById('sendmsg_pane').style.display = '';
-                        document.getElementById('err').innerHTML = '';
-
-                    }
-                } catch (e) {
-                } // reading cookie failed - never mind
-
-            }
-
-            onload = init;
-
-            //onerror = function(e) {
-            //  document.getElementById('err').innerHTML = e;
-            //
-            //  document.getElementById('login_pane').style.display = '';
-            //  document.getElementById('sendmsg_pane').style.display = 'none';
-            //
-            //  if (con && con.connected())
-            //    con.disconnect();
-            //  return false;
-            //};
 
             onunload = function() {
                 if ( typeof con != 'undefined' && con && con.connected()) {
@@ -265,8 +232,8 @@
             <form name="loginForm" onSubmit="return doLogin(this);" action="#">
                 <table>
                     <tr>
-                        <th><label for="http_base">HTTP Base</label></th><td>
-                        <input type="text" name="http_base" id="http_base" tabindex="3" value="/http-bind/"/>
+                        <th><label for="server">Jabber Server</label></th><td>
+                        <input type="text" name="server" id="server" tabindex="3" value="jabber-example.org"/>
                         </td>
                     </tr>
                     <tr>
@@ -278,8 +245,8 @@
                         </th>
                     </tr>
                     <tr>
-                        <th><label for="server">Jabber Server</label></th><td>
-                        <input type="text" name="server" id="server" tabindex="4" value="localhost"/>
+                        <th><label for="domain">Jabber Server Domain Name</label></th><td>
+                        <input type="text" name="domain" id="domain" tabindex="4" value="jabber-example.org"/>
                         </td>
                     </tr>
                     <tr>
