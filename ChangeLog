@@ -1,4 +1,4 @@
-JSJaC v1.4 - 2012/07/09
+JSJaC v1.4 - 10/19/2012
 	* lots of compatibility fixes for modern browsers, esp. IE9
 	* support for websockets
 	* support for facebook authentication
@@ -6,7 +6,8 @@ JSJaC v1.4 - 2012/07/09
 	* don't catch JS errors from registered event handlers
 	* use jsdoc3 for documentation
 	* many documentation fixes
-	* bugfixes
+	* support for CORS (IE8+)
+	* many bugfixes
 
 JSJaC v1.3.4
 ============
