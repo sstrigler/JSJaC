@@ -104,6 +104,12 @@ JSJaCWebSocketConnection.prototype.connect = function(oArg) {
   this.jid = this.username + '@' + this.domain;
   this.fulljid = this.jid + '/' + this.resource;
 
+  if (oArg.allow_plain) {
+    this._allow_plain = oArg.allow_plain;
+  } else {
+    this._allow_plain = JSJAC_ALLOW_PLAIN;
+  }
+
   if (typeof WebSocket === 'undefined') {
     this._handleEvent('onerror', JSJaCError('503', 'cancel', 'service-unavailable'));
     return;
