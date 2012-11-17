@@ -60,11 +60,9 @@
  * @class Implementation of {@link http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-01 | An XMPP Sub-protocol for WebSocket}.
  * @extends JSJaCConnection
  * @constructor
- * @param oArg connection properties.
- * @param oArg.httpbase WebSocket connection endpoint (i.e. ws://localhost:5280)
- * @param [oArg.allow_plain] controls if plaintext authentication is
- * allowed.
- * @param [oArg.oDbg] a reference to a debugger interface.
+ * @param {Object} oArg connection properties.
+ * @param {string} oArg.httpbase WebSocket connection endpoint (i.e. ws://localhost:5280)
+ * @param {JSJaCDebugger} [oArg.oDbg] A reference to a debugger implementing the JSJaCDebugger interface.
  */
 function JSJaCWebSocketConnection(oArg) {
   this.base = JSJaCConnection;
@@ -89,13 +87,26 @@ JSJaCWebSocketConnection.prototype._cleanupWebSocket = function() {
   }
 };
 
+/**
+ * Connect to a jabber/XMPP server.
+ * @param {Object} oArg The configuration to be used for connecting.
+ * @param {string} oArg.domain The domain name of the XMPP service.
+ * @param {string} oArg.username The username (nodename) to be logged in with.
+ * @param {string} oArg.resource The resource to identify the login with.
+ * @param {string} oArg.password The user's password.
+ * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
+ * @param {boolean} [oArg.register] Whether to register a new account.
+ * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
+ * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.
+ * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
+ */
 JSJaCWebSocketConnection.prototype.connect = function(oArg) {
   this._setStatus('connecting');
 
   this.domain = oArg.domain || 'localhost';
   this.username = oArg.username;
   this.resource = oArg.resource;
-  this.pass = oArg.pass;
+  this.pass = oArg.password || oArg.pass;
   this.register = oArg.register;
 
   this.authhost = oArg.authhost || this.domain;
@@ -108,6 +119,12 @@ JSJaCWebSocketConnection.prototype.connect = function(oArg) {
     this._allow_plain = oArg.allow_plain;
   } else {
     this._allow_plain = JSJAC_ALLOW_PLAIN;
+  }
+
+  if (oArg.xmllang && oArg.xmllang !== '') {
+    this._xmllang = oArg.xmllang;
+  } else {
+    this._xmllang = 'en';
   }
 
   if (typeof WebSocket === 'undefined') {
@@ -334,10 +351,16 @@ JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
   return true;
 };
 
+/**
+ * Resuming connections is not supported by WebSocket.
+ */
 JSJaCWebSocketConnection.prototype.resume = function() {
   return false; // not supported for websockets
 };
 
+/**
+ * Suspending connections is not supported by WebSocket.
+ */
 JSJaCWebSocketConnection.prototype.suspend = function() {
   return false; // not supported for websockets
 };
