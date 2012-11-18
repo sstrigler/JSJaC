@@ -107,8 +107,9 @@ The following browsers are known to work with cross domain requests.
 The following browsers are known to work with WebSocket.
 
  * Microsoft Internet Explorer 10
- * Firefox 11 and newer
+ * Firefox 16 and newer
  * Chrome 16 and newer
+ * Opera 12.10, but will not work if a proxy is configured
 
 Documentation
 -------------
@@ -121,5 +122,5 @@ There's also an online version available at http://sstrigler.github.com/JSJaC/.
 
 [1]: http://xmpp.org/extensions/xep-0025.html
 [2]: http://xmpp.org/extensions/xep-0206.html
-[3]: http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-00
+[3]: http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-01
 [4]: http://stefan-strigler.de/javascript-debug-logger/
