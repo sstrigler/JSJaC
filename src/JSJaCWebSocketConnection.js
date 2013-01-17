@@ -197,6 +197,12 @@ JSJaCWebSocketConnection.prototype._handleInitialResponse = function(event) {
   }
 };
 
+/**
+ * Disconnect from XMPP service
+ *
+ * When called upon leaving a page needs to use 'onbeforeunload' event
+ * as Websocket would be closed already otherwise prior to this call.
+ */
 JSJaCWebSocketConnection.prototype.disconnect = function() {
   this._setStatus('disconnecting');
 
@@ -206,7 +212,7 @@ JSJaCWebSocketConnection.prototype.disconnect = function() {
   this._connected = false;
 
   this.oDbg.log('Disconnecting', 4);
-  this._cleanupWebSocket();
+  this._sendRaw('</stream:stream>', JSJaC.bind(this._cleanupWebSocket, this));
 
   this.oDbg.log('Disconnected', 2);
   this._handleEvent('ondisconnect');
