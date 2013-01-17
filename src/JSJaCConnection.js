@@ -623,7 +623,7 @@ JSJaCConnection.prototype.suspendToData = function() {
 
   this._suspend();
 
-  var u = ('_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling').split(',');
+  var u = ('_connected,_keys,_ID,_xmllang,_inQ,_pQueue,_regIDs,_errcnt,_inactivity,domain,username,resource,jid,fulljid,_sid,_httpbase,_timerval,_is_polling,_xmllang').split(',');
   u = u.concat(this._getSuspendVars());
   var s = {};
 
@@ -1094,6 +1094,16 @@ JSJaCConnection.prototype._doXMPPSessDone = function(iq) {
     return;
   } else
     this._handleEvent('onconnect');
+};
+
+/**
+ * Gets additional internal vars required for suspend/resume
+ * cycle. Overwrite at subclass as required!
+ *
+ * @private
+ */
+JSJaCConnection.prototype._getSuspendVars = function() {
+    return '';
 };
 
 /**
