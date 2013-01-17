@@ -357,18 +357,16 @@ JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
   return true;
 };
 
-/**
- * Resuming connections is not supported by WebSocket.
- */
-JSJaCWebSocketConnection.prototype.resume = function() {
-  return false; // not supported for websockets
+JSJaCWebSocketConnection.prototype._resume = function() {
+  this._ws = new WebSocket(this._httpbase, 'xmpp');
+  this._ws.onclose = JSJaC.bind(this._onclose, this);
+  this._ws.onerror = JSJaC.bind(this._onerror, this);
+  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
 };
 
-/**
- * Suspending connections is not supported by WebSocket.
- */
-JSJaCWebSocketConnection.prototype.suspend = function() {
-  return false; // not supported for websockets
+JSJaCWebSocketConnection.prototype._suspend = function() {
+    console.log('_suspend');
+  this._cleanupWebSocket();
 };
 
 /**
