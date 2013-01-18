@@ -414,10 +414,15 @@ JSJaCWebSocketConnection.prototype._reInitStream = function(cb) {
  * @private
  */
 JSJaCWebSocketConnection.prototype._sendRaw = function(xml, cb, arg) {
+  if (!this._ws) {
+    // Socket might have been closed already because of an 'onerror'
+    // event. In this case we'd try to send a closing stream element
+    // 'ondisconnect' which won't work.
+    return false;
+  }
   if (cb) {
     this._ws.onmessage = JSJaC.bind(cb, this, arg);
   }
-
   this._ws.send(xml);
   return true;
 };
