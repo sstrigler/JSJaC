@@ -17,7 +17,7 @@ src/JSJaCHttpPollingConnection.js \
 src/JSJaCFBApplication.js \
 src/JSJaC.js
 
-all: clean utils install doc
+all: clean utils install doc simpleclient
 polling: clean utils polling_install doc
 
 install: build uncompressed crunch
@@ -71,6 +71,7 @@ doc:
 
 utils:
 	@make -C utils
+
 clean:
 	@rm -f $(OUTFILE) 2>/dev/null
 	@rm -f $(PACKFILE) 2>/dev/null
@@ -84,5 +85,8 @@ uncompressed:
 		cat src/JSJaCConfig.js >> $(UNCOMPRESSED) && \
 		cat $(OUTFILE) >> $(UNCOMPRESSED); \
 	fi
+
+simpleclient:
+	@cp jsjac.js examples/simpleclient/js/jsjac.js
 
 .PHONY: doc utils
