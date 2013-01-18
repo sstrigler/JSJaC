@@ -52,6 +52,8 @@
  *   not support RFC6455 hence does not work
  * - Tigase (http://www.tigase.org/) - no known work on WebSocket
  *   support
+ * - MongooseIM (https://github.com/esl/ejabberd) - a fork of ejabberd
+ *   with support for XMPP over Websockets.
  * </pre>
  */
 
