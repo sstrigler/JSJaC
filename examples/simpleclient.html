@@ -202,11 +202,6 @@
 
             onunload = function() {
                 if ( typeof con != 'undefined' && con && con.connected()) {
-                    // save backend type
-                    if (con._hold)// must be binding
-                        (new JSJaCCookie('btype', 'binding')).write();
-                    else
-                        (new JSJaCCookie('btype', 'polling')).write();
                     if (con.suspend) {
                         con.suspend();
                     }
