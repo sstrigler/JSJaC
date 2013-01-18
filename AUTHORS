@@ -1,5 +1,10 @@
 JSJaC has been developed by
 
-* Stefan Strigler <stefan@strigler.de> - Project lead
-* Andrea Cammarata - X-FACEBOOK-PLATFORM Authentication <acammarata@simacs.com>
-* Valérian Saliou - Jappix project <xmpp:vanaryon@jappix.com>
+* Stefan Strigler <stefan@strigler.de> 
+  - Project lead
+* Andrea Cammarata <acammarata@simacs.com> 
+  - X-FACEBOOK-PLATFORM Authentication
+* Valérian Saliou <xmpp:vanaryon@jappix.com> 
+  - Jappix project
+* Janusz Dziemidowicz <rraptorr@nails.eu.org> 
+  - Websockets
