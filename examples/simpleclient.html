@@ -189,17 +189,6 @@
 
             onload = init;
 
-            //onerror = function(e) {
-            //  document.getElementById('err').innerHTML = e;
-            //
-            //  document.getElementById('login_pane').style.display = '';
-            //  document.getElementById('sendmsg_pane').style.display = 'none';
-            //
-            //  if (con && con.connected())
-            //    con.disconnect();
-            //  return false;
-            //};
-
             onunload = function() {
                 if ( typeof con != 'undefined' && con && con.connected()) {
                     if (con.suspend) {
