@@ -13,3 +13,17 @@ body {
 .jumbotron h1 {
     line-height: 1;
 }
+
+#signed_in_panel div {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.message_panel {
+    height: 400px;
+}
+
+#send_form textarea {
+    width: 100%;
+}

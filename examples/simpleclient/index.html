@@ -26,6 +26,27 @@
       <div class="jumbotron">
         <h1>JSJaC SimpleClient</h1>
       </div>
+
+      <div id="signed_in_panel" class="hide">
+        <div class="well message_panel"></div>
+        <div class="well input_panel">
+          <form id="send_form">
+            <fieldset>
+              <legend>Send a message</legend>
+              <label>To:</label>
+              <input type="text" id="send_form_to" placeholder="Enter recipient"/>
+              <label>Message:</label>
+              <textarea cols="3" id="send_form_message"
+                        placeholder="Type here to send a message"></textarea>
+              <div>
+                <button class="btn" type="submit">Send</button>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+
+
       <form class="form-signin" id="signin_form">
         <h2 class="form-signin-heading">Please log in</h2>
 

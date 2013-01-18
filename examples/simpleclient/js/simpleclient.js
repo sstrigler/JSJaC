@@ -15,9 +15,7 @@ function SimpleClient(config) {
         this.conn = new JSJaCWebSocketConnection(_.extend(config, {oDbg: this.logger}));
         this.setupConn();
         this.conn.registerHandler('onconnect', JSJaC.bind(function() {
-            this.logger.log('connected');
             success_cb();
-            this.conn.disconnect();
         }, this));
         this.conn.registerHandler('onerror', JSJaC.bind(function(e) {
             this.logger.log(e,1);

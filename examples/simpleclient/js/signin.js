@@ -10,6 +10,8 @@ function SignIn() {
     }; 
 
     this.success_handler = function() {
-        $('#error').text('SUCCESS!').show();
+        $('#signin_form').fadeOut(function() { 
+            $('#signed_in_panel').show();
+        });
     };
 }
