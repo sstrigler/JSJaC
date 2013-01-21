@@ -36,7 +36,7 @@
               <label>To:</label>
               <input type="text" id="send_form_to" placeholder="Enter recipient"/>
               <label>Message:</label>
-              <textarea cols="3" id="send_form_message"
+              <textarea cols="3" id="send_form_body"
                         placeholder="Type here to send a message"></textarea>
               <div>
                 <button class="btn" type="submit">Send</button>
@@ -53,9 +53,9 @@
         <div class="alert alert-error" id="error" style="display:none;"></div>
 
         <input type="text" class="input-block-level"
-               placeholder="Jabber ID" id="jid" value="zeank2@jwchat.org">
+               placeholder="Jabber ID" id="jid" value="test1@localhost">
         <input type="password" id="password" class="input-block-level"
-               placeholder="Password" value="hkm18g">
+               placeholder="Password" value="pw">
         <button class="btn btn-large btn-primary" type="submit">Log in</button>
       </form>
 
@@ -84,6 +84,7 @@
 
     <script src="js/simpleclient.js"></script>
     <script src="js/signin.js"></script>
+    <script src="js/signedin.js"></script>
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
 

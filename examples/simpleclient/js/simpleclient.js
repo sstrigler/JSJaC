@@ -1,6 +1,18 @@
 function SimpleClient(config) {
+    /**
+     * this 'class' resembles what someone might call a controller
+     */
+
+    // connect some logger for debugging
+    if (config.debug) {
+        this.logger = new JSJaCConsoleLogger(4);
+    } else {
+        this.logger =  {log: function() {}};
+    }
+
+    // connect views
     this.signin = new SignIn();
-    this.logger = new JSJaCConsoleLogger(4);
+    this.signedin = new SignedIn();
 
     this.login = function(jid, password, success_cb, error_cb) {
         var e = '';
@@ -16,6 +28,7 @@ function SimpleClient(config) {
         this.setupConn();
         this.conn.registerHandler('onconnect', JSJaC.bind(function() {
             success_cb();
+            this.conn.send(new JSJaCPresence());
         }, this));
         this.conn.registerHandler('onerror', JSJaC.bind(function(e) {
             this.logger.log(e,1);
@@ -27,6 +40,25 @@ function SimpleClient(config) {
         this.conn.connect(args);
     };
 
+    this.logout = function() {
+        if (this.conn && this.conn.connected()) {
+            this.conn.disconnect();
+        }
+    };
+
     this.setupConn = function() {
+        this.conn.registerHandler('message', JSJaC.bind(this.handleMessage, this));
+    };
+
+    this.handleMessage = function(msg) {
+        this.signedin.handleMessage(msg.getFrom(), msg.getBody());
+    };
+
+    this.sendMessage = function(to, body) {
+        var msg = new JSJaCMessage();
+        msg.setTo(to);
+        msg.setType('chat');
+        msg.setBody(body);
+        this.conn.send(msg);
     };
 }

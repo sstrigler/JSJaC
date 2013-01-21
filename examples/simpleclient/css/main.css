@@ -21,9 +21,17 @@ body {
 }
 
 .message_panel {
-    height: 400px;
+    height: 200px;
+    overflow: auto;
 }
 
 #send_form textarea {
     width: 100%;
 }
+
+.msg_from {
+    font-weight: bold;
+}
+
+.msg_body {
+    border-bottom: 1px dashed black;
