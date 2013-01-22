@@ -30,19 +30,21 @@
       <div id="signed_in_panel" class="hide">
         <div class="well message_panel"></div>
         <div class="well input_panel">
-          <form id="send_form">
             <fieldset>
               <legend>Send a message</legend>
-              <label>To:</label>
-              <input type="text" id="send_form_to" placeholder="Enter recipient"/>
-              <label>Message:</label>
-              <textarea cols="3" id="send_form_body"
-                        placeholder="Type here to send a message"></textarea>
-              <div>
-                <button class="btn" type="submit">Send</button>
-              </div>
+              <form id="send_form" class="form-horizontal">
+                <div class="control-group">
+                  <textarea rows="2" id="send_form_body"
+                            placeholder="Enter message to send"></textarea>
+                </div>
+                <div class="control-group">
+                  <div class="controls input-append">
+                    <input type="text" id="send_form_to" class="span2 input-small" placeholder="Enter recipient"/>
+                    <button class="btn" type="submit">Send</button>
+                  </div>
+                </div>
+              </form>
             </fieldset>
-          </form>
         </div>
       </div>
 

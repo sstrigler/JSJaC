@@ -25,8 +25,12 @@ body {
     overflow: auto;
 }
 
-#send_form textarea {
+#send_form_body {
     width: 100%;
+}
+
+#send_form_to {
+    width: 240px;
 }
 
 .msg_from {
