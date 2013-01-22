@@ -87,6 +87,7 @@ uncompressed:
 	fi
 
 simpleclient:
+	@echo "Copying jsjac to simpleclient."
 	@cp jsjac.js examples/simpleclient/js/jsjac.js
 
 .PHONY: doc utils
