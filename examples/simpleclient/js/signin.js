@@ -5,6 +5,10 @@ $('#signin_form').submit(function() {
 });
 
 function SignIn() {
+    this.show = function() {
+        $('#signin_form').show();
+    };
+
     this._errorHandler = function(error_msg) {
         $('#error').text(error_msg).show();
     }; 
