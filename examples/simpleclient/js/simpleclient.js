@@ -14,6 +14,11 @@ function SimpleClient(config) {
     this.signin = new SignIn();
     this.signedin = new SignedIn();
 
+    // functions
+    this.handleMessage = function(msg) {
+        this.signedin.handleMessage(msg.getFrom(), msg.getBody());
+    };
+
     this.login = function(jid, password, success_cb, error_cb) {
         var e = '';
         if (!jid || jid === '')
@@ -48,12 +53,8 @@ function SimpleClient(config) {
         }
     };
 
-    this.setupConn = function() {
-        this.conn.registerHandler('message', JSJaC.bind(this.handleMessage, this));
-    };
-
-    this.handleMessage = function(msg) {
-        this.signedin.handleMessage(msg.getFrom(), msg.getBody());
+    this.resume = function() {
+        return false;
     };
 
     this.sendMessage = function(to, body) {
@@ -62,5 +63,13 @@ function SimpleClient(config) {
         msg.setType('chat');
         msg.setBody(body);
         this.conn.send(msg);
+    };
+
+    this.setupConn = function() {
+        this.conn.registerHandler('message', JSJaC.bind(this.handleMessage, this));
+    };
+
+    this.suspend = function() {
+        return this.conn.suspend();
     };
 }
