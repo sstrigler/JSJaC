@@ -5,6 +5,12 @@ $('#send_form').submit(function() {
     return false;
 });
 
+$('#logout_button').click(function() {
+    app.logout();
+    $('#signed_in_panel').hide();
+    $('#signin_form').fadeIn();
+});
+
 function SignedIn() {
     this.handleMessage = function(from, body) {
         $('#signed_in_panel .message_panel').prepend('<div class="msg_from">Message received from '+from+':</div><div class="msg_body">'+body+'</div>');

@@ -43,6 +43,8 @@ function SimpleClient(config) {
     this.logout = function() {
         if (this.conn && this.conn.connected()) {
             this.conn.disconnect();
+        } else {
+            this.logger.log("logout called but not connected");
         }
     };
 
