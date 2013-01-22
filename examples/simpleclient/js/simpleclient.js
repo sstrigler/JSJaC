@@ -10,6 +10,8 @@ function SimpleClient(config) {
         this.logger =  {log: function() {}};
     }
 
+    this.config = config;
+
     // connect views
     this.signin = new SignIn();
     this.signedin = new SignedIn();
@@ -54,7 +56,18 @@ function SimpleClient(config) {
     };
 
     this.resume = function() {
-        return false;
+        this.conn = new JSJaCWebSocketConnection(_.extend(this.config, {oDbg: this.logger}));
+        this.setupConn();
+        
+        if (!this.conn.resume()) {
+            this.logger.log("resume failed");
+            this.conn.disconnect();
+            this.conn = null;
+            return false;
+        } else {
+            this.logger.log("resumed");
+            return true;
+        }
     };
 
     this.sendMessage = function(to, body) {
@@ -70,6 +83,9 @@ function SimpleClient(config) {
     };
 
     this.suspend = function() {
-        return this.conn.suspend();
+        if (this.conn && this.conn.connected() && this.conn.suspend())
+            this.logger.log("suspended");
+        else 
+            this.logger.log("failed to suspend");
     };
 }

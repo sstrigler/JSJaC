@@ -9,7 +9,7 @@ $(window).load(function() {
     }
 });
 
-$(window).unload(function() {
-    app.logout();
-});
+window.onbeforeunload = function() {
+    app.suspend();
+};
 
