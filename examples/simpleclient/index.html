@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>JSJaC SimpleClient</title>
+
+    <meta name="description" content="simple example on how to build a
+                                      client based on JSJaC">
+    <meta name="author" content="Stefan Strigler et al">
+
+    <link href="css/main.css" rel="stylesheet" media="screen">
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/signin.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>JSJaC SimpleClient</h1>
+      </div>
+
+      <div id="signed_in_panel" class="hide">
+        <div class="well message_panel"></div>
+        <div class="well input_panel">
+            <fieldset>
+              <legend>Send a message</legend>
+              <form id="send_form" class="form-horizontal">
+                <div class="control-group">
+                  <textarea rows="2" id="send_form_body"
+                            placeholder="Enter message to send"></textarea>
+                </div>
+                <div class="control-group">
+                  <div class="controls input-append">
+                    <input type="text" id="send_form_to" class="span2 input-small" placeholder="Enter recipient"/>
+                    <button class="btn" type="submit">Send</button>
+                  </div>
+                </div>
+              </form>
+            </fieldset>
+        </div>
+        <button class="btn btn-large btn-block btn-danger"
+        type="button" id="logout_button">Log Out</button>
+      </div>
+
+
+      <form class="form-signin hide" id="signin_form">
+        <h2 class="form-signin-heading">Please log in</h2>
+
+        <div class="alert alert-error" id="error" style="display:none;"></div>
+
+        <input type="text" class="input-block-level"
+               placeholder="Jabber ID" id="jid" value="test1@localhost">
+        <input type="password" id="password" class="input-block-level"
+               placeholder="Password" value="pw">
+        <button class="btn btn-large btn-primary" type="submit">Log in</button>
+      </form>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap-transition.js"></script>
+    <script src="js/bootstrap-alert.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap-tab.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap-popover.js"></script>
+    <script src="js/bootstrap-button.js"></script>
+    <script src="js/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap-typeahead.js"></script>
+
+    <script src="js/underscore-min.js"></script>
+
+    <script src="js/jsjac.js"></script>
+
+    <script src="js/simpleclient.js"></script>
+    <script src="js/signin.js"></script>
+    <script src="js/signedin.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+
+  </body>
+</html>

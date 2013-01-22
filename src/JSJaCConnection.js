@@ -1118,36 +1118,24 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
   for (var i=0;i<this._events[event].length; i++) {
     var aEvent = this._events[event][i];
     if (typeof aEvent.handler == 'function') {
-      try {
-        if (arg) {
-          if (arg.pType) { // it's a packet
-            if ((!arg.getNode().hasChildNodes() && aEvent.childName != '*') ||
-				(arg.getNode().hasChildNodes() &&
-                 !arg.getChild(aEvent.childName, aEvent.childNS)))
-              continue;
-            if (aEvent.type != '*' &&
-                arg.getType() != aEvent.type)
-              continue;
-            this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
-          }
-          if (aEvent.handler(arg)) {
-            // handled!
-            break;
-          }
+      if (arg) {
+        if (arg.pType) { // it's a packet
+          if ((!arg.getNode().hasChildNodes() && aEvent.childName != '*') ||
+              (arg.getNode().hasChildNodes() &&
+               !arg.getChild(aEvent.childName, aEvent.childNS)))
+            continue;
+          if (aEvent.type != '*' &&
+              arg.getType() != aEvent.type)
+            continue;
+          this.oDbg.log(aEvent.childName+"/"+aEvent.childNS+"/"+aEvent.type+" => match for handler "+aEvent.handler,3);
         }
-        else
-          if (aEvent.handler()) {
-            // handled!
-            break;
-          }
-      } catch (e) {
-
-        if (e.fileName&&e.lineNumber) {
-            this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message+' in '+e.fileName+' line '+e.lineNumber,1);
-        } else {
-            this.oDbg.log(aEvent.handler+"\n>>>"+e.name+": "+ e.message,1);
+        if (aEvent.handler(arg)) {
+          // handled!
+          break;
         }
-
+      } else if (aEvent.handler()) {
+        // handled!
+        break;
       }
     }
   }
