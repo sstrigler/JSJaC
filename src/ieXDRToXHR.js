@@ -41,7 +41,10 @@ if (window.XDomainRequest) {
         };
 
         XMLHttpRequest.prototype.open = function(method, url, asynch, user, pwd) {
-            if (url.indexOf(document.domain) < 0 && url.indexOf('http-bind') > 0) {
+            //improve CORS deteciton (chat.example.net exemple.net), remove hardcoded http-bind
+            var parser = document.createElement('a');
+            parser.href = url;
+            if (parser.hostname!=document.domain) {
                 if (this.xdr === null){
                     this.xdr = new window.XDomainRequest();
                 }
