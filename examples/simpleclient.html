@@ -88,18 +88,17 @@
             function doLogin(oForm) {
                 document.getElementById('err').innerHTML = '';
                 // reset
-
                 try {
 
                     if (oForm.http_base.value.substr(0, 5) === 'ws://' || oForm.http_base.value.substr(0, 6) === 'wss://') {
                         con = new JSJaCWebSocketConnection({
                             httpbase : oForm.http_base.value,
-                            oDbg : new JSJaCConsoleLogger(4)
+                            oDbg : oDbg
                         });
                     } else {
                         con = new JSJaCHttpBindingConnection({
                             httpbase : oForm.http_base.value,
-                            oDbg : new JSJaCConsoleLogger(4)
+                            oDbg : oDbg
                         });
                     }
 
@@ -168,9 +167,10 @@
             }
 
             function init() {
+		oDbg = new JSJaCConsoleLogger(4);
                 try {// try to resume a session
                     con = new JSJaCHttpBindingConnection({
-                        'oDbg' : new JSJaCConsoleLogger(4)
+                        'oDbg' : oDbg
                     });
 
                     setupCon(con);
