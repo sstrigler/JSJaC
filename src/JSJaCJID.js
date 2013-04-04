@@ -165,6 +165,8 @@ JSJaCJID.prototype.clone = function() {
 JSJaCJID.prototype.isEntity = function(jid) {
     if (typeof jid == 'string')
         jid = (new JSJaCJID(jid));
+    else
+        jid = jid.clone();
     jid.removeResource();
     return (this.clone().removeResource().toString() === jid.toString());
 };
