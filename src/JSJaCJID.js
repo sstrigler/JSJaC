@@ -20,34 +20,34 @@ var JSJACJID_FORBIDDEN = ['"',' ','&','\'','/',':','<','>','@'];
  * @return a new JSJaCJID object
  */
 function JSJaCJID(jid) {
-  /**
-   *@private
-   */
-  this._node = '';
-  /**
-   *@private
-   */
-  this._domain = '';
-  /**
-   *@private
-   */
-  this._resource = '';
+    /**
+     *@private
+     */
+    this._node = '';
+    /**
+     *@private
+     */
+    this._domain = '';
+    /**
+     *@private
+     */
+    this._resource = '';
 
-  if (typeof(jid) == 'string') {
-    if (jid.indexOf('@') != -1) {
-        this.setNode(jid.substring(0,jid.indexOf('@')));
-        jid = jid.substring(jid.indexOf('@')+1);
+    if (typeof(jid) == 'string') {
+        if (jid.indexOf('@') != -1) {
+            this.setNode(jid.substring(0,jid.indexOf('@')));
+            jid = jid.substring(jid.indexOf('@')+1);
+        }
+        if (jid.indexOf('/') != -1) {
+            this.setResource(jid.substring(jid.indexOf('/')+1));
+            jid = jid.substring(0,jid.indexOf('/'));
+        }
+        this.setDomain(jid);
+    } else {
+        this.setNode(jid.node);
+        this.setDomain(jid.domain);
+        this.setResource(jid.resource);
     }
-    if (jid.indexOf('/') != -1) {
-      this.setResource(jid.substring(jid.indexOf('/')+1));
-      jid = jid.substring(0,jid.indexOf('/'));
-    }
-    this.setDomain(jid);
-  } else {
-    this.setNode(jid.node);
-    this.setDomain(jid.domain);
-    this.setResource(jid.resource);
-  }
 }
 
 /**
@@ -89,9 +89,9 @@ JSJaCJID.prototype.getResource = function() { return this._resource; };
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setNode = function(node) {
-  JSJaCJID._checkNodeName(node);
-  this._node = node || '';
-  return this;
+    JSJaCJID._checkNodeName(node);
+    this._node = node || '';
+    return this;
 };
 
 /**
@@ -103,13 +103,13 @@ JSJaCJID.prototype.setNode = function(node) {
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setDomain = function(domain) {
-  if (!domain || domain == '')
-    throw new JSJaCJIDInvalidException("domain name missing");
-  // chars forbidden for a node are not allowed in domain names
-  // anyway, so let's check
-  JSJaCJID._checkNodeName(domain);
-  this._domain = domain;
-  return this;
+    if (!domain || domain === '')
+        throw new JSJaCJIDInvalidException("domain name missing");
+    // chars forbidden for a node are not allowed in domain names
+    // anyway, so let's check
+    JSJaCJID._checkNodeName(domain);
+    this._domain = domain;
+    return this;
 };
 
 /**
@@ -119,8 +119,8 @@ JSJaCJID.prototype.setDomain = function(domain) {
  * @type JSJaCJID
  */
 JSJaCJID.prototype.setResource = function(resource) {
-  this._resource = resource || '';
-  return this;
+    this._resource = resource || '';
+    return this;
 };
 
 /**
@@ -129,13 +129,13 @@ JSJaCJID.prototype.setResource = function(resource) {
  * @type String
  */
 JSJaCJID.prototype.toString = function() {
-  var jid = '';
-  if (this.getNode() && this.getNode() != '')
-    jid = this.getNode() + '@';
-  jid += this.getDomain(); // we always have a domain
-  if (this.getResource() && this.getResource() != "")
-    jid += '/' + this.getResource();
-  return jid;
+    var jid = '';
+    if (this.getNode() && this.getNode() !== '')
+        jid = this.getNode() + '@';
+    jid += this.getDomain(); // we always have a domain
+    if (this.getResource() && this.getResource() !== "")
+        jid += '/' + this.getResource();
+    return jid;
 };
 
 /**
@@ -144,7 +144,7 @@ JSJaCJID.prototype.toString = function() {
  * @type JSJaCJID
  */
 JSJaCJID.prototype.removeResource = function() {
-  return this.setResource();
+    return this.setResource();
 };
 
 /**
@@ -153,7 +153,7 @@ JSJaCJID.prototype.removeResource = function() {
  * @type JSJaCJID
  */
 JSJaCJID.prototype.clone = function() {
-  return new JSJaCJID(this.toString());
+    return new JSJaCJID(this.toString());
 };
 
 /**
@@ -163,10 +163,10 @@ JSJaCJID.prototype.clone = function() {
  * @type Boolean
  */
 JSJaCJID.prototype.isEntity = function(jid) {
-  if (typeof jid == 'string')
-	  jid = (new JSJaCJID(jid));
-  jid.removeResource();
-  return (this.clone().removeResource().toString() === jid.toString());
+    if (typeof jid == 'string')
+        jid = (new JSJaCJID(jid));
+    jid.removeResource();
+    return (this.clone().removeResource().toString() === jid.toString());
 };
 
 /**
@@ -176,12 +176,12 @@ JSJaCJID.prototype.isEntity = function(jid) {
  * @throws JSJaCJIDInvalidException Thrown if name for node is not allowed
  */
 JSJaCJID._checkNodeName = function(nodeprep) {
-    if (!nodeprep || nodeprep == '')
-      return;
+    if (!nodeprep || nodeprep === '')
+        return;
     for (var i=0; i< JSJACJID_FORBIDDEN.length; i++) {
-      if (nodeprep.indexOf(JSJACJID_FORBIDDEN[i]) != -1) {
-        throw new JSJaCJIDInvalidException("forbidden char in nodename: "+JSJACJID_FORBIDDEN[i]);
-      }
+        if (nodeprep.indexOf(JSJACJID_FORBIDDEN[i]) != -1) {
+            throw new JSJaCJIDInvalidException("forbidden char in nodename: "+JSJACJID_FORBIDDEN[i]);
+        }
     }
 };
 
@@ -192,14 +192,14 @@ JSJaCJID._checkNodeName = function(nodeprep) {
  * @param {String} message The message associated with this Exception
  */
 function JSJaCJIDInvalidException(message) {
-  /**
-   * The exceptions associated message
-   * @type String
-   */
-  this.message = message;
-  /**
-   * The name of the exception
-   * @type String
-   */
-  this.name = "JSJaCJIDInvalidException";
+    /**
+     * The exceptions associated message
+     * @type String
+     */
+    this.message = message;
+    /**
+     * The name of the exception
+     * @type String
+     */
+    this.name = "JSJaCJIDInvalidException";
 }
