@@ -183,7 +183,7 @@ JSJaCPacket.prototype.getXMLNS = function() {
 };
 
 /**
- * Gets a child element of this packet. If no params given returns first child. 
+ * Gets a child element of this packet. If no params given returns first child.
  * @see {@link http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247 | Node}
  * @param {string} name Tagname of child to retrieve. Use '*' to match any tag. [optional]
  * @param {string} ns   Namespace of child. Use '*' to match any ns.[optional]
@@ -417,13 +417,14 @@ JSJaCPacket.prototype.buildNode = function(elementName) {
  */
 JSJaCPacket.prototype.appendNode = function(element) {
   if (typeof element=='object') { // seems to be a prebuilt node
-    return this.getNode().appendChild(element);
+    this.getNode().appendChild(element);
   } else { // build node
-    return this.getNode().appendChild(this.buildNode(element,
+    this.getNode().appendChild(this.buildNode(element,
                                                      arguments[1],
                                                      arguments[2],
                                                      this.getNode().namespaceURI));
   }
+  return this;
 };
 
 
