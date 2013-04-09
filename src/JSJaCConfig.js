@@ -14,7 +14,7 @@ JSJAC_RETRYDELAY = 5000;        // msecs to wait before trying next request afte
 
 // Options specific to HTTP Binding (BOSH)
 JSJACHBC_MAX_HOLD = 1;          // default for number of connctions held by
-                                    // connection maanger
+                                    // connection manager
 JSJACHBC_MAX_WAIT = 300;        // default 'wait' param - how long an idle connection
                                     // should be held by connection manager
 
