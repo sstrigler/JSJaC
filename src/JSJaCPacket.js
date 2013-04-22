@@ -56,6 +56,28 @@ JSJaCPacket.prototype.getNode = function() {
     return null;
 };
 
+
+
+/**
+ * Get the object in the node attributes. 
+ * @nodeName the node name  check buildNode
+ * @return {object}
+ *
+ */
+
+JSJaCPacket.prototype.getNodeVal = function(nodeName) {
+    var attributes_val = {}
+    if (!nodeName) return attributes_val;
+
+
+    Array.prototype.slice.call(this.getNode().getElementsByTagName(nodeName)[0].attributes).forEach(function(item) {
+        console.log(item.name + ': '+ item.value);
+        attributes_val[item.name] = item.value;
+    });
+
+    return attributes_val;
+}
+
 /**
  * Sets the 'to' attribute of the root node of this packet
  * @param {String} [to] A string representing a jid sending this packet to. If omitted the property will be deleted thus sending to service rather than dedicated recipient.
