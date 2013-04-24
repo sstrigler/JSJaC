@@ -1280,10 +1280,10 @@ JSJaCConnection.prototype._process = function(timerval) {
                if (!this.connected())
                  return;
                if (this._req[slot].r.readyState == 4) {
-                 this._setStatus('processing');
                  this.oDbg.log("async recv: "+this._req[slot].r.responseText,4);
                  this._handleResponse(this._req[slot]);
                  // schedule next tick
+                 this._setStatus('processing');
                  if (this._pQueue.length) {
                    this._timeout = setTimeout(JSJaC.bind(this._process, this),
                                               100);

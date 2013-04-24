@@ -442,9 +442,14 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
 
         this._connected = false;
 
-        if (condition == "remote-stream-error")
+        if (condition == "remote-stream-error") {
             if (body.getElementsByTagName("conflict").length > 0)
                 this._setStatus("session-terminate-conflict");
+            else
+                this._setStatus('terminated');
+        } else {
+            this._setStatus('terminated');
+        }
         if (condition === null)
             condition = 'session-terminate';
         this._handleEvent('onerror',JSJaCError('503','cancel',condition));
@@ -556,7 +561,6 @@ JSJaCHttpBindingConnection.prototype._repeat = function() {
  * @private
  */
 JSJaCHttpBindingConnection.prototype._resume = function() {
-
     // make sure to repeat last request as we can be sure that it had failed
     // (only if we're not using the 'pause' attribute)
     if (this._pause === 0)
