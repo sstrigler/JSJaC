@@ -345,136 +345,130 @@ JSJaCHttpBindingConnection.prototype._handleInitialResponse = function(req) {
  * @private
  */
 JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
-  if (!this.connected() || !req)
-    return null;
-
-  var r = req.r; // the XmlHttpRequest
-
-  try {
-    if (r.status == 404 || r.status == 403) {
-      // connection manager killed session
-      this._abort();
-      return null;
-    }
-
-    if (r.status != 200 || !r.responseXML) {
-      this._errcnt++;
-      var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
-      if (!r.responseXML)
-        errmsg += "\nResponse failed to parse!";
-      this.oDbg.log(errmsg,1);
-      if (this._errcnt > JSJAC_ERR_COUNT) {
-        // abort
-        this._abort();
+    if (!this.connected() || !req)
         return null;
-      }
 
-      if (this.connected()) {
-        this.oDbg.log("repeating ("+this._errcnt+")",1);
-        this._setStatus('proto_error_fallback');
+    var r = req.r; // the XmlHttpRequest
 
-        // schedule next tick
-        setTimeout(JSJaC.bind(this._resume, this),
-                   this.getPollInterval());
-      }
+    try {
+        if (r.status == 404 || r.status == 403) {
+            // connection manager killed session
+            this._abort();
+            return null;
+        }
 
-      return null;
+        if (r.status != 200 || !r.responseXML) {
+            this._errcnt++;
+            var errmsg = "invalid response ("+r.status+"):\n" + r.getAllResponseHeaders()+"\n"+r.responseText;
+            if (!r.responseXML)
+                errmsg += "\nResponse failed to parse!";
+            this.oDbg.log(errmsg,1);
+            if (this._errcnt > JSJAC_ERR_COUNT) {
+                // abort
+                this._abort();
+                return null;
+            }
+
+            if (this.connected()) {
+                this.oDbg.log("repeating ("+this._errcnt+")",1);
+                this._setStatus('proto_error_fallback');
+
+                // schedule next tick
+                setTimeout(JSJaC.bind(this._resume, this),
+                           this.getPollInterval());
+            }
+
+            return null;
+        }
+    } catch (e) {
+        this.oDbg.log("XMLHttpRequest error: status not available", 1);
+        this._errcnt++;
+        if (this._errcnt > JSJAC_ERR_COUNT) {
+            // abort
+            this._abort();
+        } else {
+            if (this.connected()) {
+                this.oDbg.log("repeating ("+this._errcnt+")",1);
+                this._setStatus('proto_error_fallback');
+                // schedule next tick
+                setTimeout(JSJaC.bind(this._resume, this),
+                           this.getPollInterval());
+            }
+        }
+        return null;
     }
-  } catch (e) {
-    this.oDbg.log("XMLHttpRequest error: status not available", 1);
-    this._errcnt++;
-    if (this._errcnt > JSJAC_ERR_COUNT) {
-      // abort
-      this._abort();
-    } else {
-      if (this.connected()) {
-        this.oDbg.log("repeating ("+this._errcnt+")",1);
-        this._setStatus('proto_error_fallback');
-        // schedule next tick
-          setTimeout(JSJaC.bind(this._resume, this),
-                     this.getPollInterval());
-      }
+
+    var body = r.responseXML.documentElement;
+    if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
+        this.oDbg.log("invalid response:\n" + r.responseText,1);
+
+        clearTimeout(this._timeout); // remove timer
+        clearInterval(this._interval);
+        clearInterval(this._inQto);
+
+        this._connected = false;
+        this.oDbg.log("Disconnected.",1);
+        this._handleEvent('ondisconnect');
+
+        this._setStatus('internal_server_error');
+        this._handleEvent('onerror',
+                          JSJaCError('500','wait','internal-server-error'));
+
+        return null;
     }
-    return null;
-  }
 
-  var body = r.responseXML.documentElement;
-  if (!body || body.tagName != 'body' || body.namespaceURI != NS_BOSH) {
-    this.oDbg.log("invalid response:\n" + r.responseText,1);
+    if (typeof(req.rid) != 'undefined' && this._last_requests[req.rid]) {
+        if (this._last_requests[req.rid].handled) {
+            this.oDbg.log("already handled "+req.rid,2);
+            return null;
+        } else
+            this._last_requests[req.rid].handled = true;
+    }
 
-    clearTimeout(this._timeout); // remove timer
-    clearInterval(this._interval);
-    clearInterval(this._inQto);
+    // Check for errors from the server
+    if (body.getAttribute("type") == "terminate") {
+        // read condition
+        var condition = body.getAttribute('condition');
 
-    this._connected = false;
-    this.oDbg.log("Disconnected.",1);
-    this._handleEvent('ondisconnect');
+        this.oDbg.log("session terminated:\n" + r.responseText,1);
 
-    this._setStatus('internal_server_error');
-    this._handleEvent('onerror',
-                      JSJaCError('500','wait','internal-server-error'));
+        clearTimeout(this._timeout); // remove timer
+        clearInterval(this._interval);
+        clearInterval(this._inQto);
 
-    return null;
-  }
-
-  if (typeof(req.rid) != 'undefined' && this._last_requests[req.rid]) {
-    if (this._last_requests[req.rid].handled) {
-      this.oDbg.log("already handled "+req.rid,2);
-      return null;
-    } else
-      this._last_requests[req.rid].handled = true;
-  }
-
-
-  // Check for errors from the server
-  if (body.getAttribute("type") == "terminate") {
-    // read condition
-    var condition = body.getAttribute('condition');
-
-    if (condition != "item-not-found") {
-      this.oDbg.log("session terminated:\n" + r.responseText,1);
-
-      clearTimeout(this._timeout); // remove timer
-      clearInterval(this._interval);
-      clearInterval(this._inQto);
-
-      try {
-        JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
-      } catch (e) {}
-
-      this._connected = false;
-
-      condition = body.getAttribute('condition');
-      if (condition == "remote-stream-error")
-        if (body.getElementsByTagName("conflict").length > 0)
-          this._setStatus("session-terminate-conflict");
-      if (condition == null)
-        condition = 'session-terminate';
-      this._handleEvent('onerror',JSJaCError('503','cancel',condition));
-
-      this.oDbg.log("Aborting remaining connections",4);
-
-      for (var i=0; i<this._hold+1; i++) {
         try {
-          this._req[i].r.abort();
-        } catch(e) { this.oDbg.log(e, 1); }
-      }
+            JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
+        } catch (e) {}
 
-      this.oDbg.log("parseResponse done with terminating", 3);
+        this._connected = false;
 
-      this.oDbg.log("Disconnected.",1);
-      this._handleEvent('ondisconnect');
-    } else {
-      this._errcnt++;
-      if (this._errcnt > JSJAC_ERR_COUNT)
-        this._abort();
+        if (condition == "remote-stream-error")
+            if (body.getElementsByTagName("conflict").length > 0)
+                this._setStatus("session-terminate-conflict");
+        if (condition === null)
+            condition = 'session-terminate';
+        this._handleEvent('onerror',JSJaCError('503','cancel',condition));
+
+        this.oDbg.log("Aborting remaining connections",4);
+
+        for (var i=0; i<this._hold+1; i++) {
+            try {
+                if (this._req[i] && this._req[i] != req)
+                    this._req[i].r.abort();
+            } catch(e) { this.oDbg.log(e, 1); }
+        }
+
+        this.oDbg.log("parseResponse done with terminating", 3);
+
+        this.oDbg.log("Disconnected.",1);
+        this._handleEvent('ondisconnect');
+
+        return null;
     }
-    return null;
-  }
 
-  // no error
-  this._errcnt = 0;
-  return r.responseXML.documentElement;
+    // no error
+    this._errcnt = 0;
+    return r.responseXML.documentElement;
 };
 
 /**
@@ -554,7 +548,7 @@ JSJaCHttpBindingConnection.prototype._resume = function() {
   /* make sure to repeat last request as we can be sure that
    * it had failed (only if we're not using the 'pause' attribute
    */
-  if (this._pause == 0 && this._rid >= this._last_rid)
+  if (this._pause === 0 && this._rid >= this._last_rid)
     this._rid = this._last_rid-1;
 
   this._process();
@@ -592,7 +586,7 @@ JSJaCHttpBindingConnection.prototype._setupRequest = function(async) {
  * @private
  */
 JSJaCHttpBindingConnection.prototype._suspend = function() {
-  if (this._pause == 0)
+  if (this._pause === 0)
     return; // got nothing to do
 
   var slot = this._getFreeSlot();
