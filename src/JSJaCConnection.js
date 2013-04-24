@@ -427,7 +427,7 @@ JSJaCConnection.prototype.resume = function() {
 
     return this.resumeFromData(JSJaCJSON.parse(json));
   } catch (e) {}
-  return false; // sth went wrong
+    return false;
 };
 
 /**
@@ -460,7 +460,7 @@ JSJaCConnection.prototype.resumeFromData = function(data) {
       this._interval = setInterval(JSJaC.bind(this._checkQueue, this),
                                    JSJAC_CHECKQUEUEINTERVAL);
       this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
-				JSJAC_CHECKINQUEUEINTERVAL);
+                                JSJAC_CHECKINQUEUEINTERVAL);
     }
 
     return (this._connected === true);
