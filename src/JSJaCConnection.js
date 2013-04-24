@@ -1285,11 +1285,14 @@ JSJaCConnection.prototype._process = function(timerval) {
                  this._handleResponse(this._req[slot]);
                  // schedule next tick
                  if (this._pQueue.length) {
-                   this._timeout = setTimeout(JSJaC.bind(this._process, this),100);
+                   this._timeout = setTimeout(JSJaC.bind(this._process, this),
+                                              100);
                  } else {
-                   this.oDbg.log("scheduling next poll in "+this.getPollInterval()+
+                   this.oDbg.log("scheduling next poll in "+
+                                 this.getPollInterval()+
                                  " msec", 4);
-                   this._timeout = setTimeout(JSJaC.bind(this._process, this),this.getPollInterval());
+                   this._timeout = setTimeout(JSJaC.bind(this._process, this),
+                                              this.getPollInterval());
                  }
                }
              }, this);
@@ -1310,11 +1313,13 @@ JSJaCConnection.prototype._process = function(timerval) {
                    this._setStatus('onerror_fallback');
 
                    // schedule next tick
-                   setTimeout(JSJaC.bind(this._resume, this), JSJAC_RETRYDELAY);
+                   setTimeout(JSJaC.bind(this._repeat, this), JSJAC_RETRYDELAY);
                    return;
                  }, this);
-  } catch(e) { } // well ... no onerror property available, maybe we
-  // can catch the error somewhere else ...
+  } catch(e) {
+      // well ... no onerror property available, maybe we
+      // can catch the error somewhere else ...
+  }
 
   var reqstr = this._getRequestString();
 

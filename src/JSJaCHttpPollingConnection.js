@@ -287,6 +287,13 @@ JSJaCHttpPollingConnection.prototype._reInitStream = function(to,cb,arg) {
 /**
  * @private
  */
+JSJaCHttpPollingConnection.prototype._repeat = function() {
+    this._resume();
+};
+
+/**
+ * @private
+ */
 JSJaCHttpPollingConnection.prototype._resume = function() {
   this._process(this._timerval);
 };

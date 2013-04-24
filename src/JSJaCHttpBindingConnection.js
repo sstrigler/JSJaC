@@ -374,7 +374,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
                 this._setStatus('proto_error_fallback');
 
                 // schedule next tick
-                setTimeout(JSJaC.bind(this._resume, this),
+                setTimeout(JSJaC.bind(this._repeat, this),
                            this.getPollInterval());
             }
 
@@ -391,7 +391,7 @@ JSJaCHttpBindingConnection.prototype._parseResponse = function(req) {
                 this.oDbg.log("repeating ("+this._errcnt+")",1);
                 this._setStatus('proto_error_fallback');
                 // schedule next tick
-                setTimeout(JSJaC.bind(this._resume, this),
+                setTimeout(JSJaC.bind(this._repeat, this),
                            this.getPollInterval());
             }
         }
@@ -530,7 +530,8 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
             cb();
         } else {
             this.oDbg.log("no bind feature - giving up",1);
-            this._handleEvent('onerror',JSJaCError('503','cancel',"service-unavailable"));
+            this._handleEvent('onerror',JSJaCError('503','cancel',
+                                                   "service-unavailable"));
             this._connected = false;
             this.oDbg.log("Disconnected.",1);
             this._handleEvent('ondisconnect');
@@ -544,14 +545,24 @@ JSJaCHttpBindingConnection.prototype._reInitStreamWait = function(req, cb) {
 /**
  * @private
  */
-JSJaCHttpBindingConnection.prototype._resume = function() {
-  /* make sure to repeat last request as we can be sure that
-   * it had failed (only if we're not using the 'pause' attribute
-   */
-  if (this._pause === 0 && this._rid >= this._last_rid)
+JSJaCHttpBindingConnection.prototype._repeat = function() {
+  if (this._rid >= this._last_rid)
     this._rid = this._last_rid-1;
 
   this._process();
+};
+
+/**
+ * @private
+ */
+JSJaCHttpBindingConnection.prototype._resume = function() {
+
+    // make sure to repeat last request as we can be sure that it had failed
+    // (only if we're not using the 'pause' attribute)
+    if (this._pause === 0)
+        this._repeat();
+    else
+        this._process();
 };
 
 /**
