@@ -833,12 +833,13 @@ JSJaCConnection.prototype._doSASLAuth = function() {
     }
     this.oDbg.log("SASL ANONYMOUS requested but not supported",1);
 
-  }else if (this.authtype == 'x-facebook-platform') {
-	if (this.mechs['X-FACEBOOK-PLATFORM']) {
-		return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-FACEBOOK-PLATFORM' />",
-							this._doFacebookAuth);
-	}
-	this.oDbg.log("X-FACEBOOK-PLATFORM requested but not supported",1);
+  } else if (this.authtype == 'x-facebook-platform') {
+      if (this.mechs['X-FACEBOOK-PLATFORM']) {
+          return this._sendRaw(
+              "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-FACEBOOK-PLATFORM' />",
+              this._doFacebookAuth);
+      }
+      this.oDbg.log("X-FACEBOOK-PLATFORM requested but not supported",1);
 
   } else {
     if (this.mechs['DIGEST-MD5']) {
