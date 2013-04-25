@@ -437,40 +437,44 @@ JSJaCConnection.prototype.resume = function() {
  * @type boolean
  */
 JSJaCConnection.prototype.resumeFromData = function(data) {
-  try {
-    this._setStatus('resuming');
+    try {
 
-    for (var i in data)
-      if (data.hasOwnProperty(i))
-        this[i] = data[i];
+        for (var i in data)
+            if (data.hasOwnProperty(i))
+                this[i] = data[i];
 
-    // copy keys - not being very generic here :-/
-    if (this._keys) {
-      this._keys2 = new JSJaCKeys();
-      var u = this._keys2._getSuspendVars();
-      for (var j=0; j<u.length; j++)
-        this._keys2[u[j]] = this._keys[u[j]];
-      this._keys = this._keys2;
+        // copy keys - not being very generic here :-/
+        if (this._keys) {
+            this._keys2 = new JSJaCKeys();
+            var u = this._keys2._getSuspendVars();
+            for (var j=0; j<u.length; j++)
+                this._keys2[u[j]] = this._keys[u[j]];
+            this._keys = this._keys2;
+        }
+
+        if (this._connected) {
+            this._setStatus('resuming');
+            this._handleEvent('onresume');
+
+            // don't poll too fast!
+            setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
+
+            this._interval = setInterval(JSJaC.bind(this._checkQueue, this),
+                                         JSJAC_CHECKQUEUEINTERVAL);
+            this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
+                                      JSJAC_CHECKINQUEUEINTERVAL);
+        } else {
+            this._setStatus('terminated');
+        }
+
+        return (this._connected === true);
+    } catch (e) {
+        if (e.message)
+            this.oDbg.log("Resume failed: "+e.message, 1);
+        else
+            this.oDbg.log("Resume failed: "+e, 1);
+        return false;
     }
-
-    if (this._connected) {
-      // don't poll too fast!
-      this._handleEvent('onresume');
-      setTimeout(JSJaC.bind(this._resume, this),this.getPollInterval());
-      this._interval = setInterval(JSJaC.bind(this._checkQueue, this),
-                                   JSJAC_CHECKQUEUEINTERVAL);
-      this._inQto = setInterval(JSJaC.bind(this._checkInQ, this),
-                                JSJAC_CHECKINQUEUEINTERVAL);
-    }
-
-    return (this._connected === true);
-  } catch (e) {
-    if (e.message)
-      this.oDbg.log("Resume failed: "+e.message, 1);
-    else
-      this.oDbg.log("Resume failed: "+e, 1);
-    return false;
-  }
 };
 
 /**
