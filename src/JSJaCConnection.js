@@ -916,7 +916,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this.oDbg.log("response: "+rPlain,2);
 
     this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"+
-                  binb2b64(str2binb(rPlain))+"</response>",
+                  b64encode(rPlain)+"</response>",
                   this._doSASLAuthDigestMd5S2);
   }
 };
