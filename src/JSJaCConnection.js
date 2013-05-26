@@ -896,13 +896,17 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
 
     this._nc = '00000001';
 
-    var A1 = str_md5(this.username+':'+this.domain+':'+this.pass)+
-    ':'+this._nonce+':'+this._cnonce;
+    var X = this.username+':'+this.domain+':'+this.pass;
+    var Y = rstr_md5(str2rstr_utf8(X));
+
+    var A1 = Y+':'+this._nonce+':'+this._cnonce;
+    var HA1 = rstr2hex(rstr_md5(A1));
 
     var A2 = 'AUTHENTICATE:'+this._digest_uri;
+    var HA2 = rstr2hex(rstr_md5(A2));
 
-    var response = hex_md5(hex_md5(A1)+':'+this._nonce+':'+this._nc+':'+
-                           this._cnonce+':auth:'+hex_md5(A2));
+    var response = rstr2hex(rstr_md5(HA1+':'+this._nonce+':'+this._nc+':'+
+                           this._cnonce+':auth:'+HA2));
 
     var rPlain = 'username="'+this.username+'",realm="'+this.domain+
     '",nonce="'+this._nonce+'",cnonce="'+this._cnonce+'",nc="'+this._nc+
@@ -937,13 +941,17 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
   this.oDbg.log("rspauth: "+rspauth,2);
 
-  var A1 = str_md5(this.username+':'+this.domain+':'+this.pass)+
-  ':'+this._nonce+':'+this._cnonce;
+  var X = this.username+':'+this.domain+':'+this.pass;
+  var Y = rstr_md5(str2rstr_utf8(X));
+
+  var A1 = Y+':'+this._nonce+':'+this._cnonce;
+  var HA1 = rstr2hex(rstr_md5(A1));
 
   var A2 = ':'+this._digest_uri;
+  var HA2 = rstr2hex(rstr_md5(A2));
 
-  var rsptest = hex_md5(hex_md5(A1)+':'+this._nonce+':'+this._nc+':'+
-                        this._cnonce+':auth:'+hex_md5(A2));
+  var rsptest = rstr2hex(rstr_md5(HA1+':'+this._nonce+':'+this._nc+':'+
+                        this._cnonce+':auth:'+HA2));
   this.oDbg.log("rsptest: "+rsptest,2);
 
   if (rsptest != rspauth) {
