@@ -95,6 +95,11 @@ function JSJaCConnection(oArg) {
    * @private
    */
   this._sendRawCallbacks = [];
+  
+  /**
+   * @private
+   */
+   this._auhtorizationId = null;
 }
 
 /**
@@ -554,6 +559,16 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
 };
 
 /**
+ * Sets authorization id to be used in SASL PLAIN
+ * authentication packets. (RFC 4616)
+ *
+ * @param {string} The chosen auth_id.
+ */
+JSJaCConnection.prototype.setAuthorizationId = function(auth_id) {
+  this._authorizationId = auth_id;
+};
+
+/**
  * Sets polling interval for this connection
  * @param {int} millisecs Milliseconds to set timer to
  * @return effective interval this connection has been set to
@@ -848,8 +863,9 @@ JSJaCConnection.prototype._doSASLAuth = function() {
                            this._doSASLAuthDigestMd5S1);
     } else if (this._allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
-      var authStr = this._getSaslPlainAuthStr();
-
+      var authStr = this._getAuthorizationId()+String.fromCharCode(0)+
+      this.username+String.fromCharCode(0)+
+      this.pass;
       this.oDbg.log("authenticating with '"+authStr+"'",2);
       authStr = b64encode(authStr);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>",
@@ -1432,16 +1448,11 @@ JSJaCConnection.prototype._unregisterPID = function(pID) {
 };
 
 /**
- * Builds authentication string to be sent in SaslPLAIN packet.
- *
- * @return string
  * @private
  */
- JSJaCConnection.prototype._getSaslPlainAuthStr = function() {
-  var authStr = this.username+'@'+
-    this.domain+String.fromCharCode(0)+
-    this.username+String.fromCharCode(0)+
-    this.pass;
-
-  return authStr;
+ JSJaCConnection.prototype._getAuthorizationId = function() {
+  if (!this._authorizationId) {
+	this._authorizationId = this.username + "@" + this.domain;
+  }
+  return this._authorizationId;
 };
