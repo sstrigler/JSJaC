@@ -848,10 +848,8 @@ JSJaCConnection.prototype._doSASLAuth = function() {
                            this._doSASLAuthDigestMd5S1);
     } else if (this._allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
-      var authStr = this.username+'@'+
-      this.domain+String.fromCharCode(0)+
-      this.username+String.fromCharCode(0)+
-      this.pass;
+      var authStr = this._getSaslPlainAuthStr();
+
       this.oDbg.log("authenticating with '"+authStr+"'",2);
       authStr = b64encode(authStr);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"+authStr+"</auth>",
@@ -1432,3 +1430,18 @@ JSJaCConnection.prototype._unregisterPID = function(pID) {
   this.oDbg.log("unregistered "+pID,3);
   return true;
 };
+
+/**
+ * Builds authentication string to be sent in SaslPLAIN packet.
+ *
+ * @return string
+ * @private
+ */
+ JSJaCConnection.prototype._getSaslPlainAuthStr = function() {
+  var authStr = this.username+'@'+
+    this.domain+String.fromCharCode(0)+
+    this.username+String.fromCharCode(0)+
+    this.pass;
+
+  return authStr;
+}
