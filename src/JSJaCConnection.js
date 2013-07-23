@@ -1444,4 +1444,4 @@ JSJaCConnection.prototype._unregisterPID = function(pID) {
     this.pass;
 
   return authStr;
-}
+};
