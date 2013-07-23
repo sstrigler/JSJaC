@@ -99,7 +99,7 @@ function JSJaCConnection(oArg) {
   /**
    * @private
    */
-   this._auhtorizationId = null;
+   this._authorizationId = null;
 }
 
 /**
