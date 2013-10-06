@@ -280,9 +280,10 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
 /**
  * @private
  */
-JSJaCHttpPollingConnection.prototype._reInitStream = function(to,cb,arg) {
-  this._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>",cb,arg);
-};
+JSJaCHttpPollingConnection.prototype._reInitStream = function(cb) {
+  var streamto = this.authhost ? this.authhost : this.domain;
+  this._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='" + streamto + "' version='1.0'>", cb);
+}
 
 /**
  * @private
