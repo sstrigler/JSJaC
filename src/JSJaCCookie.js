@@ -159,7 +159,7 @@ JSJaCCookie.read = function(name) {
   for(var i=0;i < ca.length;i++) {
     var c = ca[i];
     while (c.charAt(0)==' ') c = c.substring(1,c.length);
-    if (c.indexOf(nameEQ) == 0)
+    if (c.indexOf(nameEQ) === 0)
       return new JSJaCCookie(
         name,
         JSJaCCookie._unescape(c.substring(nameEQ.length,c.length)));
@@ -193,14 +193,14 @@ JSJaCCookie.remove = function(name) {
  */
 JSJaCCookie._escape = function(str) {
   return str.replace(/;/g, "%3AB");
-}
+};
 
 /**
  * @private
  */
 JSJaCCookie._unescape = function(str) {
   return str.replace(/%3AB/g, ";");
-}
+};
 
 /**
  * Some exception denoted to dealing with cookies

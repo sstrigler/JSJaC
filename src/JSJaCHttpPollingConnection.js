@@ -94,7 +94,7 @@ JSJaCHttpPollingConnection.prototype._getRequestString = function(raw, last) {
  * @private
  */
 JSJaCHttpPollingConnection.prototype._getStreamID = function() {
-  if (this._req[0].r.responseText == '') {
+  if (this._req[0].r.responseText === '') {
     this.oDbg.log("waiting for stream id",2);
     this._timeout = setTimeout(JSJaC.bind(this._sendEmpty, this),1000);
     return;
@@ -138,7 +138,7 @@ JSJaCHttpPollingConnection.prototype._getStreamID = function() {
  * @private
  */
 JSJaCHttpPollingConnection.prototype._getSuspendVars = function() {
-  return new Array();
+  return [];
 };
 
 /**
@@ -198,7 +198,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
   this.oDbg.log(req.getAllResponseHeaders(),4);
   var sid, aPList = req.getResponseHeader('Set-Cookie');
 
-  if (aPList == null)
+  if (aPList === null)
     sid = "-1:0"; // Generate internal server error
   else {
     aPList = aPList.split(";");
@@ -238,11 +238,11 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
     return null;
   }
 
-  if (!req.responseText || req.responseText == '')
+  if (!req.responseText)
     return null;
 
   try {
-    var response = req.responseText.replace(/\<\?xml.+\?\>/,"");
+    var response = req.responseText.replace(/<\?xml.+\?>/,"");
     if (response.match(/<stream:stream/))
         response += "</stream:stream>";
     var doc = JSJaCHttpPollingConnection._parseTree("<body>"+response+"</body>");
@@ -274,7 +274,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
   } catch (e) {
     this.oDbg.log("parse error:"+e.message,1);
   }
-  return null;;
+  return null;
 };
 
 /**
@@ -283,7 +283,7 @@ JSJaCHttpPollingConnection.prototype._parseResponse = function(r) {
 JSJaCHttpPollingConnection.prototype._reInitStream = function(cb) {
   var streamto = this.authhost ? this.authhost : this.domain;
   this._sendRaw("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='" + streamto + "' version='1.0'>", cb);
-}
+};
 
 /**
  * @private
@@ -311,7 +311,7 @@ JSJaCHttpPollingConnection.prototype._setupRequest = function(async) {
     r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
   } catch(e) { this.oDbg.log(e,1); }
 
-  var req = new Object();
+  var req = {};
   req.r = r;
   return req;
 };

@@ -40,7 +40,7 @@ JSJaCJSON.toString = function (obj) {
         v = x[i];
         f = s[typeof v];
         if (f) {
-	  try {
+          try {
             v = f(v);
             if (typeof v == 'string') {
               if (b) {
@@ -49,8 +49,8 @@ JSJaCJSON.toString = function (obj) {
               a[a.length] = v;
               b = true;
             }
-	  } catch(e) { 
-	  }
+          } catch(e) {
+          }
         }
       }
       a[a.length] = ']';
@@ -59,7 +59,7 @@ JSJaCJSON.toString = function (obj) {
     'boolean': function (x) {
       return String(x);
     },
-    'null': function (x) {
+    'null': function () {
       return "null";
     },
     number: function (x) {
@@ -70,13 +70,14 @@ JSJaCJSON.toString = function (obj) {
         if (x instanceof Array) {
           return s.array(x);
         }
-        var a = ['{'], b, f, i, v;
+        var a = [], b, f, i, v;
+        a.push('{');
         for (i in x) {
           if (x.hasOwnProperty(i)) {
             v = x[i];
             f = s[typeof v];
             if (f) {
-	      try {
+              try {
                 v = f(v);
                 if (typeof v == 'string') {
                   if (b) {
@@ -85,12 +86,12 @@ JSJaCJSON.toString = function (obj) {
                   a.push(s.string(i), ':', v);
                   b = true;
                 }
-	      } catch(e) {
-	      }
+              } catch(e) {
+              }
             }
           }
         }
-         
+
         a[a.length] = '}';
         return a.join('');
       }
@@ -118,7 +119,6 @@ switch (typeof(obj)) {
    return s.object(obj);
  case 'array':
    return s.array(obj);
-   
  }
 };
 

@@ -176,7 +176,7 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
       this._reinit = false;
     }
 
-    if (xml != '' || raw != '') {
+    if (xml !== '' || raw !== '') {
       reqstr += ">" + raw + xml + "</body>";
     } else {
       reqstr += "> </body>";

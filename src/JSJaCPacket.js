@@ -62,7 +62,7 @@ JSJaCPacket.prototype.getNode = function() {
  * @return {JSJaCPacket} this
  */
 JSJaCPacket.prototype.setTo = function(to) {
-  if (!to || to == '')
+  if (!to)
     this.getNode().removeAttribute('to');
   else if (typeof(to) == 'string')
     this.getNode().setAttribute('to',to);
@@ -79,7 +79,7 @@ JSJaCPacket.prototype.setTo = function(to) {
  * @return {JSJaCPacket} this
  */
 JSJaCPacket.prototype.setFrom = function(from) {
-  if (!from || from == '')
+  if (!from)
     this.getNode().removeAttribute('from');
   else if (typeof(from) == 'string')
     this.getNode().setAttribute('from',from);
@@ -94,7 +94,7 @@ JSJaCPacket.prototype.setFrom = function(from) {
  * @return {JSJaCPacket} this
  */
 JSJaCPacket.prototype.setID = function(id) {
-  if (!id || id == '')
+  if (!id)
     this.getNode().removeAttribute('id');
   else
     this.getNode().setAttribute('id',id);
@@ -106,7 +106,7 @@ JSJaCPacket.prototype.setID = function(id) {
  * @return {JSJaCPacket} this
  */
 JSJaCPacket.prototype.setType = function(type) {
-  if (!type || type == '')
+  if (!type)
     this.getNode().removeAttribute('type');
   else
     this.getNode().setAttribute('type',type);
@@ -118,7 +118,7 @@ JSJaCPacket.prototype.setType = function(type) {
  * @return {JSJaCPacket} this
  */
 JSJaCPacket.prototype.setXMLLang = function(xmllang) {
-  if (!xmllang || xmllang == '')
+  if (!xmllang)
     this.getNode().removeAttribute('xml:lang');
   else
     this.getNode().setAttribute('xml:lang',xmllang);
@@ -294,7 +294,7 @@ JSJaCPacket.prototype._getAttribute = function(attr) {
 };
 
 
-if (document.ELEMENT_NODE == null) {
+if (!document.ELEMENT_NODE) {
   document.ELEMENT_NODE = 1;
   document.ATTRIBUTE_NODE = 2;
   document.TEXT_NODE = 3;
@@ -440,7 +440,7 @@ function JSJaCPresence() {
   this.base = JSJaCPacket;
   this.base('presence');
 }
-JSJaCPresence.prototype = new JSJaCPacket;
+JSJaCPresence.prototype = new JSJaCPacket();
 
 /**
  * Sets the status message for current status. Usually this is set
@@ -530,7 +530,7 @@ function JSJaCIQ() {
   this.base = JSJaCPacket;
   this.base('iq');
 }
-JSJaCIQ.prototype = new JSJaCPacket;
+JSJaCIQ.prototype = new JSJaCPacket();
 
 /**
  * Some combined method to set 'to', 'type' and 'id' at once
@@ -625,7 +625,7 @@ function JSJaCMessage() {
   this.base = JSJaCPacket;
   this.base('message');
 }
-JSJaCMessage.prototype = new JSJaCPacket;
+JSJaCMessage.prototype = new JSJaCPacket();
 
 /**
  * Sets the body of the message

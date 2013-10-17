@@ -12,7 +12,7 @@ function JSJaCKeys(func,oDbg) {
   /**
    * @private
    */
-  this._k = new Array();
+  this._k = [];
   this._k[0] = seed.toString();
   if (oDbg)
     /**
@@ -49,7 +49,7 @@ function JSJaCKeys(func,oDbg) {
    * @return <code>true</code> if there's only one key left, false otherwise
    * @type boolean
    */
-  this.lastKey = function() { return (this._indexAt == 0); };
+  this.lastKey = function() { return (this._indexAt === 0); };
   /**
    * Returns number of overall/initial stack size
    * @return Number of keys created

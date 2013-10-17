@@ -57,7 +57,7 @@ function JSJaCConsoleLogger(level) {
         console.log(msg);
         break;
       }
-    } catch(e) { try { console.log(msg); } catch(e) {} }
+    } catch(e1) { try { console.log(msg); } catch(e2) {} }
   };
 
   /**

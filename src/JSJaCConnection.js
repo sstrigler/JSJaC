@@ -161,7 +161,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
 
     if (typeof(this._req[slot].r.onerror) != 'undefined') {
         this._req[slot].r.onerror =
-            JSJaC.bind(function(e) {
+            JSJaC.bind(function() {
                 this.oDbg.log('XmlHttpRequest error',1);
             }, this);
     }
@@ -302,22 +302,20 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   this._events[event].sort(function(a,b) {
     var aRank = 0;
     var bRank = 0;
-    with (a) {
-      if (type == '*')
-        aRank++;
-      if (childNS == '*')
-        aRank++;
-      if (childName == '*')
-        aRank++;
-    }
-    with (b) {
-      if (type == '*')
-        bRank++;
-      if (childNS == '*')
-        bRank++;
-      if (childName == '*')
-        bRank++;
-    }
+
+    if (a.type == '*')
+      aRank++;
+    if (a.childNS == '*')
+      aRank++;
+    if (a.childName == '*')
+      aRank++;
+    if (b.type == '*')
+      bRank++;
+    if (b.childNS == '*')
+      bRank++;
+    if (b.childName == '*')
+      bRank++;
+
     if (aRank > bRank)
       return 1;
     if (aRank < bRank)
@@ -1064,12 +1062,12 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
         return false;
     }
 
-    var errorTag;
+    var errorTag, i;
     if (doc.getElementsByTagNameNS) {
         errorTag = doc.getElementsByTagNameNS(NS_STREAM, "error").item(0);
     } else {
         var errors = doc.getElementsByTagName("error");
-        for (var i=0; i<errors.length; i++)
+        for (i=0; i<errors.length; i++)
             if (errors.item(i).namespaceURI == NS_STREAM ||
                 errors.item(i).getAttribute('xmlns') == NS_STREAM) {
                 errorTag = errors.item(i);
@@ -1093,7 +1091,7 @@ JSJaCConnection.prototype._parseStreamFeatures = function(doc) {
     var lMec1 = doc.getElementsByTagName("mechanisms");
     if (!lMec1.length) return false;
     this.has_sasl = false;
-    for (var i=0; i<lMec1.length; i++)
+    for (i=0; i<lMec1.length; i++)
         if (lMec1.item(i).getAttribute("xmlns") == NS_SASL) {
             this.has_sasl=true;
             var lMec2 = lMec1.item(i).getElementsByTagName("mechanism");
@@ -1254,7 +1252,7 @@ JSJaCConnection.prototype._sendEmpty = function(cb) {
 
   if (typeof(this._req[slot].r.onerror) != 'undefined') {
     this._req[slot].r.onerror =
-      JSJaC.bind(function(e) {
+      JSJaC.bind(function() {
                    this.oDbg.log('XmlHttpRequest error',1);
                  }, this);
   }
