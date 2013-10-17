@@ -1,0 +1,21 @@
+{
+  "latedef": true,
+  "noempty": true,
+  "undef": false,
+  "unused": true,
+  "sub": true,
+
+  "bitwise": true,
+  "immed": true,
+  "newcap": true,
+  "noarg": true,
+  "quotmark": false,
+  "regexp": true,
+  "trailing": true,
+
+  "es3": true,
+  "browser": true,
+  "nonstandard": true,
+
+  "maxerr": 10000
+}
