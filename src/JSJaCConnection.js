@@ -108,7 +108,6 @@ function JSJaCConnection(oArg) {
  * @param {boolean} [oArg.register] Whether to register a new account.
  * @param {string} [oArg.host] The host to connect to which might be different from the domain given above. So some XMPP service might host the domain 'example.com' but might be located at the host 'jabber.example.com'. Normally such situations should be gracefully handled by using DNS SRV records. But in cases where this isn't available you can set the host manually here.
  * @param {int} [oArg.port] The port of the manually given host from above.
- * @param {boolean} [oArg.secure] Whether to only allow secured (i.e. encrypted) connections to the XMPP service.
  * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
  * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', or 'anonymous'.
  * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
@@ -137,16 +136,6 @@ JSJaCConnection.prototype.connect = function(oArg) {
 
     this.host = oArg.host;
     this.port = oArg.port || 5222;
-    if (oArg.secure)
-        /**
-         * @private
-         */
-        this.secure = 'true';
-    else
-        /**
-         * @private
-         */
-        this.secure = 'false';
 
     this.jid = this.username + '@' + this.domain;
     this.fulljid = this.jid + '/' + this.resource;

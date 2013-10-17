@@ -202,8 +202,6 @@ JSJaCHttpBindingConnection.prototype._getInitialRequestString = function() {
   var reqstr = "<body content='text/xml; charset=utf-8' hold='"+this._hold+"' xmlns='http://jabber.org/protocol/httpbind' to='"+this.authhost+"' wait='"+this._wait+"' rid='"+this._rid+"'";
   if (this.host && this.port)
     reqstr += " route='xmpp:"+this.host+":"+this.port+"'";
-  if (this.secure)
-    reqstr += " secure='"+this.secure+"'";
   if (JSJAC_HAVEKEYS) {
     this._keys = new JSJaCKeys(hex_sha1,this.oDbg); // generate first set of keys
     var key = this._keys.getKey();
@@ -264,7 +262,7 @@ JSJaCHttpBindingConnection.prototype._getStreamID = function(req) {
  * @private
  */
 JSJaCHttpBindingConnection.prototype._getSuspendVars = function() {
-  return ('host,port,secure,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests,_pause').split(',');
+  return ('host,port,_rid,_last_rid,_wait,_min_polling,_inactivity,_hold,_last_requests,_pause').split(',');
 };
 
 /**

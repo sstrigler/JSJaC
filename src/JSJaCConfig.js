@@ -18,7 +18,7 @@ JSJACHBC_MAX_HOLD = 1;          // default for number of connctions held by
 JSJACHBC_MAX_WAIT = 300;        // default 'wait' param - how long an idle connection
                                     // should be held by connection manager
 
-JSJACHBC_BOSH_VERSION  = "1.6";
+JSJACHBC_BOSH_VERSION  = "1.10";
 JSJACHBC_USE_BOSH_VER  = true;
 
 JSJACHBC_MAXPAUSE = 120;        // how long a suspend/resume cycle may take
