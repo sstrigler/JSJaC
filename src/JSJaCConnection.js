@@ -110,49 +110,20 @@ function JSJaCConnection(oArg) {
  * @param {int} [oArg.port] The port of the manually given host from above.
  * @param {boolean} [oArg.secure] Whether to only allow secured (i.e. encrypted) connections to the XMPP service.
  * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
- * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.
+ * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', or 'anonymous'.
  * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
  */
 JSJaCConnection.prototype.connect = function(oArg) {
     this._setStatus('connecting');
 
-    if (oArg.authtype != 'x-facebook-platform') {
+    this.domain = oArg.domain || 'localhost';
+    this.username = oArg.username;
+    this.resource = oArg.resource;
+    this.pass = oArg.password || oArg.pass;
+    this.register = oArg.register;
 
-        this.domain = oArg.domain || 'localhost';
-        this.username = oArg.username;
-        this.resource = oArg.resource;
-        this.pass = oArg.password || oArg.pass;
-        this.register = oArg.register;
-
-        this.authhost = oArg.authhost || oArg.host || oArg.domain;
-        this.authtype = oArg.authtype || 'sasl';
-
-    } else {
-
-        this.domain = 'chat.facebook.com';
-        this.authtype = oArg.authtype;
-
-        if (oArg.facebookApp !== undefined) {
-
-            this._facebookApp = oArg.facebookApp;
-
-            if(!document.getElementById('fb-root')){
-                var fbDiv = document.createElement('div');
-                fbDiv.id = 'fb-root';
-                document.body.appendChild(fbDiv);
-            }
-
-              if (oArg.facebookApp.getSession() === undefined) {
-                this._facebookApp.Login(this, oArg);
-                return;
-            }
-
-        } else {
-             this.oDbg.log("No Facebook application param specified!",1);
-            return;
-        }
-
-    }
+    this.authhost = oArg.authhost || oArg.host || oArg.domain;
+    this.authtype = oArg.authtype || 'sasl';
 
     if (oArg.xmllang && oArg.xmllang !== '')
         this._xmllang = oArg.xmllang;
@@ -832,15 +803,6 @@ JSJaCConnection.prototype._doSASLAuth = function() {
                            this._doSASLAuthDone);
     }
     this.oDbg.log("SASL ANONYMOUS requested but not supported",1);
-
-  } else if (this.authtype == 'x-facebook-platform') {
-      if (this.mechs['X-FACEBOOK-PLATFORM']) {
-          return this._sendRaw(
-              "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-FACEBOOK-PLATFORM' />",
-              this._doFacebookAuth);
-      }
-      this.oDbg.log("X-FACEBOOK-PLATFORM requested but not supported",1);
-
   } else {
     if (this.mechs['DIGEST-MD5']) {
       this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",2);
@@ -979,89 +941,6 @@ JSJaCConnection.prototype._doSASLAuthDone = function (el) {
     } else {
         this._reInitStream(JSJaC.bind(this._doStreamBind, this));
     }
-};
-
-/**
- * @private
- */
-JSJaCConnection.prototype._doFacebookAuth = function(el) {
-
-  if (el.nodeName != "challenge") {
-    this.oDbg.log("challenge missing",1);
-    this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
-    this.disconnect();
-  } else {
-    var challenge = b64decode(el.firstChild.nodeValue);
-    this.oDbg.log("got challenge: "+challenge,2);
-
-	//Let's split all the variables taked back from server side
-	var parts = challenge.split('&');
-	var vars = Array();
-	for (var i=0;i<parts.length;i++){
-		var tmp = parts[i].split('=');
-		vars[tmp[0]] = tmp[1];
-	}
-
-      if(vars['nonce'] != ''){
-
-          var fbSession = this._facebookApp.getSession();
-
-          var response = {
-              'api_key'     : this._facebookApp.getApiKey(),
-              'call_id'     : new Date().getTime(),
-              'method'      : vars['method'],
-              'nonce'       : vars['nonce'],
-              'session_key' : fbSession['session_key'],
-              'v'           : '1.0'
-          };
-
-          response['sig'] = 'api_key=' + response['api_key'] +
-              'call_id=' + response['call_id'] +
-              'method=' + response['method'] +
-              'nonce=' + response['nonce'] +
-              'session_key=' + response['session_key'] +
-              'v=' + response['v'];
-
-          response['sig'] = hex_md5(response['sig'] + this._facebookApp.getApiSecret());
-
-          response = 'api_key=' + response['api_key'] + '&' +
-              'call_id=' + response['call_id'] + '&' +
-              'method=' + response['method'] + '&' +
-              'nonce=' + response['nonce'] + '&' +
-              'session_key=' + response['session_key'] + '&' +
-              'v=' + response['v'] + '&' +
-              'sig=' + response['sig'];
-
-          response = b64encode(response);
-
-          return this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" + response + "</response>",
-                               this._doFacebookAuthDone);
-
-
-      }else{
-
-          this.oDbg.log("nonce missing",1);
-          this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
-          this.disconnect();
-
-      }
-
-  }
-
-};
-
-/**
- * @private
- */
-JSJaCConnection.prototype._doFacebookAuthDone = function(el) {
-
-	if (el.nodeName != 'success') {
-		this.oDbg.log("auth failed",1);
-		this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
-		this.disconnect();
-	}else {
-        this._reInitStream(JSJaC.bind(this._doStreamBind, this));
-	}
 };
 
 /**

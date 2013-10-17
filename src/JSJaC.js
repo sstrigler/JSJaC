@@ -28,7 +28,6 @@ var JSJaC = {
      'JSJaCHttpPollingConnection',
      'JSJaCHttpBindingConnection',
      'JSJaCConsoleLogger',
-     'JSJaCFBApplication',
      'JSJaCWebSocketConnection'
      ];
     var scripts = document.getElementsByTagName("script");

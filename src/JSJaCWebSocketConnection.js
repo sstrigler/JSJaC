@@ -99,7 +99,7 @@ JSJaCWebSocketConnection.prototype._cleanupWebSocket = function() {
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {boolean} [oArg.register] Whether to register a new account.
  * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
- * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', 'anonymous', or 'x-facebook-platform'.
+ * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', or 'anonymous'.
  * @param {string} [oArg.xmllang] The requested language for this login. Typically XMPP server try to respond with error messages and the like in this language if available.
  */
 JSJaCWebSocketConnection.prototype.connect = function(oArg) {
