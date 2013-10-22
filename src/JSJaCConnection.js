@@ -821,31 +821,33 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this._handleEvent('onerror',JSJaCError('401','auth','not-authorized'));
     this.disconnect();
   } else {
-    var challenge = b64decode(el.firstChild.nodeValue);
+    var challenge = b64decode(el.firstChild.nodeValue), index;
     this.oDbg.log("got challenge: "+challenge,2);
-    this._nonce = challenge.substring(challenge.indexOf("nonce=")+7);
-    this._nonce = this._nonce.substring(0,this._nonce.indexOf("\""));
-    this.oDbg.log("nonce: "+this._nonce,2);
-    if (this._nonce === '' || this._nonce.indexOf('\"') != -1) {
-      this.oDbg.log("nonce not valid, aborting",1);
+
+    index = challenge.indexOf("nonce=\"");
+    if(index !== -1) {
+      this._nonce = challenge.substring(index + 7);
+      this._nonce = this._nonce.substring(0, this._nonce.indexOf("\""));
+      this.oDbg.log("nonce: " + this._nonce, 2);
+    } else {
+      this.oDbg.log("no valid nonce found, aborting", 1);
       this.disconnect();
       return;
     }
 
-    this._digest_uri = "xmpp/";
-    //     if (typeof(this.host) != 'undefined' && this.host != '') {
-    //       this._digest-uri += this.host;
-    //       if (typeof(this.port) != 'undefined' && this.port)
-    //         this._digest-uri += ":" + this.port;
-    //       this._digest-uri += '/';
-    //     }
-    this._digest_uri += this.domain;
+    index = challenge.indexOf("realm=\"");
+    if (index !== -1) {
+      this._realm = challenge.substring(index + 7);
+      this._realm = this._realm.substring(0, this._realm.indexOf("\""));
+    }
+    this._realm = this._realm || this.domain;
+    this.oDbg.log("realm: " + this._realm, 2);
 
+    this._digest_uri = "xmpp/" + this.domain;
     this._cnonce = cnonce(14);
-
     this._nc = '00000001';
 
-    var X = this.username+':'+this.domain+':'+this.pass;
+    var X = this.username+':'+this._realm+':'+this.pass;
     var Y = rstr_md5(str2rstr_utf8(X));
 
     var A1 = Y+':'+this._nonce+':'+this._cnonce;
@@ -857,10 +859,10 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     var response = hex_md5(HA1+':'+this._nonce+':'+this._nc+':'+
                            this._cnonce+':auth:'+HA2);
 
-    var rPlain = 'username="'+this.username+'",realm="'+this.domain+
-    '",nonce="'+this._nonce+'",cnonce="'+this._cnonce+'",nc="'+this._nc+
-    '",qop=auth,digest-uri="'+this._digest_uri+'",response="'+response+
-    '",charset="utf-8"';
+    var rPlain = 'username="'+this.username+'",realm="'+this._realm+
+    '",nonce="'+this._nonce+'",cnonce="'+this._cnonce+'",nc='+this._nc+
+    ',qop=auth,digest-uri="'+this._digest_uri+'",response='+response+
+    ',charset=utf-8';
 
     this.oDbg.log("response: "+rPlain,2);
 
@@ -890,7 +892,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
   var rspauth = response.substring(response.indexOf("rspauth=")+8);
   this.oDbg.log("rspauth: "+rspauth,2);
 
-  var X = this.username+':'+this.domain+':'+this.pass;
+  var X = this.username+':'+this._realm+':'+this.pass;
   var Y = rstr_md5(str2rstr_utf8(X));
 
   var A1 = Y+':'+this._nonce+':'+this._cnonce;
