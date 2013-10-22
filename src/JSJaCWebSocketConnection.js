@@ -97,6 +97,7 @@ JSJaCWebSocketConnection.prototype._cleanupWebSocket = function() {
  * @param {string} oArg.resource The resource to identify the login with.
  * @param {string} oArg.password The user's password.
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
+ * @param {boolean} [oArg.allow_scram] Whether to allow SCRAM-SHA-1 authentication. Please note that it is quite slow, do some testing on all required browsers before enabling.
  * @param {boolean} [oArg.register] Whether to register a new account.
  * @param {string} [oArg.authhost] The host that handles the actualy authorization. There are cases where this is different from the settings above, e.g. if there's a service that provides anonymous logins at 'anon.example.org'.
  * @param {string} [oArg.authtype] Must be one of 'sasl' (default), 'nonsasl', 'saslanon', or 'anonymous'.
@@ -121,6 +122,12 @@ JSJaCWebSocketConnection.prototype.connect = function(oArg) {
     this._allow_plain = oArg.allow_plain;
   } else {
     this._allow_plain = JSJAC_ALLOW_PLAIN;
+  }
+
+  if (oArg.allow_scram) {
+    this._allow_scram = oArg.allow_scram;
+  } else {
+    this._allow_scram = JSJAC_ALLOW_SCRAM;
   }
 
   if (oArg.xmllang && oArg.xmllang !== '') {
@@ -371,6 +378,22 @@ JSJaCWebSocketConnection.prototype.resume = function() {
  */
 JSJaCWebSocketConnection.prototype.suspend = function() {
   return false; // not supported for websockets
+};
+
+/**
+ * @private
+ */
+JSJaCWebSocketConnection.prototype._doSASLAuthScramSha1S1 = function(event) {
+  var el = this._parseXml(event.data);
+  return JSJaC.bind(JSJaCConnection.prototype._doSASLAuthScramSha1S1, this)(el);
+};
+
+/**
+ * @private
+ */
+JSJaCWebSocketConnection.prototype._doSASLAuthScramSha1S2 = function(event) {
+  var el = this._parseXml(event.data);
+  return JSJaC.bind(JSJaCConnection.prototype._doSASLAuthScramSha1S2, this)(el);
 };
 
 /**

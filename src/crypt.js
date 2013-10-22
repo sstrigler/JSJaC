@@ -623,7 +623,7 @@ function utf8t2d(t)
       }
   return d;
 }
-	
+
 // returns plaintext from an array of bytesrepresenting dezimal numbers, which
 // represent an UTF-8 encoded text; browser which does not understand unicode
 // like NN401 will show "?"-signs instead
@@ -711,19 +711,28 @@ if (typeof(atob) == 'undefined' || typeof(btoa) == 'undefined')
 if (typeof(atob) == 'undefined') {
   b64decode = function(s) {
     return utf8d2t(b64t2d(s));
-  }
+  };
+  b64decode_bin = function(s) {
+    var dec = b64t2d(s);
+    var ret = '';
+    for(var i = 0; i < dec.length; i++) {
+      ret += String.fromCharCode(dec[i]);
+    }
+    return ret;
+  };
 } else {
   b64decode = function(s) {
     return decodeURIComponent(escape(atob(s)));
-  }
+  };
+  b64decode_bin = atob;
 }
 
 if (typeof(btoa) == 'undefined') {
   b64encode = function(s) {
     return b64d2t(utf8t2d(s));
-  }
+  };
 } else {
   b64encode = function(s) {
     return btoa(unescape(encodeURIComponent(s)));
-  }
+  };
 }

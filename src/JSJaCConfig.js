@@ -6,6 +6,7 @@ JSJAC_ERR_COUNT = 10;           // number of retries in case of connection
                                     // errors
 
 JSJAC_ALLOW_PLAIN = true;       // whether to allow plaintext logins
+JSJAC_ALLOW_SCRAM = false;      // allow usage of SCRAM-SHA-1 authentication; please note that it is quite slow so it is disable by default
 
 JSJAC_CHECKQUEUEINTERVAL = 100;   // msecs to poll send queue
 JSJAC_CHECKINQUEUEINTERVAL = 100; // msecs to poll incoming queue

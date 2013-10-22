@@ -105,6 +105,7 @@ function JSJaCConnection(oArg) {
  * @param {string} oArg.resource The resource to identify the login with.
  * @param {string} oArg.password The user's password.
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
+ * @param {boolean} [oArg.allow_scram] Whether to allow SCRAM-SHA-1 authentication. Please note that it is quite slow, do some testing on all required browsers before enabling.
  * @param {boolean} [oArg.register] Whether to register a new account.
  * @param {string} [oArg.host] The host to connect to which might be different from the domain given above. So some XMPP service might host the domain 'example.com' but might be located at the host 'jabber.example.com'. Normally such situations should be gracefully handled by using DNS SRV records. But in cases where this isn't available you can set the host manually here.
  * @param {int} [oArg.port] The port of the manually given host from above.
@@ -133,6 +134,11 @@ JSJaCConnection.prototype.connect = function(oArg) {
         this._allow_plain = oArg.allow_plain;
     else
         this._allow_plain = JSJAC_ALLOW_PLAIN;
+
+    if (oArg.allow_scram)
+        this._allow_scram = oArg.allow_scram;
+    else
+        this._allow_scram = JSJAC_ALLOW_SCRAM;
 
     this.host = oArg.host;
     this.port = oArg.port || 5222;
@@ -791,7 +797,17 @@ JSJaCConnection.prototype._doSASLAuth = function() {
     }
     this.oDbg.log("SASL ANONYMOUS requested but not supported",1);
   } else {
-    if (this.mechs['DIGEST-MD5']) {
+    if (this._allow_scram && this.mechs['SCRAM-SHA-1']) {
+      this.oDbg.log("SASL using mechanism 'SCRAM-SHA-1'", 2);
+
+      this._clientFirstMessageBare = 'n=' + this.username + ',r=' + JSJaCUtils.cnonce(16);
+      var clientFirstMessage = 'n,,' + this._clientFirstMessageBare;
+
+      return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='SCRAM-SHA-1'>" +
+                           b64encode(clientFirstMessage) +
+                           "</auth>",
+                           this._doSASLAuthScramSha1S1);
+    } else if (this.mechs['DIGEST-MD5']) {
       this.oDbg.log("SASL using mechanism 'DIGEST-MD5'",2);
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>",
                            this._doSASLAuthDigestMd5S1);
@@ -810,6 +826,85 @@ JSJaCConnection.prototype._doSASLAuth = function() {
     this.authtype = 'nonsasl'; // fallback
   }
   return false;
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doSASLAuthScramSha1S1 = function(el) {
+  if (el.nodeName != 'challenge') {
+    this.oDbg.log('challenge missing', 1);
+    this._handleEvent('onerror', JSJaCError('401', 'auth', 'not-authorized'));
+    this.disconnect();
+  } else {
+    var serverFirstMessage = b64decode(el.firstChild.nodeValue);
+    this.oDbg.log('got challenge: ' + serverFirstMessage, 2);
+
+    var data = {};
+    var fields = serverFirstMessage.split(',');
+    for(var field in fields) {
+      var val = fields[field].substring(2);
+      data[fields[field].substring(0, 1)] = val;
+    }
+
+    var password = str2rstr_utf8(this.pass);
+    var u = b64decode_bin(data['s']) + "\x00\x00\x00\x01";
+    var h, i = parseInt(data['i'], 10);
+    for(var j = 0; j < i; j++) {
+      u = rstr_hmac_sha1(password, u);
+      h = JSJaCUtils.xor(h, u);
+    }
+
+    var clientFinalMessageWithoutProof = 'c=biws,r=' + data['r'];
+
+    this._saltedPassword = h;
+    var clientKey = rstr_hmac_sha1(this._saltedPassword, 'Client Key');
+    var storedKey = rstr_sha1(clientKey);
+    this._authMessage = this._clientFirstMessageBare + ',' + serverFirstMessage + ',' + clientFinalMessageWithoutProof;
+    var clientSignature = rstr_hmac_sha1(storedKey, str2rstr_utf8(this._authMessage));
+    var proof = JSJaCUtils.xor(clientKey, clientSignature);
+
+    var clientFinalMessage = clientFinalMessageWithoutProof + ',p=' + rstr2b64(proof);
+
+    this.oDbg.log('response: ' + clientFinalMessage, 2);
+    this._sendRaw("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" +
+                  b64encode(clientFinalMessage) +
+                  "</response>",
+                  this._doSASLAuthScramSha1S2);
+  }
+};
+
+/**
+ * @private
+ */
+JSJaCConnection.prototype._doSASLAuthScramSha1S2 = function (el) {
+  if (el.nodeName != 'success') {
+    this.oDbg.log('auth failed',1);
+    this._handleEvent('onerror', JSJaCError('401', 'auth', 'not-authorized'));
+    this.disconnect();
+  } else {
+    var serverFinalMessage = b64decode(el.firstChild.nodeValue);
+    this.oDbg.log('got success: ' + serverFinalMessage, 2);
+
+    var data = {};
+    var fields = serverFinalMessage.split(',');
+    for(var field in fields) {
+      var val = fields[field].substring(2);
+      data[fields[field].substring(0, 1)] = val;
+    }
+
+    var serverKey = rstr_hmac_sha1(this._saltedPassword, 'Server Key');
+    var serverSignature = rstr_hmac_sha1(serverKey, str2rstr_utf8(this._authMessage));
+    var verifier = b64decode_bin(data['v']);
+
+    if(serverSignature !== verifier) {
+      this.oDbg.log('server auth failed', 1);
+      this._handleEvent('onerror', JSJaCError('401', 'auth', 'not-authorized'));
+      this.disconnect();
+    } else {
+      this._reInitStream(JSJaC.bind(this._doStreamBind, this));
+    }
+  }
 };
 
 /**
