@@ -844,7 +844,7 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     this.oDbg.log("realm: " + this._realm, 2);
 
     this._digest_uri = "xmpp/" + this.domain;
-    this._cnonce = cnonce(14);
+    this._cnonce = JSJaCUtils.cnonce(14);
     this._nc = '00000001';
 
     var X = this.username+':'+this._realm+':'+this.pass;

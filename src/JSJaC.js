@@ -20,6 +20,7 @@ var JSJaC = {
      'JSJaCCookie',
      'JSJaCJSON',
      'JSJaCJID',
+     'JSJaCUtils',
      'JSJaCBuilder',
      'JSJaCPacket',
      'JSJaCError',

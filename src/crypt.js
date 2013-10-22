@@ -727,12 +727,3 @@ if (typeof(btoa) == 'undefined') {
     return btoa(unescape(encodeURIComponent(s)));
   }
 }
-
-function cnonce(size) {
-  var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var cnonce = '';
-  for (var i=0; i<size; i++) {
-    cnonce += tab.charAt(Math.round(Math.random(new Date().getTime())*(tab.length-1)));
-  }
-  return cnonce;
-}
