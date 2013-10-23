@@ -1,3 +1,4 @@
+/*exported JSJaCError */
 
 /**
  * an error packet for internal use

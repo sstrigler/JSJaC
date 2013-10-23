@@ -4,9 +4,12 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  */
 
+/*exported JSJaC */
+
 var JSJaC = {
   Version: '1.4',
   require: function(libraryName) {
+    /*jshint evil: true */
     // inserting via DOM fails in Safari 2.0, so brute force approach
     document.write('<script type="text/javascript" src="'+libraryName+'"></script>');
   },

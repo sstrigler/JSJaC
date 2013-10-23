@@ -10,6 +10,18 @@
  * @author Stefan Strigler
  */
 
+/*exported JSJaCCookieException, JSJaCCookie */
+
+/**
+ * Some exception denoted to dealing with cookies
+ * @constructor
+ * @param {String} msg The message to pass to the exception
+ */
+function JSJaCCookieException(msg) {
+  this.message = msg;
+  this.name = "CookieException";
+}
+
 /**
  * Creates a new Cookie
  * @class Class representing browser cookies for storing small amounts of data
@@ -201,13 +213,3 @@ JSJaCCookie._escape = function(str) {
 JSJaCCookie._unescape = function(str) {
   return str.replace(/%3AB/g, ";");
 };
-
-/**
- * Some exception denoted to dealing with cookies
- * @constructor
- * @param {String} msg The message to pass to the exception
- */
-function JSJaCCookieException(msg) {
-  this.message = msg;
-  this.name = "CookieException";
-}

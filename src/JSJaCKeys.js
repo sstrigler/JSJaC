@@ -1,3 +1,4 @@
+/*exported JSJaCKeys */
 
 /**
  * Creates a new set of hash keys

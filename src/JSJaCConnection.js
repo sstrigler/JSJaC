@@ -4,6 +4,8 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  */
 
+/*exported JSJaCConnection */
+
 /**
  * Creates a new Jabber/XMPP connection (a connection to a jabber server)
  * @class Somewhat abstract base class for jabber connections. Contains all

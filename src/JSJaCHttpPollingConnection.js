@@ -3,6 +3,8 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  */
 
+/*exported JSJaCHttpPollingConnection */
+
 /**
  * Instantiates an HTTP Polling session
  * @class Implementation of {@link

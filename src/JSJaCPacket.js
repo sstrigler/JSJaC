@@ -3,6 +3,8 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  */
 
+/*exported JSJaCPacket, JSJaCPresence, JSJaCIQ, JSJaCMessage */
+
 var JSJACPACKET_USE_XMLNS = true;
 
 /**

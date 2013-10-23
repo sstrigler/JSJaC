@@ -12,6 +12,7 @@
   "quotmark": false,
   "regexp": true,
   "trailing": true,
+  "freeze": true,
 
   "es3": true,
   "browser": true,
@@ -91,12 +92,14 @@
     "JSJaCConnection": true,
     "JSJaCConsoleLogger": true,
     "JSJaCCookie": true,
+    "JSJaCCookieException": true,
     "JSJaCDebugger": true,
     "JSJaCError": true,
     "JSJaCHttpBindingConnection": true,
     "JSJaCHttpPollingConnection": true,
     "JSJaCIQ": true,
     "JSJaCJID": true,
+    "JSJaCJIDInvalidException": true,
     "JSJaCJSON": true,
     "JSJaCKeys": true,
     "JSJaCMessage": true,
@@ -104,6 +107,9 @@
     "JSJaCPresence": true,
     "JSJaCUtils": true,
     "JSJaCWebSocketConnection": true,
+
+    "XmlHttp": false,
+    "XmlDocument": false,
 
     "b64_sha1": false,
     "hex_sha1": false,

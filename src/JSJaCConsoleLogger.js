@@ -1,6 +1,10 @@
 /**
  * @fileOverview Contains Debugger interface for Firebug and Safari
  */
+
+/*exported JSJaCConsoleLogger */
+/*global console */
+
 /**
  * A logger that logs using the 'console' object.
  * @constructor

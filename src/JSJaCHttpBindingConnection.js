@@ -3,6 +3,8 @@
  * @author Stefan Strigler steve@zeank.in-berlin.de
  */
 
+/*exported JSJaCHttpBindingConnection */
+
 /**
  * Instantiates a BOSH session connection.
  * @class Implementation of {@link http://xmpp.org/extensions/xep-0206.html | XMPP Over BOSH}

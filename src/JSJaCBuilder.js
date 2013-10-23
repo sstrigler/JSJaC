@@ -21,6 +21,8 @@
  * SOFTWARE.
  */
 
+/*exported JSJaCBuilder */
+
 /**
  * This code is taken from 
  * {@link http://wiki.script.aculo.us/scriptaculous/show/Builder | script.aculo.us' Dom Builder} 

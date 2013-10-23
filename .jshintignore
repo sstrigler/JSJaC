@@ -1,5 +1,6 @@
 src/crypt.js
 src/xmlextras.js
+src/ieXDRToXHR.js
 utils
 jsjac.js
 jsjac.uncompressed.js

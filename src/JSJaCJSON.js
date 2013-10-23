@@ -18,6 +18,8 @@
  * SOFTWARE.
  */
 
+/*exported JSJaCJSON */
+
 /*
   json.js
   taken from prototype.js, made static
@@ -123,6 +125,7 @@ switch (typeof(obj)) {
 };
 
 JSJaCJSON.parse = function (str) {
+  /*jshint evil: true */
   try {
     return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
                                                        str.replace(/"(\\.|[^"\\])*"/g, ''))) &&

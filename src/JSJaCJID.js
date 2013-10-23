@@ -4,6 +4,27 @@
  * @author Stefan Strigler
  */
 
+/*exported JSJaCJIDInvalidException, JSJaCJID */
+
+/**
+ * Creates a new Exception of type JSJaCJIDInvalidException
+ * @class Exception to indicate invalid values for a jid
+ * @constructor
+ * @param {String} message The message associated with this Exception
+ */
+function JSJaCJIDInvalidException(message) {
+    /**
+     * The exceptions associated message
+     * @type String
+     */
+    this.message = message;
+    /**
+     * The name of the exception
+     * @type String
+     */
+    this.name = "JSJaCJIDInvalidException";
+}
+
 /**
  * list of forbidden chars for nodenames
  * @private
@@ -186,22 +207,3 @@ JSJaCJID._checkNodeName = function(nodeprep) {
         }
     }
 };
-
-/**
- * Creates a new Exception of type JSJaCJIDInvalidException
- * @class Exception to indicate invalid values for a jid
- * @constructor
- * @param {String} message The message associated with this Exception
- */
-function JSJaCJIDInvalidException(message) {
-    /**
-     * The exceptions associated message
-     * @type String
-     */
-    this.message = message;
-    /**
-     * The name of the exception
-     * @type String
-     */
-    this.name = "JSJaCJIDInvalidException";
-}
