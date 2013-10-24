@@ -98,6 +98,7 @@ JSJaCWebSocketConnection.prototype._cleanupWebSocket = function() {
  * @param {string} oArg.username The username (nodename) to be logged in with.
  * @param {string} oArg.resource The resource to identify the login with.
  * @param {string} oArg.password The user's password.
+ * @param {string} [oArg.authzid] Authorization identity. Used to act as another user, in most cases not needed and rarely supported by servers. If present should be a bare JID (user@example.net).
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {boolean} [oArg.allow_scram] Whether to allow SCRAM-SHA-1 authentication. Please note that it is quite slow, do some testing on all required browsers before enabling.
  * @param {boolean} [oArg.register] Whether to register a new account.
@@ -112,6 +113,7 @@ JSJaCWebSocketConnection.prototype.connect = function(oArg) {
   this.username = oArg.username;
   this.resource = oArg.resource;
   this.pass = oArg.password || oArg.pass;
+  this.authzid = oArg.authzid || '';
   this.register = oArg.register;
 
   this.authhost = oArg.authhost || this.domain;

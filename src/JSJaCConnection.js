@@ -106,6 +106,7 @@ function JSJaCConnection(oArg) {
  * @param {string} oArg.username The username (nodename) to be logged in with.
  * @param {string} oArg.resource The resource to identify the login with.
  * @param {string} oArg.password The user's password.
+ * @param {string} [oArg.authzid] Authorization identity. Used to act as another user, in most cases not needed and rarely supported by servers. If present should be a bare JID (user@example.net).
  * @param {boolean} [oArg.allow_plain] Whether to allow plain text logins.
  * @param {boolean} [oArg.allow_scram] Whether to allow SCRAM-SHA-1 authentication. Please note that it is quite slow, do some testing on all required browsers before enabling.
  * @param {boolean} [oArg.register] Whether to register a new account.
@@ -122,6 +123,7 @@ JSJaCConnection.prototype.connect = function(oArg) {
     this.username = oArg.username;
     this.resource = oArg.resource;
     this.pass = oArg.password || oArg.pass;
+    this.authzid = oArg.authzid || '';
     this.register = oArg.register;
 
     this.authhost = oArg.authhost || oArg.host || oArg.domain;
@@ -802,8 +804,14 @@ JSJaCConnection.prototype._doSASLAuth = function() {
     if (this._allow_scram && this.mechs['SCRAM-SHA-1']) {
       this.oDbg.log("SASL using mechanism 'SCRAM-SHA-1'", 2);
 
-      this._clientFirstMessageBare = 'n=' + this.username + ',r=' + JSJaCUtils.cnonce(16);
-      var clientFirstMessage = 'n,,' + this._clientFirstMessageBare;
+      this._clientFirstMessageBare = 'n=' + this.username.replace(/=/g, '=3D').replace(/,/g, '=2C') + ',r=' + JSJaCUtils.cnonce(16);
+      var gs2Header;
+      if (this.authzid) {
+        gs2Header = 'n,a=' + this.authzid.replace(/=/g, '=3D').replace(/,/g, '=2C') + ',';
+      } else {
+        gs2Header = 'n,,';
+      }
+      var clientFirstMessage = gs2Header + this._clientFirstMessageBare;
 
       return this._sendRaw("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='SCRAM-SHA-1'>" +
                            b64encode(clientFirstMessage) +
@@ -815,8 +823,7 @@ JSJaCConnection.prototype._doSASLAuth = function() {
                            this._doSASLAuthDigestMd5S1);
     } else if (this._allow_plain && this.mechs['PLAIN']) {
       this.oDbg.log("SASL using mechanism 'PLAIN'",2);
-      var authStr = this.username+'@'+
-      this.domain+String.fromCharCode(0)+
+      var authStr = this.authzid+String.fromCharCode(0)+
       this.username+String.fromCharCode(0)+
       this.pass;
       this.oDbg.log("authenticating with '"+authStr+"'",2);
@@ -857,7 +864,13 @@ JSJaCConnection.prototype._doSASLAuthScramSha1S1 = function(el) {
       h = JSJaCUtils.xor(h, u);
     }
 
-    var clientFinalMessageWithoutProof = 'c=biws,r=' + data['r'];
+    var gs2Header;
+    if (this.authzid) {
+      gs2Header = 'n,a=' + this.authzid.replace(/=/g, '=3D').replace(/,/g, '=2C') + ',';
+    } else {
+      gs2Header = 'n,,';
+    }
+    var clientFinalMessageWithoutProof = 'c=' + b64encode(gs2Header) + ',r=' + data['r'];
 
     this._saltedPassword = h;
     var clientKey = rstr_hmac_sha1(this._saltedPassword, 'Client Key');
@@ -948,6 +961,9 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     var Y = rstr_md5(str2rstr_utf8(X));
 
     var A1 = Y+':'+this._nonce+':'+this._cnonce;
+    if (this.authzid) {
+      A1 = A1 + ':' + this.authzid;
+    }
     var HA1 = rstr2hex(rstr_md5(A1));
 
     var A2 = 'AUTHENTICATE:'+this._digest_uri;
@@ -960,6 +976,10 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S1 = function(el) {
     '",nonce="'+this._nonce+'",cnonce="'+this._cnonce+'",nc='+this._nc+
     ',qop=auth,digest-uri="'+this._digest_uri+'",response='+response+
     ',charset=utf-8';
+
+    if (this.authzid) {
+      rPlain = 'authzid="' + this.authzid + '",' + rPlain;
+    }
 
     this.oDbg.log("response: "+rPlain,2);
 
@@ -993,6 +1013,9 @@ JSJaCConnection.prototype._doSASLAuthDigestMd5S2 = function(el) {
   var Y = rstr_md5(str2rstr_utf8(X));
 
   var A1 = Y+':'+this._nonce+':'+this._cnonce;
+  if (this.authzid) {
+    A1 = A1 + ':' + this.authzid;
+  }
   var HA1 = rstr2hex(rstr_md5(A1));
 
   var A2 = ':'+this._digest_uri;
