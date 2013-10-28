@@ -1,6 +1,7 @@
 var NS_DISCO_ITEMS =  "http://jabber.org/protocol/disco#items";
 var NS_DISCO_INFO =   "http://jabber.org/protocol/disco#info";
 var NS_VCARD =        "vcard-temp";
+var NS_VCARD_UPDATE = "vcard-temp:x:update";
 var NS_AUTH =         "jabber:iq:auth";
 var NS_AUTH_ERROR =   "jabber:iq:auth:error";
 var NS_REGISTER =     "jabber:iq:register";
@@ -20,6 +21,9 @@ var NS_EXPIRE =       "jabber:x:expire";
 var NS_EVENT =        "jabber:x:event";
 var NS_XCONFERENCE =  "jabber:x:conference";
 var NS_PING =         "urn:xmpp:ping";
+var NS_BOOKSMARKS =   "storage:bookmarks";
+var NS_FORWARD_0 =    "urn:xmpp:forward:0";
+var NS_CARBONS_2 =    "urn:xmpp:carbons:2";
 var NS_CHAT_STATES =  "http://jabber.org/protocol/chatstates";
 var NS_STATS =        "http://jabber.org/protocol/stats";
 var NS_MUC =          "http://jabber.org/protocol/muc";
@@ -29,8 +33,10 @@ var NS_MUC_OWNER =    "http://jabber.org/protocol/muc#owner";
 var NS_PUBSUB =       "http://jabber.org/protocol/pubsub";
 var NS_PUBSUB_EVENT = "http://jabber.org/protocol/pubsub#event";
 var NS_PUBSUB_OWNER = "http://jabber.org/protocol/pubsub#owner";
+var NS_PUBSUB_ERRORS ="http://jabber.org/protocol/pubsub#errors";
 var NS_PUBSUB_NMI =   "http://jabber.org/protocol/pubsub#node-meta-info";
 var NS_COMMANDS =     "http://jabber.org/protocol/commands";
+var NS_CAPS =         "http://jabber.org/protocol/caps";
 var NS_STREAM =       "http://etherx.jabber.org/streams";
 var NS_CLIENT =       "jabber:client";
 
@@ -102,4 +108,3 @@ var ERR_SUBSCRIPTION_REQUIRED =
         STANZA_ERROR("407", "auth",   "subscription-required");
 var ERR_UNEXPECTED_REQUEST =
         STANZA_ERROR("400", "wait",   "unexpected-request");
-
