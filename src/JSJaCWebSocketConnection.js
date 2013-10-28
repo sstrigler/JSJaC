@@ -27,9 +27,8 @@
  * proxies, be sure to make extensive tests if you use one.
  *
  * There is no standard for XMPP over WebSocket. However, there is a
- * draft
- * (http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-01)
- * and this implementation follows it.
+ * draft (http://tools.ietf.org/html/draft-ietf-xmpp-websocket-00) and
+ * this implementation follows it.
  *
  * Tested servers:
  *
@@ -50,8 +49,7 @@
  *   for RFC6455 hence it does not work
  * - Apache Vysper (http://mina.apache.org/vysper/) - does
  *   not support RFC6455 hence does not work
- * - Tigase (http://www.tigase.org/) - no known work on WebSocket
- *   support
+ * - Tigase (http://www.tigase.org/) - works fine since 5.2.0.
  * - MongooseIM (https://github.com/esl/ejabberd) - a fork of ejabberd
  *   with support for XMPP over Websockets.
  * </pre>
@@ -61,7 +59,7 @@
 
 /**
  * Instantiates a WebSocket session.
- * @class Implementation of {@link http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-01 | An XMPP Sub-protocol for WebSocket}.
+ * @class Implementation of {@link http://tools.ietf.org/html/draft-ietf-xmpp-websocket-00 | An XMPP Sub-protocol for WebSocket}.
  * @extends JSJaCConnection
  * @constructor
  * @param {Object} oArg connection properties.

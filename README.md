@@ -122,5 +122,5 @@ There's also an online version available at http://sstrigler.github.com/JSJaC/.
 
 [1]: http://xmpp.org/extensions/xep-0025.html
 [2]: http://xmpp.org/extensions/xep-0206.html
-[3]: http://tools.ietf.org/html/draft-moffitt-xmpp-over-websocket-01
+[3]: http://tools.ietf.org/html/draft-ietf-xmpp-websocket-00
 [4]: http://stefan-strigler.de/javascript-debug-logger/
