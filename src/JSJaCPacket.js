@@ -494,6 +494,28 @@ JSJaCPresence.prototype.setPresence = function(show,status,prio) {
 };
 
 /**
+ * Alows to response to a presence subscription this is need in order to accept
+ * denie or solicitate precense subscription
+ * @param {type} from
+ * @param {type} to
+ * @param {type} type
+ * @param {type} id
+ * @returns {JSJaCPresence.prototype}
+ */
+JSJaCPresence.prototype.setPresenceSubscription = function(from, to, type, id) {
+    this.getNode().setAttribute('id', id);
+    if (from)
+        this.getNode().setAttribute('from', from);
+
+    if (to)
+        this.getNode().setAttribute('to', to);
+
+    if (type)
+        this.getNode().setAttribute("type", type);
+    return this;
+};
+
+/**
  * Gets the status message of this presence
  * @return The (human readable) status message
  * @type String
@@ -566,6 +588,67 @@ JSJaCIQ.prototype.setQuery = function(xmlns) {
   }
   this.getNode().appendChild(query);
   return query;
+};
+
+/**
+ * Creates a stanza for adding or modifiyng user groups
+ * @param {type} groups
+ * @param {type} user
+ * @param {type} nick
+ * @returns {unresolved}
+ */
+JSJaCIQ.prototype.setGroup = function(groups, user, nick) {
+    var query;
+    var xet;
+    var max;
+    try {
+        query = this.getDoc().createElementNS('jabber:iq:roster', 'query');
+    } catch (e) {
+        query = this.getDoc().createElement('query');
+        query.setAttribute('xmlns', 'jabber:iq:roster');
+    }
+
+    xet = this.getDoc().createElement('item');
+    xet.setAttribute('jid', user);
+    xet.setAttribute('name', nick);
+
+    for (var i = 0; i < groups.length; i++) {
+        max = this.getDoc().createElement('group');
+        max.appendChild(this.getDoc().createTextNode(groups[i]));
+        xet.appendChild(max);
+
+    }
+
+    query.appendChild(xet);
+
+    this.getNode().appendChild(query);
+    return query;
+};
+
+/**
+ * Creates an stanza to remove a user from the roster
+ * @param {type} usuario
+ * @returns {unresolved}
+ */
+JSJaCIQ.prototype.removeRoster = function(user) {
+    var query;
+    var xet;
+    var max;
+    try {
+        query = this.getDoc().createElementNS('jabber:iq:roster', 'query');
+    } catch (e) {
+        query = this.getDoc().createElement('query');
+        query.setAttribute('xmlns', 'jabber:iq:roster');
+    }
+
+    xet = this.getDoc().createElement('item');
+    xet.setAttribute('jid', user);
+    xet.setAttribute('subscription', 'remove');
+
+    query.appendChild(xet);
+
+    this.getNode().appendChild(query);
+    return query;
 };
 
 /**
