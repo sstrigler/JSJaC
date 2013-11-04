@@ -27,14 +27,14 @@ polling_install: polling_build uncompressed crunch
 build:
 	@echo "building ...";
 	@for i in ${SRC}; do \
-		echo "\t$$i"; \
+		echo -e "\t$$i"; \
 		cat "$$i" >> $(OUTFILE); \
 	done
 
 polling_build:
 	@echo "building ...";
 	@for i in ${POLLING_SRC}; do \
-		echo "\t$$i"; \
+		echo -e "\t$$i"; \
 		cat "$$i" >> $(OUTFILE); \
 	done
 
@@ -63,7 +63,7 @@ moo:
 	fi
 
 doc:
-	@echo "creating jsdoc ...\c" 
+	@echo -e "creating jsdoc ...\c" 
 	@utils/jsdoc3/jsdoc -d doc src/
 	@echo " done."
 
