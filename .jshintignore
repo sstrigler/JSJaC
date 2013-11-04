@@ -3,4 +3,5 @@ src/xmlextras.js
 src/ieXDRToXHR.js
 utils
 jsjac.js
+jsjac.packed.js
 jsjac.uncompressed.js

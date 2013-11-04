@@ -1,3 +1,5 @@
+/*jshint unused: false */
+
 var NS_DISCO_ITEMS =  "http://jabber.org/protocol/disco#items";
 var NS_DISCO_INFO =   "http://jabber.org/protocol/disco#info";
 var NS_VCARD =        "vcard-temp";
