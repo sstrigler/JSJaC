@@ -162,26 +162,26 @@ JSJaCHttpBindingConnection.prototype._getRequestString = function(raw, last) {
       this._pQueue = this._pQueue.slice(1,this._pQueue.length);
     }
 
-    reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind' ";
+    reqstr = "<body rid='"+this._rid+"' sid='"+this._sid+"' xmlns='http://jabber.org/protocol/httpbind'";
     if (JSJAC_HAVEKEYS) {
-      reqstr += "key='"+this._keys.getKey()+"' ";
+      reqstr += " key='"+this._keys.getKey()+"'";
       if (this._keys.lastKey()) {
         this._keys = new JSJaCKeys(hex_sha1,this.oDbg);
-        reqstr += "newkey='"+this._keys.getKey()+"' ";
+        reqstr += " newkey='"+this._keys.getKey()+"'";
       }
     }
     if (last)
-      reqstr += "type='terminate'";
+      reqstr += " type='terminate'";
     else if (this._reinit) {
       if (JSJACHBC_USE_BOSH_VER)
-        reqstr += "xml:lang='"+this._xmllang+"' xmpp:restart='true' xmlns:xmpp='urn:xmpp:xbosh' to='"+this.domain+"'";
+        reqstr += " xml:lang='"+this._xmllang+"' xmpp:restart='true' xmlns:xmpp='urn:xmpp:xbosh' to='"+this.domain+"'";
       this._reinit = false;
     }
 
     if (xml !== '' || raw !== '') {
       reqstr += ">" + raw + xml + "</body>";
     } else {
-      reqstr += "> </body>";
+      reqstr += "/>";
     }
 
     this._last_requests[this._rid] = {};
