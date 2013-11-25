@@ -562,7 +562,7 @@ JSJaCIQ.prototype.setQuery = function(xmlns) {
     query = this.getDoc().createElementNS(xmlns,'query');
   } catch (e) {
     query = this.getDoc().createElement('query');
-	query.setAttribute('xmlns',xmlns);
+    query.setAttribute('xmlns',xmlns);
   }
   this.getNode().appendChild(query);
   return query;

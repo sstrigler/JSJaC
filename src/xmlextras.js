@@ -44,7 +44,7 @@ XmlHttp.create = function () {
                 req.readyState = 4;
                 if (typeof req.onreadystatechange == "function")
                     req.onreadystatechange();
-			}, false);
+            }, false);
         }
 
         return req;
