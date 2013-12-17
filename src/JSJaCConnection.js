@@ -287,6 +287,8 @@ JSJaCConnection.prototype.getPollInterval = function() {
  * @param {String} type The type of the packet to handle (works only if childName and chidNS are given (both may be set to '*' in order to get skipped) [optional]
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+
+ * @return This object
  */
 JSJaCConnection.prototype.registerHandler = function(event) {
   event = event.toLowerCase(); // don't be case-sensitive here
@@ -301,7 +303,7 @@ JSJaCConnection.prototype.registerHandler = function(event) {
   if (arguments.length > 4)
     eArg.type = arguments[3];
   if (!this._events[event])
-    this._events[event] = new Array(eArg);
+    this._events[event] = [eArg];
   else
     this._events[event] = this._events[event].concat(eArg);
 
@@ -333,13 +335,15 @@ JSJaCConnection.prototype.registerHandler = function(event) {
     return 0;
   });
   this.oDbg.log("registered handler for event '"+event+"'",2);
+
+  return this;
 };
 
 JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
   event = event.toLowerCase(); // don't be case-sensitive here
 
   if (!this._events[event])
-    return;
+    return this;
 
   var arr = this._events[event], res = [];
   for (var i=0; i<arr.length; i++)
@@ -350,6 +354,8 @@ JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
     this._events[event] = res;
     this.oDbg.log("unregistered handler for event '"+event+"'",2);
   }
+
+  return this;
 };
 
 /**
@@ -361,10 +367,11 @@ JSJaCConnection.prototype.unregisterHandler = function(event,handler) {
  * a retrieved packet (works only if childName is given)
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+
+ * @return This object
  */
-JSJaCConnection.prototype.registerIQGet =
-  function(childName, childNS, handler) {
-  this.registerHandler('iq', childName, childNS, 'get', handler);
+JSJaCConnection.prototype.registerIQGet = function(childName, childNS, handler) {
+  return this.registerHandler('iq', childName, childNS, 'get', handler);
 };
 
 /**
@@ -376,10 +383,11 @@ JSJaCConnection.prototype.registerIQGet =
  * a retrieved packet (works only if childName is given)
 
  * @param {Function} handler The handler to be called when event occurs. If your handler returns 'true' it cancels bubbling of the event. No other registered handlers for this event will be fired.
+
+ * @return This object
  */
-JSJaCConnection.prototype.registerIQSet =
-  function(childName, childNS, handler) {
-  this.registerHandler('iq', childName, childNS, 'set', handler);
+JSJaCConnection.prototype.registerIQSet = function(childName, childNS, handler) {
+  return this.registerHandler('iq', childName, childNS, 'set', handler);
 };
 
 /**
