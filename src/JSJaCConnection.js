@@ -481,7 +481,7 @@ JSJaCConnection.prototype.send = function(packet,cb,arg) {
       packet.setID('JSJaCID_'+this._ID++); // generate an ID
 
     // register callback with id
-    this._registerPID(packet.getID(),cb,arg);
+    this._registerPID(packet, cb, arg);
   }
 
   this._pQueue = this._pQueue.concat(packet.xml());
@@ -1143,19 +1143,20 @@ JSJaCConnection.prototype._handleEvent = function(event,arg) {
 /**
  * @private
  */
-JSJaCConnection.prototype._handlePID = function(aJSJaCPacket) {
-  if (!aJSJaCPacket.getID())
+JSJaCConnection.prototype._handlePID = function(packet) {
+  if (!packet.getID())
     return false;
-  for (var i in this._regIDs) {
-    if (this._regIDs.hasOwnProperty(i) &&
-        this._regIDs[i] && i == aJSJaCPacket.getID()) {
-      var pID = aJSJaCPacket.getID();
-      this.oDbg.log("handling "+pID,3);
-      if (this._regIDs[i].cb.call(this, aJSJaCPacket, this._regIDs[i].arg) === false) {
+
+  var jid = packet.getFrom() || this.domain;
+  var id = packet.getID();
+  if (this._regIDs[jid][id]) {
+      this.oDbg.log("handling id "+id,3);
+      var reg = this._regIDs[jid][id];
+      if (reg.cb.call(this, packet, reg.arg) === false) {
         // don't unregister
         return false;
       } else {
-        this._unregisterPID(pID);
+        delete reg;
         return true;
       }
     }
@@ -1341,20 +1342,63 @@ JSJaCConnection.prototype._process = function(timerval) {
 
 /**
  * @private
+ * @param {JSJaCPacket} packet The packet to be sent.
+ * @param {function} cb The callback to be called when response is received.
+ * @param {any} arg Optional arguments to be passed to 'cb' when executing it.
+ * @return Whether registering an ID was successful
+ * @type boolean
  */
-JSJaCConnection.prototype._registerPID = function(pID,cb,arg) {
-  if (!pID || !cb)
+JSJaCConnection.prototype._registerPID = function(packet, cb, arg) {
+  this.oDbg.log("registering id for packet "+packet.xml(), 3);
+  var id = packet.getID();
+  if (!id) {
+    this.oDbg.log("id missing", 1);
     return false;
-  this._regIDs[pID] = {};
-  this._regIDs[pID].cb = cb;
-  if (arg)
-    this._regIDs[pID].arg = arg;
-  this.oDbg.log("registered "+pID,3);
+  }
+
+  if (typeof cb != 'function') {
+    this.oDbg.log("callback is not a function", 1);
+    return false;
+  }
+
+  var jid = packet.getTo() || this.domain;
+
+  if (!this._regIDs[jid]) {
+    this._regIDs[jid] = {};
+  }
+
+  if (this._regIDs[jid][id] != null) {
+    this.oDbg.log("id already registered: " + id, 1);
+    return false;
+  }
+  this._regIDs[jid][id] = {
+      cb:  cb,
+      arg: arg,
+      ts:  Date.now()
+  };
+  this.oDbg.log("registered id "+id,3);
+  this._cleanupRegisteredPIDs();
   return true;
 };
 
+JSJaCConnection.prototype._cleanupRegisteredPIDs = function() {
+  var now = Date.now();
+  for (var jid in this._regIDs) {
+    if (this._regIDs.hasOwnProperty(jid)) {
+      for (var id in this._regIDs[jid]) {
+        if (this._regIDs[jid].hasOwnProperty(id)) {
+          if (this._regIDs[jid][id].ts + JSJAC_REGID_TIMEOUT < now) {
+            this.oDbg.log("deleting registered id '"+id+ "due to timeout", 1);
+            delete this._regIDs[jid][id];
+          }
+        }
+      }
+    }
+  }
+};
+
 /**
- * partial function binding sendEmpty to callback
+ * Partial function binding sendEmpty to callback
  * @private
  */
 JSJaCConnection.prototype._prepSendEmpty = function(cb, ctx) {
@@ -1416,15 +1460,4 @@ JSJaCConnection.prototype._setStatus = function(status) {
     this._handleEvent('onstatuschanged', status);
     this._handleEvent('status_changed', status);
   }
-};
-
-/**
- * @private
- */
-JSJaCConnection.prototype._unregisterPID = function(pID) {
-  if (!this._regIDs[pID])
-    return false;
-  this._regIDs[pID] = null;
-  this.oDbg.log("unregistered "+pID,3);
-  return true;
 };
