@@ -531,7 +531,7 @@ JSJaCConnection.prototype.sendIQ = function(iq, handlers, arg) {
 
 /**
  * Sets polling interval for this connection
- * @param {int} millisecs Milliseconds to set timer to
+ * @param {int} timerval Milliseconds to set timer to
  * @return effective interval this connection has been set to
  * @type int
  */
