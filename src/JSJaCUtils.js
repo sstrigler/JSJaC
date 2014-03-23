@@ -40,6 +40,19 @@ var JSJaCUtils = {
       cnonce += tab.charAt(Math.round(Math.random(new Date().getTime()) * (tab.length - 1)));
     }
     return cnonce;
+  },
+
+  /**
+   * Current timestamp.
+   * @return Seconds since 1.1.1970.
+   * @type int
+   */
+  now: function() {
+    if (Date.now && typeof Date.now == 'function') {
+      return Date.now();
+    } else {
+      return new Date().getTime();
+    }
   }
 
 };

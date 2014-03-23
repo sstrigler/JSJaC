@@ -1376,7 +1376,7 @@ JSJaCConnection.prototype._registerPID = function(packet, cb, arg) {
   this._regIDs[jid][id] = {
       cb:  cb,
       arg: arg,
-      ts:  Date.now()
+      ts:  JSJaCUtils.now()
   };
   this.oDbg.log("registered id "+id,3);
   this._cleanupRegisteredPIDs();
