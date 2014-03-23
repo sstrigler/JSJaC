@@ -1147,7 +1147,7 @@ JSJaCConnection.prototype._handlePID = function(packet) {
   if (!packet.getID())
     return false;
 
-  var jid = packet.getFrom() || this.domain;
+  var jid = packet.getFrom() || this.jid;
   var id = packet.getID();
   if (this._regIDs[jid][id]) {
       this.oDbg.log("handling id "+id,3);
@@ -1363,7 +1363,7 @@ JSJaCConnection.prototype._registerPID = function(packet, cb, arg) {
     return false;
   }
 
-  var jid = packet.getTo() || this.domain;
+  var jid = packet.getTo() || this.jid;
 
   if (!this._regIDs[jid]) {
     this._regIDs[jid] = {};
