@@ -72,15 +72,6 @@ Date.hrTime = function(ts) {
 };
 
 /**
- * Current timestamp.
- * @return Seconds since 1.1.1970.
- * @type int
- */
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-
-/**
  * somewhat opposit to {@link #hrTime}
  * expects a javascript Date object as parameter and returns a jabber
  * date string conforming to
