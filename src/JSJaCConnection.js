@@ -1159,6 +1159,8 @@ JSJaCConnection.prototype._handlePID = function(packet) {
         delete reg;
         return true;
       }
+    } else {
+      this.oDbg.log("not handling id '"+id+"' from jid "+jid, 1);
     }
   }
   return false;
