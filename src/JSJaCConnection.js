@@ -1150,20 +1150,19 @@ JSJaCConnection.prototype._handlePID = function(packet) {
   var jid = packet.getFrom() || this.jid;
   var id = packet.getID();
   if (this._regIDs[jid][id]) {
-      this.oDbg.log("handling id "+id,3);
-      var reg = this._regIDs[jid][id];
-      if (reg.cb.call(this, packet, reg.arg) === false) {
-        // don't unregister
-        return false;
-      } else {
-        delete reg;
-        return true;
-      }
+    this.oDbg.log("handling id "+id,3);
+    var reg = this._regIDs[jid][id];
+    if (reg.cb.call(this, packet, reg.arg) === false) {
+      // don't unregister
+      return false;
     } else {
-      this.oDbg.log("not handling id '"+id+"' from jid "+jid, 1);
+      delete reg;
+      return true;
     }
+  } else {
+    this.oDbg.log("not handling id '"+id+"' from jid "+jid, 1);
+    return false;
   }
-  return false;
 };
 
 /**
