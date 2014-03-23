@@ -12,7 +12,7 @@
 String.prototype.htmlEnc = function() {
   if(!this)
     return this;
-  
+
   var str = this.replace(/&/g,"&amp;");
   str = str.replace(/</g,"&lt;");
   str = str.replace(/>/g,"&gt;");
@@ -30,7 +30,7 @@ String.prototype.htmlEnc = function() {
 String.prototype.revertHtmlEnc = function() {
   if(!this)
     return this;
-  
+
   var str = this.replace(/&amp;/gi,'&');
   str = str.replace(/&lt;/gi,'<');
   str = str.replace(/&gt;/gi,'>');
@@ -70,6 +70,15 @@ Date.jab2date = function(ts) {
 Date.hrTime = function(ts) {
   return Date.jab2date(ts).toLocaleString();
 };
+
+/**
+ * Current timestamp.
+ * @return Seconds since 1.1.1970.
+ * @type int
+ */
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
 
 /**
  * somewhat opposit to {@link #hrTime}

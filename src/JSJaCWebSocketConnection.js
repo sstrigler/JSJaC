@@ -353,7 +353,7 @@ JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
     }
 
     // register callback with id
-    this._registerPID(packet.getID(), cb, arg);
+    this._registerPID(packet, cb, arg);
   }
 
   try {
