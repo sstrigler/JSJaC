@@ -21,7 +21,7 @@ JSJAC_TIMERVAL = 2000;          // default polling interval
 JSJAC_RETRYDELAY = 5000;        // msecs to wait before trying next
                                 // request after error
 
-JSJAC_REGID_TIMEOUT = 20;       // time in seconds until registered
+JSJAC_REGID_TIMEOUT = 20000;    // time in msec until registered
                                 // callbacks for ids timeout
 
 /* Options specific to HTTP Binding (BOSH) */
