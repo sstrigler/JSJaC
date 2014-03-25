@@ -16,6 +16,7 @@ src/JSJaCHttpPollingConnection.js \
 src/JSJaC.js
 
 all: clean utils install doc
+nodoc: clean utils install
 polling: clean utils polling_install doc
 
 install: build uncompressed crunch
