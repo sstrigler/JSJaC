@@ -1149,14 +1149,14 @@ JSJaCConnection.prototype._handlePID = function(packet) {
 
   var jid = packet.getFrom() || this.jid;
   var id = packet.getID();
-  if (this._regIDs[jid][id]) {
+  if (this._regIDs[jid] && this._regIDs[jid][id]) {
     this.oDbg.log("handling id "+id,3);
     var reg = this._regIDs[jid][id];
     if (reg.cb.call(this, packet, reg.arg) === false) {
       // don't unregister
       return false;
     } else {
-      delete reg;
+      delete this._regIDs[jid][id];
       return true;
     }
   } else {
@@ -1389,7 +1389,7 @@ JSJaCConnection.prototype._cleanupRegisteredPIDs = function() {
       for (var id in this._regIDs[jid]) {
         if (this._regIDs[jid].hasOwnProperty(id)) {
           if (this._regIDs[jid][id].ts + JSJAC_REGID_TIMEOUT < now) {
-            this.oDbg.log("deleting registered id '"+id+ "due to timeout", 1);
+            this.oDbg.log("deleting registered id '"+id+ "' due to timeout", 1);
             delete this._regIDs[jid][id];
           }
         }
