@@ -1371,6 +1371,9 @@ JSJaCConnection.prototype._registerPID = function(packet, cb, arg) {
   }
 
   var jid = packet.getTo() || this.jid;
+  
+  if (packet.getTo() == this.domain)
+     jid = this.jid;
 
   if (!this._regIDs[jid]) {
     this._regIDs[jid] = {};
