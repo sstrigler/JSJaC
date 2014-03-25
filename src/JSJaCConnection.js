@@ -1148,6 +1148,10 @@ JSJaCConnection.prototype._handlePID = function(packet) {
     return false;
 
   var jid = packet.getFrom() || this.jid;
+
+  if (packet.getFrom() == this.domain) 
+    jid = this.jid;
+
   var id = packet.getID();
   if (this._regIDs[jid] && this._regIDs[jid][id]) {
     this.oDbg.log("handling id "+id,3);
