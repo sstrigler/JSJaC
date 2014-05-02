@@ -1147,10 +1147,6 @@ JSJaCConnection.prototype._handlePID = function(packet) {
   if (!packet.getID())
     return false;
 
-  if (packet.pType() != 'iq' ||
-       (packet.getType() != 'error' && packet.getType() != 'result'))
-    return false; 
-
   var jid = packet.getFrom() || this.jid;
 
   if (packet.getFrom() == this.domain) 
