@@ -168,6 +168,7 @@ if (window.XDomainRequest) {
                     this.statusText = xhr.statusText;
                     this.responseText = xhr.responseText;
                     this.responseXML = xhr.responseXML;
+                    this.responseBody = xhr.responseBody;
                 }
 
                 this.onreadystatechange();
