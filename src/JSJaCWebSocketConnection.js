@@ -355,13 +355,13 @@ JSJaCWebSocketConnection.prototype._getInitialRequestString = function() {
 };
 
 JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
-  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
-  if (!packet || !packet.pType) {
-    this.oDbg.log('no packet: ' + packet, 1);
+  if (!this.connected()) {
     return false;
   }
 
-  if (!this.connected()) {
+  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
+  if (!packet || !packet.pType) {
+    this.oDbg.log('no packet: ' + packet, 1);
     return false;
   }
 
