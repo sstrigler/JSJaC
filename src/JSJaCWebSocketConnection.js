@@ -359,11 +359,12 @@ JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
     return false;
   }
 
-  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
   if (!packet || !packet.pType) {
     this.oDbg.log('no packet: ' + packet, 1);
     return false;
   }
+
+  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
 
   // remember id for response if callback present
   if (cb) {
