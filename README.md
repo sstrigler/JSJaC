@@ -1,17 +1,15 @@
 JSJaC - JavaScript Jabber Client Library
 ========================================
 
-JSJaC is a Jabber/XMPP client library written in JavaScript to ease
-implementation of web based Jabber/XMPP clients. For communication
-with a jabber server it needs to support either [HTTP Polling][1] or
-[XMPP Over BOSH][2] (formerly known as HTTP Binding) or [XMPP Over
-WebSocket][3].
-JSJaC has an object oriented interface which should be quite easy to
-use.
-Communication is done by using the HTTPRequest object (also refered to
-as AJAX technology) or WebSocket. Your browser must support this.
-JSJaC is fully compatible with all major AJAX/JavaScript frameworks
-like prototype, mootools, jQuery, dojo and YUI!.
+JSJaC is an XMPP (formerly known as Jabber) client library written in
+JavaScript to ease implementation of web based XMPP
+clients. For communication with an XMPP server it needs to support
+either [HTTP Polling][1] or [XMPP Over BOSH][2] (formerly known as
+HTTP Binding) or [XMPP Over WebSocket][3]. JSJaC has an object
+oriented interface which should be quite easy to use.  Communication
+is done by using the HTTPRequest object (also refered to as AJAX
+technology) or WebSocket. Your browser must support this.  JSJaC is
+fully compatible with all major JavaScript frameworks.
 
 **Note**: As security restrictions of most modern browsers prevent
   HTTP Polling from being usable anymore this module is disabled by
@@ -33,13 +31,19 @@ directory as this file. See
 * gpl-2.0.txt - for version 2 of the GNU General Public License
 * lgpl-2.1.txt - for version 2.1 of the GNU Lesser General Public License
 
+Build
+-----
+
+In order to build a single compressed file to be included from within
+your app please run `make` at the top level directory of this project.
+
 Hints on Usage
 --------------
 
 ### Service Address
 
 Let's say your JSJaC based web application is located at
-http://example.com/. Your Jabber server is at jabber-example.com and
+http://example.com/. Your XMPP server is at jabber-example.com and
 it's HTTP Binding service is located at
 http://jabber-example.org:5280/ or https://jabber-example.org:5281/.
 
@@ -78,16 +82,20 @@ More information: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 JSJaCConnection supports use of [JSDebugger][4] which is available
 separately.
 
-JSJaC also ships with a class 'JSJaCConsoleLogger' which lets you log to
+JSJaC also ships with a class `JSJaCConsoleLogger` which lets you log to
 Firebug's and Safari's console.
 
 ### Example
 
 For an example on how to use this library within your web application
-please have to look at 'examples/simpleclient.html' or 'examples/simpleCrossDomainClient.html'.
+please have to look at `examples/simpleclient.html` or
+`examples/simpleCrossDomainClient.html`.
 
 Supported Browsers and Platforms
 --------------------------------
+
+**(Obviously outdated, most modern browsers should work perfectly fine
+  though)**
 
 The following browsers are known to work with HTTP Binding. Let me
 know about others!
