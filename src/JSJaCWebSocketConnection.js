@@ -346,11 +346,8 @@ JSJaCWebSocketConnection.prototype._getInitialRequestString = function() {
     streamto = this.authhost;
   }
 
-  reqstr = '<stream:stream to="' + streamto + '" xmlns="jabber:client" xmlns:stream="' + NS_STREAM + '"';
-  if (this.authtype === 'sasl' || this.authtype === 'saslanon') {
-    reqstr += ' version="1.0"';
-  }
-  reqstr += '>';
+  reqstr = '<open xmlns="' + NS_STREAM + '" to="' + streamto + '" version="1.0"/>';
+  
   return reqstr;
 };
 
@@ -451,7 +448,7 @@ JSJaCWebSocketConnection.prototype._reInitStream = function(cb) {
     streamto = this.authhost;
   }
 
-  reqstr = '<stream:stream xmlns:stream="' + NS_STREAM + '" xmlns="jabber:client" to="' + streamto + '" version="1.0">';
+  reqstr = '<open xmlns="' + NS_STREAM + '" to="' + streamto + '" version="1.0"/>';
   this._sendRaw(reqstr, cb);
 };
 
