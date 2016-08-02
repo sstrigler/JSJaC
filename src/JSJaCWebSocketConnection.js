@@ -299,7 +299,26 @@ JSJaCWebSocketConnection.prototype._parseXml = function(s) {
   this.oDbg.log('Parsing: ' + s, 4);
   try {
     doc = XmlDocument.create('stream', NS_STREAM);
-    if(s.indexOf('<stream:stream') === -1) {
+    if(s.trim() == '</stream:stream>') {
+      // Consider session as closed
+      this.oDbg.log("session terminated", 1);
+
+      clearTimeout(this._timeout); // remove timer
+      clearInterval(this._interval);
+      clearInterval(this._inQto);
+
+      try {
+          JSJaCCookie.read(this._cookie_prefix+'JSJaC_State').erase();
+      } catch (e) {}
+
+      this._connected = false;
+      this._handleEvent('onerror',JSJaCError('503','cancel','session-terminate'));
+
+      this.oDbg.log("Disconnected.",1);
+      this._handleEvent('ondisconnect');
+
+      return null;
+    } else if(s.indexOf('<stream:stream') === -1) {
       // Wrap every stanza into stream element, so that XML namespaces work properly.
       doc.loadXML("<stream:stream xmlns:stream='" + NS_STREAM + "' xmlns='jabber:client'>" + s + "</stream:stream>");
       return doc.documentElement.firstChild;
@@ -336,15 +355,16 @@ JSJaCWebSocketConnection.prototype._getInitialRequestString = function() {
 };
 
 JSJaCWebSocketConnection.prototype.send = function(packet, cb, arg) {
-  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
+  if (!this.connected()) {
+    return false;
+  }
+
   if (!packet || !packet.pType) {
     this.oDbg.log('no packet: ' + packet, 1);
     return false;
   }
 
-  if (!this.connected()) {
-    return false;
-  }
+  this._ws.onmessage = JSJaC.bind(this._onmessage, this);
 
   // remember id for response if callback present
   if (cb) {
