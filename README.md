@@ -94,9 +94,6 @@ please have to look at `examples/simpleclient.html` or
 Supported Browsers and Platforms
 --------------------------------
 
-**(Obviously outdated, most modern browsers should work perfectly fine
-  though)**
-
 The following browsers are known to work with HTTP Binding. Let me
 know about others!
 
