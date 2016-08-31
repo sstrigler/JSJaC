@@ -860,8 +860,10 @@ JSJaCConnection.prototype._doSASLAuthScramSha1S1 = function(el) {
     var data = {};
     var fields = serverFirstMessage.split(',');
     for(var field in fields) {
-      var val = fields[field].substring(2);
-      data[fields[field].substring(0, 1)] = val;
+      if (fields.hasOwnProperty(field)) {
+        var val = fields[field].substring(2);
+        data[fields[field].substring(0, 1)] = val;
+      }
     }
 
     var password = str2rstr_utf8(this.pass);
@@ -912,8 +914,10 @@ JSJaCConnection.prototype._doSASLAuthScramSha1S2 = function (el) {
     var data = {};
     var fields = serverFinalMessage.split(',');
     for(var field in fields) {
-      var val = fields[field].substring(2);
-      data[fields[field].substring(0, 1)] = val;
+      if (fields.hasOwnProperty(field)) {
+        var val = fields[field].substring(2);
+        data[fields[field].substring(0, 1)] = val;
+      }
     }
 
     var serverKey = rstr_hmac_sha1(this._saltedPassword, 'Server Key');
