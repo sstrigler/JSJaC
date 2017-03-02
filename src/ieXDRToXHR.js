@@ -40,7 +40,7 @@ if (window.XDomainRequest) {
             };
         };
 
-        XMLHttpRequest.prototype.open = function(method, url, asynch, user, pwd) {
+        window.XMLHttpRequest.prototype.open = function(method, url, asynch, user, pwd) {
             //improve CORS deteciton (chat.example.net exemple.net), remove hardcoded http-bind
             var parser = document.createElement('a');
             parser.href = url;
@@ -63,7 +63,7 @@ if (window.XDomainRequest) {
             }
         };
 
-        XMLHttpRequest.prototype.xdrGetResponseHeader = function(name) {
+        window.XMLHttpRequest.prototype.xdrGetResponseHeader = function(name) {
             if (name === 'Content-Type' && this.xdr.contentType > ''){
                 return this.xdr.contentType;
             }
@@ -71,15 +71,15 @@ if (window.XDomainRequest) {
             return '';
         };
         
-        XMLHttpRequest.prototype.xdrGetAllResponseHeaders = function() {
+        window.XMLHttpRequest.prototype.xdrGetAllResponseHeaders = function() {
             return (this.xdr.contentType > '') ? 'Content-Type: ' + this.xdr.contentType : '';
         };
         
-        XMLHttpRequest.prototype.xdrSetRequestHeader = function(name, value) {
+        window.XMLHttpRequest.prototype.xdrSetRequestHeader = function(name, value) {
             //throw new Error('Request headers not supported');
         };
         
-        XMLHttpRequest.prototype.xdrLoaded = function() {
+        window.XMLHttpRequest.prototype.xdrLoaded = function() {
             if (this.onreadystatechange !== null) {
                 this.readyState = 4;
                 this.status = 200;
@@ -95,7 +95,7 @@ if (window.XDomainRequest) {
             }
         };
         
-        XMLHttpRequest.prototype.xdrError = function() {
+        window.XMLHttpRequest.prototype.xdrError = function() {
             if (this.onreadystatechange !== null) {
                 this.readyState = 4;
                 this.status = 0;
@@ -106,7 +106,7 @@ if (window.XDomainRequest) {
             }
         };
         
-        XMLHttpRequest.prototype.xdrProgress = function() {
+        window.XMLHttpRequest.prototype.xdrProgress = function() {
             if (this.onreadystatechange !== null && this.status !== 3) {
                 this.readyState = 3;
                 this.status = 3;
@@ -115,14 +115,14 @@ if (window.XDomainRequest) {
             }
         };
         
-        XMLHttpRequest.prototype.finalXDRRequest = function() {
+        window.XMLHttpRequest.prototype.finalXDRRequest = function() {
             var xdr = this.xdr;
             delete xdr.onload;
             delete xdr.onerror;
             delete xdr.onprogress;
         };
         
-        XMLHttpRequest.prototype.sendXDR = function(data) {
+        window.XMLHttpRequest.prototype.sendXDR = function(data) {
             var xdr = this.xdr;
 
             xdr.onload = this.xdrLoadedBinded;
@@ -133,12 +133,12 @@ if (window.XDomainRequest) {
             this.xdr.send(data);
         };
         
-        XMLHttpRequest.prototype.abortXDR = function() {
+        window.XMLHttpRequest.prototype.abortXDR = function() {
             this.finalXDRRequest();
             this.xdr.abort();
         };
         
-        XMLHttpRequest.prototype.setXDRActive = function() {
+        window.XMLHttpRequest.prototype.setXDRActive = function() {
             this.send = this.sendXDR;
             this.abort = this.abortXDR;
             this.getResponseHeader = this.xdrGetResponseHeader;
@@ -146,19 +146,19 @@ if (window.XDomainRequest) {
             this.setRequestHeader = this.xdrSetRequestHeader;
         };
 
-        XMLHttpRequest.prototype.xhrGetResponseHeader = function(name) {
+        window.XMLHttpRequest.prototype.xhrGetResponseHeader = function(name) {
             return this.xhr.getResponseHeader(name);
         };
         
-        XMLHttpRequest.prototype.xhrGetAllResponseHeaders = function() {
+        window.XMLHttpRequest.prototype.xhrGetAllResponseHeaders = function() {
             return this.xhr.getAllResponseHeaders();
         };
         
-        XMLHttpRequest.prototype.xhrSetRequestHeader = function(name, value) {
+        window.XMLHttpRequest.prototype.xhrSetRequestHeader = function(name, value) {
             return this.xhr.setRequestHeader(name, value);
         };
         
-        XMLHttpRequest.prototype.xhrReadyStateChanged = function() {
+        window.XMLHttpRequest.prototype.xhrReadyStateChanged = function() {
             if (this.onreadystatechange !== null && this.readyState !== this.xhr.readyState) {
                 var xhr = this.xhr;
 
@@ -175,19 +175,19 @@ if (window.XDomainRequest) {
             }
         };
         
-        XMLHttpRequest.prototype.finalXHRRequest = function() {
+        window.XMLHttpRequest.prototype.finalXHRRequest = function() {
             delete this.xhr.onreadystatechange;
         };
-        XMLHttpRequest.prototype.abortXHR = function() {
+        window.XMLHttpRequest.prototype.abortXHR = function() {
             this.finalXHRRequest();
             this.xhr.abort();
         };
-        XMLHttpRequest.prototype.sendXHR = function(data) {
+        window.XMLHttpRequest.prototype.sendXHR = function(data) {
             this.xhr.onreadystatechange = this.xhrReadyStateChangedBinded;
 
             this.xhr.send(data);
         };
-        XMLHttpRequest.prototype.setXHRActive = function() {
+        window.XMLHttpRequest.prototype.setXHRActive = function() {
             this.send = this.sendXHR;
             this.abort = this.abortXHR;
             this.getResponseHeader = this.xhrGetResponseHeader;
