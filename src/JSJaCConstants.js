@@ -40,6 +40,7 @@ var NS_PUBSUB_NMI =   "http://jabber.org/protocol/pubsub#node-meta-info";
 var NS_COMMANDS =     "http://jabber.org/protocol/commands";
 var NS_CAPS =         "http://jabber.org/protocol/caps";
 var NS_STREAM =       "http://etherx.jabber.org/streams";
+var NS_FRAMING =      "urn:ietf:params:xml:ns:xmpp-framing";
 var NS_CLIENT =       "jabber:client";
 
 var NS_BOSH =         "http://jabber.org/protocol/httpbind";
